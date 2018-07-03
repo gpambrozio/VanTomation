@@ -1,0 +1,589 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		EC8F568720EB2E82005D6959 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8F568620EB2E82005D6959 /* AppDelegate.swift */; };
+		EC8F568920EB2E82005D6959 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8F568820EB2E82005D6959 /* ViewController.swift */; };
+		EC8F568C20EB2E82005D6959 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EC8F568A20EB2E82005D6959 /* Main.storyboard */; };
+		EC8F568E20EB2E84005D6959 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EC8F568D20EB2E84005D6959 /* Assets.xcassets */; };
+		EC8F569120EB2E84005D6959 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EC8F568F20EB2E84005D6959 /* LaunchScreen.storyboard */; };
+		EC8F569C20EB2E84005D6959 /* VanTomationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8F569B20EB2E84005D6959 /* VanTomationTests.swift */; };
+		EC8F56A720EB2E84005D6959 /* VanTomationUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8F56A620EB2E84005D6959 /* VanTomationUITests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		EC8F569820EB2E84005D6959 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EC8F567B20EB2E82005D6959 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EC8F568220EB2E82005D6959;
+			remoteInfo = VanTomation;
+		};
+		EC8F56A320EB2E84005D6959 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EC8F567B20EB2E82005D6959 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EC8F568220EB2E82005D6959;
+			remoteInfo = VanTomation;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		EC8F568320EB2E82005D6959 /* VanTomation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VanTomation.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EC8F568620EB2E82005D6959 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		EC8F568820EB2E82005D6959 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		EC8F568B20EB2E82005D6959 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		EC8F568D20EB2E84005D6959 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		EC8F569020EB2E84005D6959 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		EC8F569220EB2E84005D6959 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		EC8F569720EB2E84005D6959 /* VanTomationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VanTomationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		EC8F569B20EB2E84005D6959 /* VanTomationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VanTomationTests.swift; sourceTree = "<group>"; };
+		EC8F569D20EB2E84005D6959 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		EC8F56A220EB2E84005D6959 /* VanTomationUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VanTomationUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		EC8F56A620EB2E84005D6959 /* VanTomationUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VanTomationUITests.swift; sourceTree = "<group>"; };
+		EC8F56A820EB2E84005D6959 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		EC8F568020EB2E82005D6959 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EC8F569420EB2E84005D6959 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EC8F569F20EB2E84005D6959 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		EC8F567A20EB2E82005D6959 = {
+			isa = PBXGroup;
+			children = (
+				EC8F568520EB2E82005D6959 /* VanTomation */,
+				EC8F569A20EB2E84005D6959 /* VanTomationTests */,
+				EC8F56A520EB2E84005D6959 /* VanTomationUITests */,
+				EC8F568420EB2E82005D6959 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		EC8F568420EB2E82005D6959 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EC8F568320EB2E82005D6959 /* VanTomation.app */,
+				EC8F569720EB2E84005D6959 /* VanTomationTests.xctest */,
+				EC8F56A220EB2E84005D6959 /* VanTomationUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		EC8F568520EB2E82005D6959 /* VanTomation */ = {
+			isa = PBXGroup;
+			children = (
+				EC8F568620EB2E82005D6959 /* AppDelegate.swift */,
+				EC8F568820EB2E82005D6959 /* ViewController.swift */,
+				EC8F568A20EB2E82005D6959 /* Main.storyboard */,
+				EC8F568D20EB2E84005D6959 /* Assets.xcassets */,
+				EC8F568F20EB2E84005D6959 /* LaunchScreen.storyboard */,
+				EC8F569220EB2E84005D6959 /* Info.plist */,
+			);
+			path = VanTomation;
+			sourceTree = "<group>";
+		};
+		EC8F569A20EB2E84005D6959 /* VanTomationTests */ = {
+			isa = PBXGroup;
+			children = (
+				EC8F569B20EB2E84005D6959 /* VanTomationTests.swift */,
+				EC8F569D20EB2E84005D6959 /* Info.plist */,
+			);
+			path = VanTomationTests;
+			sourceTree = "<group>";
+		};
+		EC8F56A520EB2E84005D6959 /* VanTomationUITests */ = {
+			isa = PBXGroup;
+			children = (
+				EC8F56A620EB2E84005D6959 /* VanTomationUITests.swift */,
+				EC8F56A820EB2E84005D6959 /* Info.plist */,
+			);
+			path = VanTomationUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		EC8F568220EB2E82005D6959 /* VanTomation */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EC8F56AB20EB2E84005D6959 /* Build configuration list for PBXNativeTarget "VanTomation" */;
+			buildPhases = (
+				EC8F567F20EB2E82005D6959 /* Sources */,
+				EC8F568020EB2E82005D6959 /* Frameworks */,
+				EC8F568120EB2E82005D6959 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = VanTomation;
+			productName = VanTomation;
+			productReference = EC8F568320EB2E82005D6959 /* VanTomation.app */;
+			productType = "com.apple.product-type.application";
+		};
+		EC8F569620EB2E84005D6959 /* VanTomationTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EC8F56AE20EB2E84005D6959 /* Build configuration list for PBXNativeTarget "VanTomationTests" */;
+			buildPhases = (
+				EC8F569320EB2E84005D6959 /* Sources */,
+				EC8F569420EB2E84005D6959 /* Frameworks */,
+				EC8F569520EB2E84005D6959 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EC8F569920EB2E84005D6959 /* PBXTargetDependency */,
+			);
+			name = VanTomationTests;
+			productName = VanTomationTests;
+			productReference = EC8F569720EB2E84005D6959 /* VanTomationTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		EC8F56A120EB2E84005D6959 /* VanTomationUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EC8F56B120EB2E84005D6959 /* Build configuration list for PBXNativeTarget "VanTomationUITests" */;
+			buildPhases = (
+				EC8F569E20EB2E84005D6959 /* Sources */,
+				EC8F569F20EB2E84005D6959 /* Frameworks */,
+				EC8F56A020EB2E84005D6959 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EC8F56A420EB2E84005D6959 /* PBXTargetDependency */,
+			);
+			name = VanTomationUITests;
+			productName = VanTomationUITests;
+			productReference = EC8F56A220EB2E84005D6959 /* VanTomationUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		EC8F567B20EB2E82005D6959 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0940;
+				LastUpgradeCheck = 0940;
+				ORGANIZATIONNAME = "Gustavo Ambrozio";
+				TargetAttributes = {
+					EC8F568220EB2E82005D6959 = {
+						CreatedOnToolsVersion = 9.4.1;
+					};
+					EC8F569620EB2E84005D6959 = {
+						CreatedOnToolsVersion = 9.4.1;
+						TestTargetID = EC8F568220EB2E82005D6959;
+					};
+					EC8F56A120EB2E84005D6959 = {
+						CreatedOnToolsVersion = 9.4.1;
+						TestTargetID = EC8F568220EB2E82005D6959;
+					};
+				};
+			};
+			buildConfigurationList = EC8F567E20EB2E82005D6959 /* Build configuration list for PBXProject "VanTomation" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = EC8F567A20EB2E82005D6959;
+			productRefGroup = EC8F568420EB2E82005D6959 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				EC8F568220EB2E82005D6959 /* VanTomation */,
+				EC8F569620EB2E84005D6959 /* VanTomationTests */,
+				EC8F56A120EB2E84005D6959 /* VanTomationUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		EC8F568120EB2E82005D6959 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EC8F569120EB2E84005D6959 /* LaunchScreen.storyboard in Resources */,
+				EC8F568E20EB2E84005D6959 /* Assets.xcassets in Resources */,
+				EC8F568C20EB2E82005D6959 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EC8F569520EB2E84005D6959 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EC8F56A020EB2E84005D6959 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		EC8F567F20EB2E82005D6959 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EC8F568920EB2E82005D6959 /* ViewController.swift in Sources */,
+				EC8F568720EB2E82005D6959 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EC8F569320EB2E84005D6959 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EC8F569C20EB2E84005D6959 /* VanTomationTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EC8F569E20EB2E84005D6959 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EC8F56A720EB2E84005D6959 /* VanTomationUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		EC8F569920EB2E84005D6959 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EC8F568220EB2E82005D6959 /* VanTomation */;
+			targetProxy = EC8F569820EB2E84005D6959 /* PBXContainerItemProxy */;
+		};
+		EC8F56A420EB2E84005D6959 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EC8F568220EB2E82005D6959 /* VanTomation */;
+			targetProxy = EC8F56A320EB2E84005D6959 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		EC8F568A20EB2E82005D6959 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				EC8F568B20EB2E82005D6959 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		EC8F568F20EB2E84005D6959 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				EC8F569020EB2E84005D6959 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		EC8F56A920EB2E84005D6959 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		EC8F56AA20EB2E84005D6959 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		EC8F56AC20EB2E84005D6959 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = XG2WG7U93U;
+				INFOPLIST_FILE = VanTomation/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = br.eng.gustavo.VanTomation;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		EC8F56AD20EB2E84005D6959 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = XG2WG7U93U;
+				INFOPLIST_FILE = VanTomation/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = br.eng.gustavo.VanTomation;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		EC8F56AF20EB2E84005D6959 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = XG2WG7U93U;
+				INFOPLIST_FILE = VanTomationTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = br.eng.gustavo.VanTomationTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/VanTomation.app/VanTomation";
+			};
+			name = Debug;
+		};
+		EC8F56B020EB2E84005D6959 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = XG2WG7U93U;
+				INFOPLIST_FILE = VanTomationTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = br.eng.gustavo.VanTomationTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/VanTomation.app/VanTomation";
+			};
+			name = Release;
+		};
+		EC8F56B220EB2E84005D6959 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = XG2WG7U93U;
+				INFOPLIST_FILE = VanTomationUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = br.eng.gustavo.VanTomationUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = VanTomation;
+			};
+			name = Debug;
+		};
+		EC8F56B320EB2E84005D6959 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = XG2WG7U93U;
+				INFOPLIST_FILE = VanTomationUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = br.eng.gustavo.VanTomationUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = VanTomation;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		EC8F567E20EB2E82005D6959 /* Build configuration list for PBXProject "VanTomation" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EC8F56A920EB2E84005D6959 /* Debug */,
+				EC8F56AA20EB2E84005D6959 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EC8F56AB20EB2E84005D6959 /* Build configuration list for PBXNativeTarget "VanTomation" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EC8F56AC20EB2E84005D6959 /* Debug */,
+				EC8F56AD20EB2E84005D6959 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EC8F56AE20EB2E84005D6959 /* Build configuration list for PBXNativeTarget "VanTomationTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EC8F56AF20EB2E84005D6959 /* Debug */,
+				EC8F56B020EB2E84005D6959 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EC8F56B120EB2E84005D6959 /* Build configuration list for PBXNativeTarget "VanTomationUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EC8F56B220EB2E84005D6959 /* Debug */,
+				EC8F56B320EB2E84005D6959 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = EC8F567B20EB2E82005D6959 /* Project object */;
+}
