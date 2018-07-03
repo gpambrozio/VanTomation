@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		671680447B9AAF27D48CB121 /* Pods_VanTomationTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF0657AD084F29454B02218E /* Pods_VanTomationTests.framework */; };
+		A6C8A7378DE3A1E0B9E107D1 /* Pods_VanTomation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 224B247CA41DBCFEA61576AF /* Pods_VanTomation.framework */; };
+		B19F9D25BB5C133422BEE01D /* Pods_VanTomationUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7622A07071BC303034BCD6DE /* Pods_VanTomationUITests.framework */; };
 		EC8F568720EB2E82005D6959 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8F568620EB2E82005D6959 /* AppDelegate.swift */; };
 		EC8F568920EB2E82005D6959 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8F568820EB2E82005D6959 /* ViewController.swift */; };
 		EC8F568C20EB2E82005D6959 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EC8F568A20EB2E82005D6959 /* Main.storyboard */; };
@@ -34,6 +37,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		103484006F8E181F5DEB5DEC /* Pods-VanTomationUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VanTomationUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-VanTomationUITests/Pods-VanTomationUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		224B247CA41DBCFEA61576AF /* Pods_VanTomation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VanTomation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		368C196598E59C2C19274BCE /* Pods-VanTomation.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VanTomation.release.xcconfig"; path = "Pods/Target Support Files/Pods-VanTomation/Pods-VanTomation.release.xcconfig"; sourceTree = "<group>"; };
+		7622A07071BC303034BCD6DE /* Pods_VanTomationUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VanTomationUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		BA6C123B898D8A8469E88FAD /* Pods-VanTomationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VanTomationTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-VanTomationTests/Pods-VanTomationTests.debug.xcconfig"; sourceTree = "<group>"; };
+		BE7180F0C42A373ED079BB3B /* Pods-VanTomationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VanTomationTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-VanTomationTests/Pods-VanTomationTests.release.xcconfig"; sourceTree = "<group>"; };
+		C01FC24EC56D386209E14D14 /* Pods-VanTomation.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VanTomation.debug.xcconfig"; path = "Pods/Target Support Files/Pods-VanTomation/Pods-VanTomation.debug.xcconfig"; sourceTree = "<group>"; };
+		DD5AB710BB35CE5026ED0398 /* Pods-VanTomationUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VanTomationUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-VanTomationUITests/Pods-VanTomationUITests.release.xcconfig"; sourceTree = "<group>"; };
 		EC8F568320EB2E82005D6959 /* VanTomation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VanTomation.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EC8F568620EB2E82005D6959 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		EC8F568820EB2E82005D6959 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -47,6 +58,7 @@
 		EC8F56A220EB2E84005D6959 /* VanTomationUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VanTomationUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EC8F56A620EB2E84005D6959 /* VanTomationUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VanTomationUITests.swift; sourceTree = "<group>"; };
 		EC8F56A820EB2E84005D6959 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FF0657AD084F29454B02218E /* Pods_VanTomationTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VanTomationTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +66,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A6C8A7378DE3A1E0B9E107D1 /* Pods_VanTomation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -61,6 +74,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				671680447B9AAF27D48CB121 /* Pods_VanTomationTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -68,12 +82,36 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B19F9D25BB5C133422BEE01D /* Pods_VanTomationUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0F694128A212E944581B44B4 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				C01FC24EC56D386209E14D14 /* Pods-VanTomation.debug.xcconfig */,
+				368C196598E59C2C19274BCE /* Pods-VanTomation.release.xcconfig */,
+				BA6C123B898D8A8469E88FAD /* Pods-VanTomationTests.debug.xcconfig */,
+				BE7180F0C42A373ED079BB3B /* Pods-VanTomationTests.release.xcconfig */,
+				103484006F8E181F5DEB5DEC /* Pods-VanTomationUITests.debug.xcconfig */,
+				DD5AB710BB35CE5026ED0398 /* Pods-VanTomationUITests.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		6B2A425F4B309A9BDDE5C60C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				224B247CA41DBCFEA61576AF /* Pods_VanTomation.framework */,
+				FF0657AD084F29454B02218E /* Pods_VanTomationTests.framework */,
+				7622A07071BC303034BCD6DE /* Pods_VanTomationUITests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		EC8F567A20EB2E82005D6959 = {
 			isa = PBXGroup;
 			children = (
@@ -81,6 +119,8 @@
 				EC8F569A20EB2E84005D6959 /* VanTomationTests */,
 				EC8F56A520EB2E84005D6959 /* VanTomationUITests */,
 				EC8F568420EB2E82005D6959 /* Products */,
+				0F694128A212E944581B44B4 /* Pods */,
+				6B2A425F4B309A9BDDE5C60C /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -132,9 +172,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = EC8F56AB20EB2E84005D6959 /* Build configuration list for PBXNativeTarget "VanTomation" */;
 			buildPhases = (
+				C08D3506DC96CFB3F1FC67A2 /* [CP] Check Pods Manifest.lock */,
 				EC8F567F20EB2E82005D6959 /* Sources */,
 				EC8F568020EB2E82005D6959 /* Frameworks */,
 				EC8F568120EB2E82005D6959 /* Resources */,
+				DC1F7BA65D1F2A3BCEF977A5 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -149,6 +191,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = EC8F56AE20EB2E84005D6959 /* Build configuration list for PBXNativeTarget "VanTomationTests" */;
 			buildPhases = (
+				34A423966D95F9CC16AE191C /* [CP] Check Pods Manifest.lock */,
 				EC8F569320EB2E84005D6959 /* Sources */,
 				EC8F569420EB2E84005D6959 /* Frameworks */,
 				EC8F569520EB2E84005D6959 /* Resources */,
@@ -167,6 +210,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = EC8F56B120EB2E84005D6959 /* Build configuration list for PBXNativeTarget "VanTomationUITests" */;
 			buildPhases = (
+				D9A71AC641235BB0C2201202 /* [CP] Check Pods Manifest.lock */,
 				EC8F569E20EB2E84005D6959 /* Sources */,
 				EC8F569F20EB2E84005D6959 /* Frameworks */,
 				EC8F56A020EB2E84005D6959 /* Resources */,
@@ -250,6 +294,81 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		34A423966D95F9CC16AE191C /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-VanTomationTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		C08D3506DC96CFB3F1FC67A2 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-VanTomation-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D9A71AC641235BB0C2201202 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-VanTomationUITests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		DC1F7BA65D1F2A3BCEF977A5 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-VanTomation/Pods-VanTomation-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/BlueCapKit/BlueCapKit.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BlueCapKit.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-VanTomation/Pods-VanTomation-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		EC8F567F20EB2E82005D6959 /* Sources */ = {
@@ -428,6 +547,7 @@
 		};
 		EC8F56AC20EB2E84005D6959 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = C01FC24EC56D386209E14D14 /* Pods-VanTomation.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -446,6 +566,7 @@
 		};
 		EC8F56AD20EB2E84005D6959 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 368C196598E59C2C19274BCE /* Pods-VanTomation.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -464,6 +585,7 @@
 		};
 		EC8F56AF20EB2E84005D6959 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = BA6C123B898D8A8469E88FAD /* Pods-VanTomationTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -485,6 +607,7 @@
 		};
 		EC8F56B020EB2E84005D6959 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = BE7180F0C42A373ED079BB3B /* Pods-VanTomationTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -506,6 +629,7 @@
 		};
 		EC8F56B220EB2E84005D6959 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 103484006F8E181F5DEB5DEC /* Pods-VanTomationUITests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
@@ -526,6 +650,7 @@
 		};
 		EC8F56B320EB2E84005D6959 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = DD5AB710BB35CE5026ED0398 /* Pods-VanTomationUITests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
