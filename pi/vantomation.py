@@ -14,33 +14,46 @@ import traceback
 
 class DeviceManager(object):
     def __init__(self, service_uuid, char_uuids, thread_class):
-        self.threads_by_id = {}
+        self.threads_by_addr = {}
         self.threads_by_name = {}
         self.service_uuid = service_uuid
         self.reversed_service_uuid = uuid.UUID(bytes="".join([uuid.UUID(service_uuid).bytes[15-i] for i in range(16)])).hex
         self.char_uuids = char_uuids
         self.thread_class = thread_class
+        self.coordinator = None
+
+        
+    def set_coordinator(self, coordinator, identifier):
+        self.coordinator = coordinator
+        self.coordinator_identifier = identifier
         
         
     def found_devices(self, devices):
+        # Check if everything is OK
+        for addr in self.threads_by_addr:
+            t = self.threads_by_addr[addr]
+            if not t.is_alive():
+                if self.coordinator is not None:
+                    self.coordinator.device_disconnected(t, self.coordinator_identifier)
+                del self.threads_by_name[t.name]
+                del self.threads_by_addr[addr]
+
         for dev in devices:
             scan_data = dev.getScanData()
             services = [s[2] for s in scan_data if s[0] == 7]
 
-            t = self.threads_by_id.get(dev.addr)
-            if t is not None and not t.is_alive():
-                del self.threads_by_name[t.name]
-                del self.threads_by_id[dev.addr]
-
-            if self.reversed_service_uuid in services and dev.addr not in self.threads_by_id:
+            if self.reversed_service_uuid in services and dev.addr not in self.threads_by_addr:
                 try:
                     print("Found device %s" % dev.addr)
                     t = self.thread_class(self, dev, self.service_uuid, self.char_uuids)
                     print("Connected to %s (%s)" % (dev.addr, t.name))
-                    self.threads_by_id[dev.addr] = t
+                    self.threads_by_addr[dev.addr] = t
                     self.threads_by_name[t.name] = t
+                    if self.coordinator is not None:
+                        self.coordinator.device_connected(t, self.coordinator_identifier)
                 except Exception, e:
                     print("Exception connecting to %s: %s" % (dev.addr, e))
+                    print(traceback.format_exc())
 
 
 class NotificationDelegate(DefaultDelegate):
@@ -113,7 +126,6 @@ class DeviceThread(object):
         pass
 
 
-
 class UARTManager(DeviceManager):
 
     def __init__(self):
@@ -175,15 +187,18 @@ class ControllerManager(DeviceManager):
 
     def __init__(self):
         SERVICE_UUID = '12345678-1234-5678-1234-56789abc0010'
-        CHARACTERISTIC_UUID = '12345679-1234-5678-1234-56789abc0010'
+        COMMAND_CHAR_UUID = '12345679-1234-5678-1234-56789abc0010'
+        DEVICES_CHAR_UUID = '1234567a-1234-5678-1234-56789abc0010'
 
-        DeviceManager.__init__(self, SERVICE_UUID, [CHARACTERISTIC_UUID], ControllerThread)
+        DeviceManager.__init__(self, SERVICE_UUID, [COMMAND_CHAR_UUID, DEVICES_CHAR_UUID], ControllerThread)
         
 
 class ControllerThread(DeviceThread):
 
     def before_thread(self):
-        self.start_notifications(self.characteristics[0])
+        self.command_characteristic = self.characteristics[0]
+        self.devices_characteristic = self.characteristics[1]
+        self.start_notifications(self.command_characteristic)
         self.queue = queue.Queue()
 
 
@@ -191,20 +206,52 @@ class ControllerThread(DeviceThread):
         self.queue.put(data)
 
 
+    def update_connected_devices(self, devices):
+        self.devices_characteristic.write(devices)
+        
+
 class Coordinator(object):
     
     def __init__(self, controller_manager, device_managers):
         self.controller_manager = controller_manager
         self.device_managers = device_managers
+        for manager in device_managers:
+            manager.set_coordinator(self, "D")
+
+        controller_manager.set_coordinator(self, "C")
         
         self.devices = {
             'O': 'AgnesOutsideLights',
             'I': 'AgnesInsides',
         }
         
+        self.devices_by_name = {v: k for (k, v) in self.devices.iteritems()}
+        
+        self.connected_devices = set()
+        
         self.thread = threading.Thread(target=self.run)
         self.thread.daemon = True                            # Daemonize thread
         self.thread.start()                                  # Start the execution
+        
+
+    def device_connected(self, thread, coordinator_identifier):
+        if coordinator_identifier == "D":
+            self.connected_devices.add(thread.name)
+
+        self.update_connected_devices()
+
+
+    def device_disconnected(self, thread, coordinator_identifier):
+        if coordinator_identifier == "D":
+            self.connected_devices.remove(thread.name)
+            self.update_connected_devices()
+
+
+    def update_connected_devices(self):
+        connected = "".join(sorted([self.devices_by_name[name] for name in self.connected_devices if name in self.devices_by_name]))
+        for controller in self.controller_manager.threads_by_name.values():
+            print("Updating devices: %s to %s" % (connected, controller.name))
+            controller.update_connected_devices(connected)
 
 
     def run(self):

@@ -20,14 +20,21 @@ enum AppError: Error {
 }
 
 public struct CommandCharacteristic: CharacteristicConfigurable {
-
     // CharacteristicConfigurable
     public static let uuid                                     = "12345679-1234-5678-1234-56789abc0010"
     public static let name                                     = "Command"
     public static let permissions: CBAttributePermissions      = [.readable, .writeable]
     public static let properties: CBCharacteristicProperties   = [.read, .notify]
-    public static let initialValue                             = SerDe.serialize("0")
+    public static let initialValue                             = SerDe.serialize("")
+}
 
+public struct ConnectedDevicesCharacteristic: CharacteristicConfigurable {
+    // CharacteristicConfigurable
+    public static let uuid                                     = "1234567A-1234-5678-1234-56789abc0010"
+    public static let name                                     = "Devices"
+    public static let permissions: CBAttributePermissions      = [.readable, .writeable]
+    public static let properties: CBCharacteristicProperties   = [.read, .write, .writeWithoutResponse]
+    public static let initialValue                             = SerDe.serialize("")
 }
 
 class MasterManager {
@@ -43,9 +50,10 @@ class MasterManager {
     let commandService = MutableService(uuid: Constants.uuid)
 
     let commandCharacteristic = MutableCharacteristic(profile: StringCharacteristicProfile<CommandCharacteristic>())
+    let devicesCharacteristic = MutableCharacteristic(profile: StringCharacteristicProfile<ConnectedDevicesCharacteristic>())
 
     private init() {
-        commandService.characteristics = [commandCharacteristic]
+        commandService.characteristics = [commandCharacteristic, devicesCharacteristic]
         startAdvertising()
     }
 
@@ -73,7 +81,6 @@ class MasterManager {
         }
 
         startAdvertiseFuture.onSuccess { _ in
-            self.commandCharacteristic.value = SerDe.serialize("-1")
         }
 
         startAdvertiseFuture.onFailure { [weak self] error in
@@ -92,16 +99,16 @@ class MasterManager {
             }
         }
 
-        let accelerometerUpdatePeriodFuture = startAdvertiseFuture.flatMap { [unowned self] in
-            self.commandCharacteristic.startRespondingToWriteRequests()
+        let devicesFuture = startAdvertiseFuture.flatMap { [unowned self] in
+            self.devicesCharacteristic.startRespondingToWriteRequests()
         }
-        accelerometerUpdatePeriodFuture.onSuccess { [unowned self] (request, _) in
-            guard let value = request.value, value.count > 0 && value.count <= 8 else {
-                self.commandCharacteristic.respondToRequest(request, withResult:CBATTError.invalidAttributeValueLength)
+        devicesFuture.onSuccess { [unowned self] (request, _) in
+            guard let value = request.value, value.count > 0 && value.count <= 16 else {
+                self.devicesCharacteristic.respondToRequest(request, withResult:CBATTError.invalidAttributeValueLength)
                 return
             }
-            self.commandCharacteristic.value = value
-            self.commandCharacteristic.respondToRequest(request, withResult:CBATTError.success)
+            self.devicesCharacteristic.value = value
+            self.devicesCharacteristic.respondToRequest(request, withResult:CBATTError.success)
         }
     }
 
