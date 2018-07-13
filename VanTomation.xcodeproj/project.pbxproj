@@ -17,6 +17,7 @@
 		EC8F569120EB2E84005D6959 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EC8F568F20EB2E84005D6959 /* LaunchScreen.storyboard */; };
 		EC8F569C20EB2E84005D6959 /* VanTomationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8F569B20EB2E84005D6959 /* VanTomationTests.swift */; };
 		EC8F56A720EB2E84005D6959 /* VanTomationUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8F56A620EB2E84005D6959 /* VanTomationUITests.swift */; };
+		EC8F56B520EB35B3005D6959 /* MasterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8F56B420EB35B3005D6959 /* MasterManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,6 +59,7 @@
 		EC8F56A220EB2E84005D6959 /* VanTomationUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VanTomationUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EC8F56A620EB2E84005D6959 /* VanTomationUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VanTomationUITests.swift; sourceTree = "<group>"; };
 		EC8F56A820EB2E84005D6959 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		EC8F56B420EB35B3005D6959 /* MasterManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterManager.swift; sourceTree = "<group>"; };
 		FF0657AD084F29454B02218E /* Pods_VanTomationTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VanTomationTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -138,6 +140,7 @@
 			isa = PBXGroup;
 			children = (
 				EC8F568620EB2E82005D6959 /* AppDelegate.swift */,
+				EC8F56B420EB35B3005D6959 /* MasterManager.swift */,
 				EC8F568820EB2E82005D6959 /* ViewController.swift */,
 				EC8F568A20EB2E82005D6959 /* Main.storyboard */,
 				EC8F568D20EB2E84005D6959 /* Assets.xcassets */,
@@ -237,6 +240,11 @@
 				TargetAttributes = {
 					EC8F568220EB2E82005D6959 = {
 						CreatedOnToolsVersion = 9.4.1;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+						};
 					};
 					EC8F569620EB2E84005D6959 = {
 						CreatedOnToolsVersion = 9.4.1;
@@ -377,6 +385,7 @@
 			files = (
 				EC8F568920EB2E82005D6959 /* ViewController.swift in Sources */,
 				EC8F568720EB2E82005D6959 /* AppDelegate.swift in Sources */,
+				EC8F56B520EB35B3005D6959 /* MasterManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
