@@ -30,7 +30,7 @@ public struct CommandCharacteristic: CharacteristicConfigurable {
 
 public struct ConnectedDevicesCharacteristic: CharacteristicConfigurable {
     // CharacteristicConfigurable
-    public static let uuid                                     = "1234567A-1234-5678-1234-56789abc0010"
+    public static let uuid                                     = "1234567a-1234-5678-1234-56789abc0010"
     public static let name                                     = "Devices"
     public static let permissions: CBAttributePermissions      = [.readable, .writeable]
     public static let properties: CBCharacteristicProperties   = [.read, .write, .writeWithoutResponse]
@@ -51,6 +51,8 @@ class MasterManager {
 
     let commandCharacteristic = MutableCharacteristic(profile: StringCharacteristicProfile<CommandCharacteristic>())
     let devicesCharacteristic = MutableCharacteristic(profile: StringCharacteristicProfile<ConnectedDevicesCharacteristic>())
+
+    var devicesClosure: ((String) -> Void)? = nil
 
     private init() {
         commandService.characteristics = [commandCharacteristic, devicesCharacteristic]
@@ -109,6 +111,8 @@ class MasterManager {
             }
             self.devicesCharacteristic.value = value
             self.devicesCharacteristic.respondToRequest(request, withResult:CBATTError.success)
+            self.devicesClosure?(String(data: value, encoding: .ascii) ?? "!")
+            print("Devices updated to \(value)")
         }
     }
 

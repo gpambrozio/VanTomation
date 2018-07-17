@@ -1,16 +1,24 @@
 PODS:
   - BlueCapKit (0.7.0)
+  - fluid-slider (0.0.6):
+    - pop
+  - pop (1.0.10)
 
 DEPENDENCIES:
   - BlueCapKit
+  - fluid-slider
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - BlueCapKit
+    - fluid-slider
+    - pop
 
 SPEC CHECKSUMS:
   BlueCapKit: b13b8715d4de6f325971c4dd5bc33598697dad2f
+  fluid-slider: 3aeb48bd7f875dc0431963fde12674e69c7c0ed2
+  pop: 82ca6b068ce9278fd350fd9dd09482a0ce9492e6
 
-PODFILE CHECKSUM: afc540d01e4f13e3b7f0aad1c88e0b5259860b67
+PODFILE CHECKSUM: 0a17f84d1ad88e93e298e50aef4b3d35b50090f6
 
 COCOAPODS: 1.5.3

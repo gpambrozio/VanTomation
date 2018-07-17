@@ -18,21 +18,86 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QDk-XG-VqI">
-                                <rect key="frame" x="59" y="98" width="46" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Button"/>
-                                <connections>
-                                    <action selector="didTapButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="K1i-7g-RTQ"/>
-                                </connections>
-                            </button>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="QhJ-gA-s7H">
+                                <rect key="frame" x="15" y="30" width="345" height="474.5"/>
+                                <subviews>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="cbN-0g-kQ4">
+                                        <rect key="frame" x="0.0" y="0.0" width="345" height="439"/>
+                                        <subviews>
+                                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="fs5-0g-hxd">
+                                                <rect key="frame" x="72.5" y="0.0" width="200" height="29"/>
+                                                <segments>
+                                                    <segment title="Color"/>
+                                                    <segment title="Rainbow"/>
+                                                    <segment title="Theater"/>
+                                                </segments>
+                                                <connections>
+                                                    <action selector="didChangeLedMode" destination="BYZ-38-t0r" eventType="valueChanged" id="dD7-BB-z0P"/>
+                                                </connections>
+                                            </segmentedControl>
+                                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="433-2L-exN" customClass="Slider" customModule="fluid_slider">
+                                                <rect key="frame" x="0.0" y="38" width="345" height="30"/>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="30" id="Ccc-pI-xh6"/>
+                                                </constraints>
+                                                <connections>
+                                                    <action selector="didChangeLedMode" destination="BYZ-38-t0r" eventType="touchUpInside" id="DJY-rU-TMo"/>
+                                                    <action selector="didChangeLedMode" destination="BYZ-38-t0r" eventType="touchUpOutside" id="Ya1-Sb-llS"/>
+                                                </connections>
+                                            </view>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="oqg-yv-Ygr" customClass="Slider" customModule="fluid_slider">
+                                                <rect key="frame" x="0.0" y="48" width="345" height="30"/>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="30" id="jnE-Im-yua"/>
+                                                </constraints>
+                                                <connections>
+                                                    <action selector="didChangeLedMode" destination="BYZ-38-t0r" eventType="touchUpOutside" id="96N-mY-9u2"/>
+                                                    <action selector="didChangeLedMode" destination="BYZ-38-t0r" eventType="touchUpInside" id="rUg-5F-KMJ"/>
+                                                </connections>
+                                            </view>
+                                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" image="ColorPicker" translatesAutoresizingMaskIntoConstraints="NO" id="vzX-ke-q7g" customClass="ColorPickerImageView" customModule="VanTomation" customModuleProvider="target">
+                                                <rect key="frame" x="2.5" y="98" width="340" height="341"/>
+                                            </imageView>
+                                        </subviews>
+                                        <constraints>
+                                            <constraint firstAttribute="trailing" secondItem="oqg-yv-Ygr" secondAttribute="trailing" id="4m4-Bc-47v"/>
+                                            <constraint firstAttribute="trailing" secondItem="433-2L-exN" secondAttribute="trailing" id="dgF-cY-KQx"/>
+                                            <constraint firstItem="433-2L-exN" firstAttribute="leading" secondItem="cbN-0g-kQ4" secondAttribute="leading" id="gqN-i6-bxD"/>
+                                            <constraint firstItem="oqg-yv-Ygr" firstAttribute="leading" secondItem="cbN-0g-kQ4" secondAttribute="leading" id="y5i-yJ-GKh"/>
+                                        </constraints>
+                                    </stackView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="X9T-af-A7M">
+                                        <rect key="frame" x="0.0" y="454" width="345" height="20.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="QhJ-gA-s7H" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="10" id="We2-C8-190"/>
+                            <constraint firstItem="QhJ-gA-s7H" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="15" id="Yni-CM-w4o"/>
+                            <constraint firstItem="QhJ-gA-s7H" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="guu-ur-PUT"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
+                    <connections>
+                        <outlet property="brightnessSlider" destination="oqg-yv-Ygr" id="IiN-pw-zmf"/>
+                        <outlet property="colorPicker" destination="vzX-ke-q7g" id="wcf-Or-87l"/>
+                        <outlet property="connectedLabel" destination="X9T-af-A7M" id="XyP-eT-V8l"/>
+                        <outlet property="ledColorMode" destination="fs5-0g-hxd" id="70Z-Eh-uIB"/>
+                        <outlet property="speedSlider" destination="433-2L-exN" id="fkm-lL-5Ho"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
         </scene>
     </scenes>
+    <resources>
+        <image name="ColorPicker" width="340" height="341"/>
+    </resources>
 </document>

@@ -6,6 +6,7 @@ target 'VanTomation' do
   use_frameworks!
 
   pod 'BlueCapKit'
+  pod 'fluid-slider'
 
   # Pods for VanTomation
 
