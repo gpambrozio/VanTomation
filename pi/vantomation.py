@@ -230,7 +230,8 @@ class ControllerThread(DeviceThread):
 
 
     def received_data(self, cHandle, data):
-        self.queue.put(data)
+        if cHandle == self.command_characteristic.getHandle():
+            self.queue.put(data)
 
 
     def update_connected_devices(self, devices):
