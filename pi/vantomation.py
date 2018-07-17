@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from bluepy.btle import Scanner, DefaultDelegate
+from bluepy.btle import Scanner, DefaultDelegate, BTLEException
 from bluepy import btle
 import threading
 import queue
@@ -30,7 +30,7 @@ class DeviceManager(object):
         
     def found_devices(self, devices):
         # Check if everything is OK
-        for addr in self.threads_by_addr:
+        for addr in self.threads_by_addr.keys():   # .keys() creates a copy and avoids error due to removing key
             t = self.threads_by_addr[addr]
             if not t.is_alive():
                 if self.coordinator is not None:
@@ -83,6 +83,8 @@ class DeviceThread(object):
         self.service = self.peripheral.getServiceByUUID(service_uuid)
         self.characteristics = [self.service.getCharacteristics(uuid)[0] for uuid in char_uuids]
         
+        self.commands = queue.Queue()
+        
         self.before_thread()
     
         self.thread = threading.Thread(target=self.run)
@@ -94,12 +96,31 @@ class DeviceThread(object):
         """ Method that runs forever """
 
         while True:
-            if self.peripheral.waitForNotifications(5.0):
-                # handleNotification() was called
-                print("Received %s from %s" % (self.delegate.last_data, self.name))
-                self.received_data(self.delegate.last_data[0], self.delegate.last_data[1])
-            else:
-                self.no_data_received()
+            try:
+                if self.peripheral.waitForNotifications(0.1):
+                    # handleNotification() was called
+                    print("Received %s from %s" % (self.delegate.last_data, self.name))
+                    self.received_data(self.delegate.last_data[0], self.delegate.last_data[1])
+                else:
+                    self.no_data_received()
+
+            except BTLEException, e:
+                print("BTLEException: %s\n%s" % (e, traceback.format_exc()))
+                if e.code != BTLEException.DISCONNECTED:
+                    self.peripheral.disconnect()
+                break
+
+            except Exception, e:
+                print("Exception: %s\n%s" % (e, traceback.format_exc()))
+                
+            try:
+                command = self.commands.get(False)
+                command()
+                self.commands.task_done()
+            except queue.Empty:
+                pass
+            except Exception, e:
+                print("Exception: %s\n%s" % (e, traceback.format_exc()))
 
 
     def start_notifications(self, characteristic):
@@ -124,6 +145,10 @@ class DeviceThread(object):
     def no_data_received(self):
         # Just in case a subclass wants to do something about it.
         pass
+        
+        
+    def add_command(self, command):
+        self.commands.put(command)
 
 
 class UARTManager(DeviceManager):
@@ -155,8 +180,8 @@ class UARTThread(DeviceThread):
         
     def write(self, data):
         """Write a string of data to the UART device."""
-        self.tx_characteristic.write(data)
-        
+        self.add_command(lambda: self.tx_characteristic.write(data))
+
         
     def send_command(self, command):
         print("Sending command %s to %s" % (binascii.hexlify(command), self.name))
@@ -177,7 +202,9 @@ class UARTThread(DeviceThread):
         None is returned.
         """
         try:
-            return self.queue.get(timeout=timeout_sec)
+            read_data = self.queue.get(timeout=timeout_sec)
+            self.queue.task_done()
+            return read_data
         except queue.Empty:
             # Timeout exceeded, return None to signify no data received.
             return None
@@ -207,7 +234,7 @@ class ControllerThread(DeviceThread):
 
 
     def update_connected_devices(self, devices):
-        self.devices_characteristic.write(devices)
+        self.add_command(lambda: self.devices_characteristic.write(devices))
         
 
 class Coordinator(object):
@@ -248,7 +275,7 @@ class Coordinator(object):
 
 
     def update_connected_devices(self):
-        connected = "".join(sorted([self.devices_by_name[name] for name in self.connected_devices if name in self.devices_by_name]))
+        connected = "!" + ("".join(sorted([self.devices_by_name[name] for name in self.connected_devices if name in self.devices_by_name])))
         for controller in self.controller_manager.threads_by_name.values():
             print("Updating devices: %s to %s" % (connected, controller.name))
             controller.update_connected_devices(connected)
@@ -261,6 +288,7 @@ class Coordinator(object):
             for controller in self.controller_manager.threads_by_name.values():
                 try:
                     full_command = controller.queue.get(False)
+                    controller.queue.task_done()
                     
                     print("Got command %s" % full_command)
                     all_devices_by_name = {}
@@ -281,11 +309,11 @@ class Coordinator(object):
                         color = binascii.unhexlify(full_command[2:])
                         device_thread.send_command("C" + color)
                         
-                except Queue.Empty as e:
+                except Queue.Empty:
                     # Nothing available, just move on...
                     pass
                     
-                except BaseException as e:
+                except Exception, e:
                     print("Exception: %s\n%s" % (e, traceback.format_exc()))
 
             time.sleep(0.2)
