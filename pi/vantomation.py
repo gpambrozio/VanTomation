@@ -10,15 +10,17 @@ import time
 import binascii
 import traceback
 
+def reverse_uuid(service_uuid):
+    return uuid.UUID(bytes="".join([uuid.UUID(service_uuid).bytes[15-i] for i in range(16)])).hex
+
 # Define service and characteristic UUIDs.
 
 class DeviceManager(object):
-    def __init__(self, service_uuid, char_uuids, thread_class):
+    def __init__(self, service_and_char_uuids, thread_class):
         self.threads_by_addr = {}
         self.threads_by_name = {}
-        self.service_uuid = service_uuid
-        self.reversed_service_uuid = uuid.UUID(bytes="".join([uuid.UUID(service_uuid).bytes[15-i] for i in range(16)])).hex
-        self.char_uuids = char_uuids
+        self.service_and_char_uuids = service_and_char_uuids
+        self.required_services = set([reverse_uuid(s[0]) for s in service_and_char_uuids])
         self.thread_class = thread_class
         self.coordinator = None
 
@@ -37,15 +39,16 @@ class DeviceManager(object):
                     self.coordinator.device_disconnected(t, self.coordinator_identifier)
                 del self.threads_by_name[t.name]
                 del self.threads_by_addr[addr]
+                print("Device %s thread died... Removing" % addr)
 
         for dev in devices:
             scan_data = dev.getScanData()
-            services = [s[2] for s in scan_data if s[0] == 7]
+            services = set([s[2] for s in scan_data if s[0] == 7])
 
-            if self.reversed_service_uuid in services and dev.addr not in self.threads_by_addr:
+            if self.required_services <= services and dev.addr not in self.threads_by_addr:
                 try:
-                    print("Found device %s" % dev.addr)
-                    t = self.thread_class(self, dev, self.service_uuid, self.char_uuids)
+                    print("Found device %s type %s" % (dev.addr, type(self)))
+                    t = self.thread_class(self, dev, self.service_and_char_uuids)
                     print("Connected to %s (%s)" % (dev.addr, t.name))
                     self.threads_by_addr[dev.addr] = t
                     self.threads_by_name[t.name] = t
@@ -66,11 +69,12 @@ class NotificationDelegate(DefaultDelegate):
 
 
 class DeviceThread(object):
-    def __init__(self, manager, dev, service_uuid, char_uuids):
+    def __init__(self, manager, dev, service_and_char_uuids):
         """ Constructor
         """
         self.manager = manager
         self.dev = dev
+        self.service_and_char_uuids = service_and_char_uuids
         
         self.name = dev.getValueText(9)
 
@@ -80,8 +84,12 @@ class DeviceThread(object):
         self.peripheral.connect(self.dev)
 
         # print("services %s" % [s.uuid.getCommonName() for s in self.peripheral.getServices()])
-        self.service = self.peripheral.getServiceByUUID(service_uuid)
-        self.characteristics = [self.service.getCharacteristics(uuid)[0] for uuid in char_uuids]
+        self.services = [self.peripheral.getServiceByUUID(s[0]) for s in service_and_char_uuids]
+        self.characteristics = {}
+        for i, s in enumerate(service_and_char_uuids):
+            service_uuid = s[0]
+            service = self.services[i]
+            self.characteristics[service_uuid] = [service.getCharacteristics(uuid)[0] for uuid in s[1:]]
         
         self.commands = queue.Queue()
         
@@ -158,15 +166,16 @@ class UARTManager(DeviceManager):
         TX_CHAR_UUID = '6E400002-B5A3-F393-E0A9-E50E24DCCA9E'
         RX_CHAR_UUID = '6E400003-B5A3-F393-E0A9-E50E24DCCA9E'
 
-        DeviceManager.__init__(self, SERVICE_UUID, [TX_CHAR_UUID, RX_CHAR_UUID], UARTThread)
+        DeviceManager.__init__(self, [[SERVICE_UUID, TX_CHAR_UUID, RX_CHAR_UUID]], UARTThread)
         
 
 class UARTThread(DeviceThread):
 
     def before_thread(self):
         self.queue = queue.Queue()
-        self.tx_characteristic = self.characteristics[0]
-        self.rx_characteristic = self.characteristics[1]
+        service_uuid = self.service_and_char_uuids[0][0]
+        self.tx_characteristic = self.characteristics[service_uuid][0]
+        self.rx_characteristic = self.characteristics[service_uuid][1]
         self.start_notifications(self.rx_characteristic)
 
 
@@ -177,12 +186,12 @@ class UARTThread(DeviceThread):
     def no_data_received(self):
         pass
 
-        
+
     def write(self, data):
         """Write a string of data to the UART device."""
         self.add_command(lambda: self.tx_characteristic.write(data))
 
-        
+
     def send_command(self, command):
         print("Sending command %s to %s" % (binascii.hexlify(command), self.name))
         full_command = "!" + chr(len(command) + 3) + command
@@ -217,14 +226,15 @@ class ControllerManager(DeviceManager):
         COMMAND_CHAR_UUID = '12345679-1234-5678-1234-56789abc0010'
         DEVICES_CHAR_UUID = '1234567a-1234-5678-1234-56789abc0010'
 
-        DeviceManager.__init__(self, SERVICE_UUID, [COMMAND_CHAR_UUID, DEVICES_CHAR_UUID], ControllerThread)
+        DeviceManager.__init__(self, [[SERVICE_UUID, COMMAND_CHAR_UUID, DEVICES_CHAR_UUID]], ControllerThread)
         
 
 class ControllerThread(DeviceThread):
 
     def before_thread(self):
-        self.command_characteristic = self.characteristics[0]
-        self.devices_characteristic = self.characteristics[1]
+        service_uuid = self.service_and_char_uuids[0][0]
+        self.command_characteristic = self.characteristics[service_uuid][0]
+        self.devices_characteristic = self.characteristics[service_uuid][1]
         self.start_notifications(self.command_characteristic)
         self.queue = queue.Queue()
 
@@ -249,7 +259,7 @@ class Coordinator(object):
         controller_manager.set_coordinator(self, "C")
         
         self.devices = {
-            'O': 'AgnesOutsideLights',
+            'L': 'AgnesLights',
             'I': 'AgnesInsides',
         }
         
@@ -307,8 +317,9 @@ class Coordinator(object):
                         continue
                     
                     if command == 'C':
-                        color = binascii.unhexlify(full_command[2:])
-                        device_thread.send_command("C" + color)
+                        strip = full_command[2]
+                        color = binascii.unhexlify(full_command[3:])
+                        device_thread.send_command("C" + strip + color)
                         
                 except Queue.Empty:
                     # Nothing available, just move on...
