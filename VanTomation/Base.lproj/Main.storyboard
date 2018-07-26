@@ -19,13 +19,20 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="QhJ-gA-s7H">
-                                <rect key="frame" x="15" y="30" width="345" height="474.5"/>
+                                <rect key="frame" x="15" y="30" width="345" height="572.5"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="cbN-0g-kQ4">
-                                        <rect key="frame" x="0.0" y="0.0" width="345" height="439"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="345" height="537"/>
                                         <subviews>
+                                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="DJY-s8-9xM">
+                                                <rect key="frame" x="110" y="0.0" width="125" height="29"/>
+                                                <segments>
+                                                    <segment title="Inside"/>
+                                                    <segment title="Outside"/>
+                                                </segments>
+                                            </segmentedControl>
                                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="fs5-0g-hxd">
-                                                <rect key="frame" x="72.5" y="0.0" width="200" height="29"/>
+                                                <rect key="frame" x="72.5" y="48" width="200" height="29"/>
                                                 <segments>
                                                     <segment title="Color"/>
                                                     <segment title="Rainbow"/>
@@ -35,19 +42,8 @@
                                                     <action selector="didChangeLedMode" destination="BYZ-38-t0r" eventType="valueChanged" id="dD7-BB-z0P"/>
                                                 </connections>
                                             </segmentedControl>
-                                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="433-2L-exN" customClass="Slider" customModule="fluid_slider">
-                                                <rect key="frame" x="0.0" y="38" width="345" height="30"/>
-                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="30" id="Ccc-pI-xh6"/>
-                                                </constraints>
-                                                <connections>
-                                                    <action selector="didChangeLedMode" destination="BYZ-38-t0r" eventType="touchUpInside" id="DJY-rU-TMo"/>
-                                                    <action selector="didChangeLedMode" destination="BYZ-38-t0r" eventType="touchUpOutside" id="Ya1-Sb-llS"/>
-                                                </connections>
-                                            </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="oqg-yv-Ygr" customClass="Slider" customModule="fluid_slider">
-                                                <rect key="frame" x="0.0" y="48" width="345" height="30"/>
+                                                <rect key="frame" x="0.0" y="96" width="345" height="30"/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="30" id="jnE-Im-yua"/>
@@ -57,19 +53,30 @@
                                                     <action selector="didChangeLedMode" destination="BYZ-38-t0r" eventType="touchUpInside" id="rUg-5F-KMJ"/>
                                                 </connections>
                                             </view>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WZG-Q6-zYF" customClass="Slider" customModule="fluid_slider">
+                                                <rect key="frame" x="0.0" y="146" width="345" height="30"/>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="30" id="ND1-F9-y9d"/>
+                                                </constraints>
+                                                <connections>
+                                                    <action selector="didChangeLedMode" destination="BYZ-38-t0r" eventType="touchUpOutside" id="AMU-9i-dVr"/>
+                                                    <action selector="didChangeLedMode" destination="BYZ-38-t0r" eventType="touchUpInside" id="h5a-RT-jwH"/>
+                                                </connections>
+                                            </view>
                                             <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" image="ColorPicker" translatesAutoresizingMaskIntoConstraints="NO" id="vzX-ke-q7g" customClass="ColorPickerImageView" customModule="VanTomation" customModuleProvider="target">
-                                                <rect key="frame" x="2.5" y="98" width="340" height="341"/>
+                                                <rect key="frame" x="2.5" y="196" width="340" height="341"/>
                                             </imageView>
                                         </subviews>
                                         <constraints>
                                             <constraint firstAttribute="trailing" secondItem="oqg-yv-Ygr" secondAttribute="trailing" id="4m4-Bc-47v"/>
-                                            <constraint firstAttribute="trailing" secondItem="433-2L-exN" secondAttribute="trailing" id="dgF-cY-KQx"/>
-                                            <constraint firstItem="433-2L-exN" firstAttribute="leading" secondItem="cbN-0g-kQ4" secondAttribute="leading" id="gqN-i6-bxD"/>
+                                            <constraint firstAttribute="trailing" secondItem="WZG-Q6-zYF" secondAttribute="trailing" id="MZB-Mf-PdH"/>
+                                            <constraint firstItem="WZG-Q6-zYF" firstAttribute="leading" secondItem="cbN-0g-kQ4" secondAttribute="leading" id="YC0-le-MKC"/>
                                             <constraint firstItem="oqg-yv-Ygr" firstAttribute="leading" secondItem="cbN-0g-kQ4" secondAttribute="leading" id="y5i-yJ-GKh"/>
                                         </constraints>
                                     </stackView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="X9T-af-A7M">
-                                        <rect key="frame" x="0.0" y="454" width="345" height="20.5"/>
+                                        <rect key="frame" x="0.0" y="552" width="345" height="20.5"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
@@ -90,7 +97,8 @@
                         <outlet property="colorPicker" destination="vzX-ke-q7g" id="wcf-Or-87l"/>
                         <outlet property="connectedLabel" destination="X9T-af-A7M" id="XyP-eT-V8l"/>
                         <outlet property="ledColorMode" destination="fs5-0g-hxd" id="70Z-Eh-uIB"/>
-                        <outlet property="speedSlider" destination="433-2L-exN" id="fkm-lL-5Ho"/>
+                        <outlet property="speedSlider" destination="WZG-Q6-zYF" id="rOC-Nb-FZv"/>
+                        <outlet property="stripSelection" destination="DJY-s8-9xM" id="eIR-WE-IID"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

@@ -117,6 +117,7 @@ class MasterManager {
     }
 
     func send(command: String) {
+        print("Sending command \(command)")
         do {
             try self.commandCharacteristic.update(withData: command.data(using: .utf8)!)
         } catch let e {

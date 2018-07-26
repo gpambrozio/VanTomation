@@ -14,10 +14,11 @@ class ViewController: UIViewController {
     private let masterManager = MasterManager.shared
     private var pickedColor: UIColor?
 
+    @IBOutlet weak var stripSelection: UISegmentedControl!
     @IBOutlet weak var ledColorMode: UISegmentedControl!
     @IBOutlet weak var colorPicker: ColorPickerImageView!
-    @IBOutlet weak var speedSlider: Slider!
     @IBOutlet weak var brightnessSlider: Slider!
+    @IBOutlet weak var speedSlider: Slider!
     @IBOutlet weak var connectedLabel: UILabel!
 
     override func viewDidLoad() {
@@ -42,6 +43,20 @@ class ViewController: UIViewController {
         brightnessSlider.contentViewColor = .blue
         brightnessSlider.valueViewColor = .white
 
+        speedSlider.attributedTextForFraction = { fraction in
+            let formatter = NumberFormatter()
+            formatter.maximumIntegerDigits = 3
+            formatter.maximumFractionDigits = 0
+            let string = formatter.string(from: (fraction * 100) as NSNumber) ?? ""
+            return NSAttributedString(string: string, attributes: [.font: UIFont.systemFont(ofSize: 12, weight: .bold),
+                                                                   .foregroundColor: UIColor.black])
+        }
+        speedSlider.setMinimumLabelAttributedText(NSAttributedString(string: "", attributes: [:]))
+        speedSlider.setMaximumLabelAttributedText(NSAttributedString(string: "", attributes: [:]))
+        speedSlider.fraction = 0.5
+        speedSlider.contentViewColor = .clear
+        speedSlider.valueViewColor = .white
+
         masterManager.devicesClosure = { [connectedLabel] devices in
             connectedLabel?.text = "Connected: \(devices)"
         }
@@ -57,18 +72,36 @@ class ViewController: UIViewController {
             colors.deallocate()
         }
 
-        guard let color = pickedColor,
-            color.getRed(colors.advanced(by: 0),
-                         green: colors.advanced(by: 1),
-                         blue: colors.advanced(by: 2),
-                         alpha: nil) else { return }
+        let strip = stripSelection.selectedSegmentIndex == 0 ? "I" : "O"
 
-        let command = String(format: "LCI%02X%02X%02X%02X",
+        let command: String
+        switch ledColorMode.selectedSegmentIndex {
+        case 0:
+            guard let color = pickedColor,
+                color.getRed(colors.advanced(by: 0),
+                             green: colors.advanced(by: 1),
+                             blue: colors.advanced(by: 2),
+                             alpha: nil) else { return }
+
+            command = String(format: "LC\(strip)%02X%02X%02X%02X",
                              Int(brightnessSlider.fraction * 40),
                              Int(colors[0] * 255),
                              Int(colors[1] * 255),
                              Int(colors[2] * 255))
-        print(command)
+        case 1:
+            command = String(format: "LR\(strip)%02X%02X",
+                             Int(brightnessSlider.fraction * 40),
+                             Int(speedSlider.fraction * 200))
+
+        case 2:
+            command = String(format: "LT\(strip)%02X%02X",
+                Int(brightnessSlider.fraction * 40),
+                Int(speedSlider.fraction * 200 + 24))
+        default:
+            command = ""
+        }
+
+        guard command.count > 0 else { return }
         masterManager.send(command: command)
     }
 }
