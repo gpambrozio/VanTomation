@@ -51,14 +51,6 @@ class ViewController: UIViewController {
         masterManager.devicesClosure = nil
     }
 
-    private func hex<T>(_ n: T) -> String where T : FixedWidthInteger, T : UnsignedInteger {
-        let ret = String.init(n, radix: 16, uppercase: true)
-        if ret.count % 2 == 0 {
-            return ret
-        }
-        return "0\(ret)"
-    }
-
     @IBAction func didChangeLedMode() {
         let colors = UnsafeMutablePointer<CGFloat>.allocate(capacity: 3)
         defer {
@@ -71,11 +63,11 @@ class ViewController: UIViewController {
                          blue: colors.advanced(by: 2),
                          alpha: nil) else { return }
 
-        let red = hex(UInt8(colors[0] * 255))
-        let green = hex(UInt8(colors[1] * 255))
-        let blue = hex(UInt8(colors[2] * 255))
-
-        let command = "CO\(hex(UInt(brightnessSlider.fraction * 40)))\(red)\(green)\(blue)"
+        let command = String(format: "LCI%02X%02X%02X%02X",
+                             Int(brightnessSlider.fraction * 40),
+                             Int(colors[0] * 255),
+                             Int(colors[1] * 255),
+                             Int(colors[2] * 255))
         print(command)
         masterManager.send(command: command)
     }

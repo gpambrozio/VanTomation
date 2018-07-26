@@ -39,7 +39,7 @@ class DeviceManager(object):
                     self.coordinator.device_disconnected(t, self.coordinator_identifier)
                 del self.threads_by_name[t.name]
                 del self.threads_by_addr[addr]
-                print("Device %s thread died... Removing" % addr)
+                print("Device %s thread died... Removing" % t.name)
 
         for dev in devices:
             scan_data = dev.getScanData()
@@ -180,7 +180,9 @@ class UARTThread(DeviceThread):
 
 
     def received_data(self, cHandle, data):
-        self.queue.put(data)
+        # Maybe use this for something..
+        # self.queue.put(data)
+        pass
 
         
     def no_data_received(self):
@@ -305,8 +307,7 @@ class Coordinator(object):
                     all_devices_by_name = {}
                     for manager in self.device_managers:
                         all_devices_by_name.update(manager.threads_by_name)
-                    command = full_command[0]
-                    device_id = full_command[1]
+                    device_id = full_command[0]
                     device_name = self.devices.get(device_id)
                     if device_name is None:
                         print("Device %s unknown" % device_id)
@@ -316,10 +317,12 @@ class Coordinator(object):
                         print("Device %s (%s) not connected" % (device_id, device_name))
                         continue
                     
-                    if command == 'C':
-                        strip = full_command[2]
+                    command = full_command[1]
+                    if command in "CRT":
                         color = binascii.unhexlify(full_command[3:])
-                        device_thread.send_command("C" + strip + color)
+                        device_thread.send_command(full_command[1:3] + color)
+                    else:
+                        print("Unknown command: %s" % command)
                         
                 except Queue.Empty:
                     # Nothing available, just move on...
