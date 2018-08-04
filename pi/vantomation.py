@@ -11,6 +11,8 @@ import binascii
 import traceback
 
 def reverse_uuid(service_uuid):
+    if len(service_uuid) < 36:
+        return service_uuid
     return uuid.UUID(bytes="".join([uuid.UUID(service_uuid).bytes[15-i] for i in range(16)])).hex
 
 # Define service and characteristic UUIDs.
@@ -43,7 +45,7 @@ class DeviceManager(object):
 
         for dev in devices:
             scan_data = dev.getScanData()
-            services = set([s[2] for s in scan_data if s[0] == 7])
+            services = set([s[2] for s in scan_data if s[0] in [3, 6, 7]])
 
             if self.required_services <= services and dev.addr not in self.threads_by_addr:
                 try:
@@ -76,7 +78,7 @@ class DeviceThread(object):
         self.dev = dev
         self.service_and_char_uuids = service_and_char_uuids
         
-        self.name = dev.getValueText(9)
+        self.name = dev.getValueText(9) || dev.getValueText(8)
 
         self.delegate = NotificationDelegate()
         self.peripheral = btle.Peripheral()
