@@ -64,19 +64,26 @@ def dump_services(dev):
 
 scanner = Scanner()
 print("Starting scan")
+scanner.start()
+scanner.clear()
 while True:
-    devices = scanner.scan(5)
+    scanner.process(5)
+    devices = scanner.getDevices()
+    print("")
     for dev in devices:
         scan_data = dev.getScanData()
         services = [s[2] for s in scan_data if s[0] in [3, 6, 7]]
 
-        print("Found device %s (%s) services %s" % (dev.addr, dev.getValueText(9), scan_data))
+        # flags = [s[2] for s in scan_data if s[0] == 1]
+        # if len(flags) == 0 or flags[0] != '1a':
+        #     continue
+            
+        print("Found device %s (%s) scan_data %s" % (dev.addr, dev.getValueText(9), scan_data))
 
-        interested_uuid = "1918"
+        interested_uuid = 'AAAA'
         if interested_uuid in services:
-            peripheral = btle.Peripheral()
-            peripheral.connect(dev)
+            peripheral = btle.Peripheral(dev)
 
             dump_services(peripheral)
             peripheral.disconnect()
-            break
+            exit(0)
