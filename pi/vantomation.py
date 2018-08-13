@@ -10,6 +10,7 @@ import time
 import binascii
 import traceback
 import logging
+import subprocess
 
 FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(format=FORMAT)
@@ -207,7 +208,14 @@ class UARTThread(DeviceThread):
         self.add_command(lambda: self.tx_characteristic.write(data))
 
 
-    def send_command(self, command):
+    def send_command(self, full_command):
+        command = full_command[1]
+        if command not in "CRT":
+            logger.debug("Unknown command: %s", command)
+            return
+        color = binascii.unhexlify(full_command[3:])
+        command = full_command[1:3] + color
+
         logger.debug("Sending command %s to %s", binascii.hexlify(command), self.name)
         full_command = "!" + chr(len(command) + 3) + command
         checksum = 0
@@ -262,6 +270,34 @@ class ControllerThread(DeviceThread):
     def update_connected_devices(self, devices):
         self.add_command(lambda: self.devices_characteristic.write(devices))
         
+        
+class PIManager(object):
+    def __init__(self):
+        self.threads_by_addr = {'localhost': self}
+
+
+    def set_coordinator(self, coordinator, identifier):
+        self.coordinator = coordinator
+        self.coordinator_identifier = identifier
+
+        
+    def send_command(self, full_command):
+        logger.debug("Pi received command %s", full_command)
+        command = full_command[1]
+        if command not in "LU":
+            logger.debug("Unknown command: %s", command)
+            return
+            
+        port = 7 if command == "L" else 0
+        subprocess.call("gpio mode %d out" % port, shell=True)
+        subprocess.call("gpio write %d 1" % port, shell=True)
+        time.sleep(0.3)
+        subprocess.call("gpio write %d 0" % port, shell=True)
+        time.sleep(0.2)
+        subprocess.call("gpio write %d 1" % port, shell=True)
+        time.sleep(0.3)
+        subprocess.call("gpio write %d 0" % port, shell=True)
+
 
 class Coordinator(object):
     
@@ -275,6 +311,7 @@ class Coordinator(object):
         
         self.devices = {
             'L': 'fd:6e:55:f0:de:06',
+            'P': 'localhost',
         }
         
         self.devices_by_addr = {v: k for (k, v) in self.devices.iteritems()}
@@ -329,13 +366,8 @@ class Coordinator(object):
                         logger.debug("Device %s (%s) not connected", device_id, device_addr)
                         logger.debug("connected: %s", all_devices_by_addr)
                         continue
-                    
-                    command = full_command[1]
-                    if command in "CRT":
-                        color = binascii.unhexlify(full_command[3:])
-                        device_thread.send_command(full_command[1:3] + color)
-                    else:
-                        logger.debug("Unknown command: %s", command)
+
+                    device_thread.send_command(full_command)
                         
                 except Queue.Empty:
                     # Nothing available, just move on...
@@ -349,8 +381,9 @@ class Coordinator(object):
 
 scanner = Scanner()
 uart_manager = UARTManager()
+pi_manager = PIManager()
 controller_manager = ControllerManager()
-coordinator = Coordinator(controller_manager, [uart_manager])
+coordinator = Coordinator(controller_manager, [uart_manager, pi_manager])
 logger.debug("Starting scan")
 while True:
     devices = scanner.scan(1)

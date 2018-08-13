@@ -45,12 +45,12 @@ class MasterManager {
         static let uuid = "12345678-1234-5678-1234-56789abc0010"
     }
 
-    let manager = PeripheralManager(options: [CBPeripheralManagerOptionRestoreIdentifierKey: "us.gnos.BlueCap.peripheral-manager-example" as NSString])
+    let manager = PeripheralManager(options: [CBPeripheralManagerOptionRestoreIdentifierKey: "br.eng.gustavo.vantomation-controller" as NSString])
 
     let commandService = MutableService(uuid: Constants.uuid)
 
-    let commandCharacteristic = MutableCharacteristic(profile: StringCharacteristicProfile<CommandCharacteristic>())
-    let devicesCharacteristic = MutableCharacteristic(profile: StringCharacteristicProfile<ConnectedDevicesCharacteristic>())
+    private let commandCharacteristic = MutableCharacteristic(profile: StringCharacteristicProfile<CommandCharacteristic>())
+    private let devicesCharacteristic = MutableCharacteristic(profile: StringCharacteristicProfile<ConnectedDevicesCharacteristic>())
 
     var devicesClosure: ((String) -> Void)? = nil
 

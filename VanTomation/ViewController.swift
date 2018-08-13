@@ -14,19 +14,22 @@ class ViewController: UIViewController {
     private let masterManager = MasterManager.shared
     private var pickedColor: UIColor?
 
-    @IBOutlet weak var stripSelection: UISegmentedControl!
-    @IBOutlet weak var ledColorMode: UISegmentedControl!
-    @IBOutlet weak var colorPicker: ColorPickerImageView!
-    @IBOutlet weak var brightnessSlider: Slider!
-    @IBOutlet weak var speedSlider: Slider!
-    @IBOutlet weak var connectedLabel: UILabel!
+    @IBOutlet private var lockControl: UISegmentedControl!
+    @IBOutlet private var stripSelection: UISegmentedControl!
+    @IBOutlet private var ledColorMode: UISegmentedControl!
+    @IBOutlet private var colorPicker: ColorPickerImageView!
+    @IBOutlet private var brightnessSlider: Slider!
+    @IBOutlet private var speedSlider: Slider!
+    @IBOutlet private var connectedLabel: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         colorPicker.pickedColorClosure = { [weak self] color in
-            self?.pickedColor = color
-            self?.brightnessSlider.contentViewColor = color
-            self?.didChangeLedMode()
+            guard let `self` = self else { return }
+            self.ledColorMode.selectedSegmentIndex = 0
+            self.pickedColor = color
+            self.brightnessSlider.contentViewColor = color
+            self.didChangeLedMode()
         }
 
         brightnessSlider.attributedTextForFraction = { fraction in
@@ -66,6 +69,11 @@ class ViewController: UIViewController {
         masterManager.devicesClosure = nil
     }
 
+    @IBAction func didChangeLockMode() {
+        let lock = lockControl.selectedSegmentIndex == 0
+        masterManager.send(command: "P\(lock ? "L" : "U")")
+    }
+
     @IBAction func didChangeLedMode() {
         let colors = UnsafeMutablePointer<CGFloat>.allocate(capacity: 3)
         defer {
@@ -77,6 +85,7 @@ class ViewController: UIViewController {
         let command: String
         switch ledColorMode.selectedSegmentIndex {
         case 0:
+            speedSlider.isHidden = true
             guard let color = pickedColor,
                 color.getRed(colors.advanced(by: 0),
                              green: colors.advanced(by: 1),
@@ -89,11 +98,13 @@ class ViewController: UIViewController {
                              Int(colors[1] * 255),
                              Int(colors[2] * 255))
         case 1:
+            speedSlider.isHidden = false
             command = String(format: "LR\(strip)%02X%02X",
                              Int(brightnessSlider.fraction * 40),
                              Int(speedSlider.fraction * 200))
 
         case 2:
+            speedSlider.isHidden = false
             command = String(format: "LT\(strip)%02X%02X",
                 Int(brightnessSlider.fraction * 40),
                 Int(speedSlider.fraction * 200 + 24))
