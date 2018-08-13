@@ -9,6 +9,12 @@ import uuid
 import time
 import binascii
 import traceback
+import logging
+
+FORMAT = '%(asctime)-15s %(message)s'
+logging.basicConfig(format=FORMAT)
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
 
 def reverse_uuid(service_uuid):
     if len(service_uuid) < 36:
@@ -41,7 +47,7 @@ class DeviceManager(object):
                     self.coordinator.device_disconnected(t, self.coordinator_identifier)
                 del self.threads_by_name[t.name]
                 del self.threads_by_addr[addr]
-                print("Device %s thread died... Removing" % t.name)
+                logger.debug("Device %s thread died... Removing", t.name)
 
         for dev in devices:
             scan_data = dev.getScanData()
@@ -53,16 +59,16 @@ class DeviceManager(object):
                 dev.addr not in self.threads_by_addr and 
                 name not in self.threads_by_name):
                 try:
-                    print("Found device %s type %s" % (dev.addr, type(self)))
+                    logger.debug("Found device %s type %s", dev.addr, type(self))
                     t = self.thread_class(self, dev, name, self.service_and_char_uuids)
-                    print("Connected to %s (%s)" % (dev.addr, t.name))
+                    logger.debug("Connected to %s (%s)", dev.addr, t.name)
                     self.threads_by_addr[dev.addr] = t
                     self.threads_by_name[name] = t
                     if self.coordinator is not None:
                         self.coordinator.device_connected(t, self.coordinator_identifier)
                 except Exception, e:
-                    print("Exception connecting to %s: %s" % (dev.addr, e))
-                    print(traceback.format_exc())
+                    logger.debug("Exception connecting to %s: %s", dev.addr, e)
+                    logger.debug(traceback.format_exc())
 
 
 class NotificationDelegate(DefaultDelegate):
@@ -90,7 +96,7 @@ class DeviceThread(object):
         self.peripheral.setDelegate(self.delegate)
         self.peripheral.connect(self.dev)
 
-        # print("services %s" % [s.uuid.getCommonName() for s in self.peripheral.getServices()])
+        # logger.debug("services %s", [s.uuid.getCommonName() for s in self.peripheral.getServices()])
         self.services = [self.peripheral.getServiceByUUID(s[0]) for s in service_and_char_uuids]
         self.characteristics = {}
         for i, s in enumerate(service_and_char_uuids):
@@ -114,19 +120,19 @@ class DeviceThread(object):
             try:
                 if self.peripheral.waitForNotifications(0.1):
                     # handleNotification() was called
-                    print("Received %s from %s" % (self.delegate.last_data, self.name))
+                    logger.debug("Received %s from %s", self.delegate.last_data, self.name)
                     self.received_data(self.delegate.last_data[0], self.delegate.last_data[1])
                 else:
                     self.no_data_received()
 
             except BTLEException, e:
-                print("BTLEException: %s\n%s" % (e, traceback.format_exc()))
+                logger.debug("BTLEException: %s\n%s", e, traceback.format_exc())
                 if e.code != BTLEException.DISCONNECTED:
                     self.peripheral.disconnect()
                 break
 
             except Exception, e:
-                print("Exception: %s\n%s" % (e, traceback.format_exc()))
+                logger.debug("Exception: %s\n%s", e, traceback.format_exc())
 
             try:
                 command = self.commands.get(False)
@@ -135,7 +141,7 @@ class DeviceThread(object):
             except queue.Empty:
                 pass
             except Exception, e:
-                print("Exception: %s\n%s" % (e, traceback.format_exc()))
+                logger.debug("Exception: %s\n%s", e, traceback.format_exc())
 
 
     def start_notifications(self, characteristic):
@@ -202,7 +208,7 @@ class UARTThread(DeviceThread):
 
 
     def send_command(self, command):
-        print("Sending command %s to %s" % (binascii.hexlify(command), self.name))
+        logger.debug("Sending command %s to %s", binascii.hexlify(command), self.name)
         full_command = "!" + chr(len(command) + 3) + command
         checksum = 0
         for c in full_command:
@@ -296,7 +302,7 @@ class Coordinator(object):
     def update_connected_devices(self):
         connected = "!" + ("".join(sorted([self.devices_by_addr[addr] for addr in self.connected_devices if addr in self.devices_by_addr])))
         for controller in self.controller_manager.threads_by_name.values():
-            print("Updating devices: %s to %s" % (connected, controller.name))
+            logger.debug("Updating devices: %s to %s", connected, controller.name)
             controller.update_connected_devices(connected)
 
 
@@ -309,19 +315,19 @@ class Coordinator(object):
                     full_command = controller.queue.get(False)
                     controller.queue.task_done()
                     
-                    print("Got command %s" % full_command)
+                    logger.debug("Got command %s", full_command)
                     all_devices_by_addr = {}
                     for manager in self.device_managers:
                         all_devices_by_addr.update(manager.threads_by_addr)
                     device_id = full_command[0]
                     device_addr = self.devices.get(device_id)
                     if device_addr is None:
-                        print("Device %s unknown" % device_id)
+                        logger.debug("Device %s unknown", device_id)
                         continue
                     device_thread = all_devices_by_addr.get(device_addr)
                     if device_thread is None:
-                        print("Device %s (%s) not connected" % (device_id, device_name))
-                        print("connected: %s" % all_devices_by_addr)
+                        logger.debug("Device %s (%s) not connected", device_id, device_addr)
+                        logger.debug("connected: %s", all_devices_by_addr)
                         continue
                     
                     command = full_command[1]
@@ -329,14 +335,14 @@ class Coordinator(object):
                         color = binascii.unhexlify(full_command[3:])
                         device_thread.send_command(full_command[1:3] + color)
                     else:
-                        print("Unknown command: %s" % command)
+                        logger.debug("Unknown command: %s", command)
                         
                 except Queue.Empty:
                     # Nothing available, just move on...
                     pass
                     
                 except Exception, e:
-                    print("Exception: %s\n%s" % (e, traceback.format_exc()))
+                    logger.debug("Exception: %s\n%s", e, traceback.format_exc())
 
             time.sleep(0.2)
 
@@ -345,7 +351,7 @@ scanner = Scanner()
 uart_manager = UARTManager()
 controller_manager = ControllerManager()
 coordinator = Coordinator(controller_manager, [uart_manager])
-print("Starting scan")
+logger.debug("Starting scan")
 while True:
     devices = scanner.scan(1)
     uart_manager.found_devices(devices)
