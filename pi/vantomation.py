@@ -273,12 +273,14 @@ class ControllerThread(DeviceThread):
         
 class PIManager(object):
     def __init__(self):
-        self.threads_by_addr = {'localhost': self}
+        self.addr = 'localhost'
+        self.threads_by_addr = {self.addr: self}
 
 
     def set_coordinator(self, coordinator, identifier):
         self.coordinator = coordinator
         self.coordinator_identifier = identifier
+        self.coordinator.device_connected(self, self.coordinator_identifier)
 
         
     def send_command(self, full_command):
@@ -302,12 +304,7 @@ class PIManager(object):
 class Coordinator(object):
     
     def __init__(self, controller_manager, device_managers):
-        self.controller_manager = controller_manager
-        self.device_managers = device_managers
-        for manager in device_managers:
-            manager.set_coordinator(self, "D")
-
-        controller_manager.set_coordinator(self, "C")
+        self.connected_devices = set()
         
         self.devices = {
             'L': 'fd:6e:55:f0:de:06',
@@ -316,7 +313,12 @@ class Coordinator(object):
         
         self.devices_by_addr = {v: k for (k, v) in self.devices.iteritems()}
         
-        self.connected_devices = set()
+        self.controller_manager = controller_manager
+        self.device_managers = device_managers
+        for manager in device_managers:
+            manager.set_coordinator(self, "D")
+
+        controller_manager.set_coordinator(self, "C")
         
         self.thread = threading.Thread(target=self.run)
         self.thread.daemon = True                            # Daemonize thread
