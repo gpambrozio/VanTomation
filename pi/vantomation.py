@@ -47,13 +47,17 @@ class DeviceManager(object):
             scan_data = dev.getScanData()
             services = set([s[2] for s in scan_data if s[0] in [3, 6, 7]])
 
-            if self.required_services <= services and dev.addr not in self.threads_by_addr:
+            name = dev.getValueText(9) or dev.getValueText(8)
+            if (name is not None and
+                self.required_services <= services and
+                dev.addr not in self.threads_by_addr and 
+                name not in self.threads_by_name):
                 try:
                     print("Found device %s type %s" % (dev.addr, type(self)))
-                    t = self.thread_class(self, dev, self.service_and_char_uuids)
+                    t = self.thread_class(self, dev, name, self.service_and_char_uuids)
                     print("Connected to %s (%s)" % (dev.addr, t.name))
                     self.threads_by_addr[dev.addr] = t
-                    self.threads_by_name[t.name] = t
+                    self.threads_by_name[name] = t
                     if self.coordinator is not None:
                         self.coordinator.device_connected(t, self.coordinator_identifier)
                 except Exception, e:
@@ -71,14 +75,15 @@ class NotificationDelegate(DefaultDelegate):
 
 
 class DeviceThread(object):
-    def __init__(self, manager, dev, service_and_char_uuids):
+    def __init__(self, manager, dev, name, service_and_char_uuids):
         """ Constructor
         """
         self.manager = manager
         self.dev = dev
         self.service_and_char_uuids = service_and_char_uuids
         
-        self.name = dev.getValueText(9) || dev.getValueText(8)
+        self.addr = dev.addr
+        self.name = name
 
         self.delegate = NotificationDelegate()
         self.peripheral = btle.Peripheral()
@@ -122,7 +127,7 @@ class DeviceThread(object):
 
             except Exception, e:
                 print("Exception: %s\n%s" % (e, traceback.format_exc()))
-                
+
             try:
                 command = self.commands.get(False)
                 command()
@@ -263,11 +268,10 @@ class Coordinator(object):
         controller_manager.set_coordinator(self, "C")
         
         self.devices = {
-            'L': 'AgnesLights',
-            'I': 'AgnesInsides',
+            'L': 'fd:6e:55:f0:de:06',
         }
         
-        self.devices_by_name = {v: k for (k, v) in self.devices.iteritems()}
+        self.devices_by_addr = {v: k for (k, v) in self.devices.iteritems()}
         
         self.connected_devices = set()
         
@@ -278,19 +282,19 @@ class Coordinator(object):
 
     def device_connected(self, thread, coordinator_identifier):
         if coordinator_identifier == "D":
-            self.connected_devices.add(thread.name)
+            self.connected_devices.add(thread.addr)
 
         self.update_connected_devices()
 
 
     def device_disconnected(self, thread, coordinator_identifier):
         if coordinator_identifier == "D":
-            self.connected_devices.remove(thread.name)
+            self.connected_devices.remove(thread.addr)
             self.update_connected_devices()
 
 
     def update_connected_devices(self):
-        connected = "!" + ("".join(sorted([self.devices_by_name[name] for name in self.connected_devices if name in self.devices_by_name])))
+        connected = "!" + ("".join(sorted([self.devices_by_addr[addr] for addr in self.connected_devices if addr in self.devices_by_addr])))
         for controller in self.controller_manager.threads_by_name.values():
             print("Updating devices: %s to %s" % (connected, controller.name))
             controller.update_connected_devices(connected)
@@ -306,17 +310,18 @@ class Coordinator(object):
                     controller.queue.task_done()
                     
                     print("Got command %s" % full_command)
-                    all_devices_by_name = {}
+                    all_devices_by_addr = {}
                     for manager in self.device_managers:
-                        all_devices_by_name.update(manager.threads_by_name)
+                        all_devices_by_addr.update(manager.threads_by_addr)
                     device_id = full_command[0]
-                    device_name = self.devices.get(device_id)
-                    if device_name is None:
+                    device_addr = self.devices.get(device_id)
+                    if device_addr is None:
                         print("Device %s unknown" % device_id)
                         continue
-                    device_thread = all_devices_by_name.get(device_name)
+                    device_thread = all_devices_by_addr.get(device_addr)
                     if device_thread is None:
                         print("Device %s (%s) not connected" % (device_id, device_name))
+                        print("connected: %s" % all_devices_by_addr)
                         continue
                     
                     command = full_command[1]
