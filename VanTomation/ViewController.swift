@@ -14,7 +14,6 @@ class ViewController: UIViewController {
     private let masterManager = MasterManager.shared
     private var pickedColor: UIColor?
 
-    @IBOutlet private var lockControl: UISegmentedControl!
     @IBOutlet private var stripSelection: UISegmentedControl!
     @IBOutlet private var ledColorMode: UISegmentedControl!
     @IBOutlet private var colorPicker: ColorPickerImageView!
@@ -69,9 +68,12 @@ class ViewController: UIViewController {
         masterManager.devicesClosure = nil
     }
 
-    @IBAction func didChangeLockMode() {
-        let lock = lockControl.selectedSegmentIndex == 0
-        masterManager.send(command: "P\(lock ? "L" : "U")")
+    @IBAction func lock() {
+        masterManager.send(command: "PL")
+    }
+    
+    @IBAction func unlock() {
+        masterManager.send(command: "PU")
     }
 
     @IBAction func didChangeLedMode() {
