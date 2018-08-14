@@ -388,6 +388,10 @@ controller_manager = ControllerManager()
 coordinator = Coordinator(controller_manager, [uart_manager, pi_manager])
 logger.debug("Starting scan")
 while True:
-    devices = scanner.scan(1)
-    uart_manager.found_devices(devices)
-    controller_manager.found_devices(devices)
+    try:
+        devices = scanner.scan(1)
+        uart_manager.found_devices(devices)
+        controller_manager.found_devices(devices)
+    except Exception, e:
+        logger.debug("Exception on main loop: %s\n%s", e, traceback.format_exc())
+        scanner.clear()
