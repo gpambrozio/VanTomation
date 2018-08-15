@@ -11,6 +11,7 @@ import binascii
 import traceback
 import logging
 import subprocess
+import struct
 
 FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(format=FORMAT)
@@ -18,8 +19,8 @@ logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
 def reverse_uuid(service_uuid):
-    if len(service_uuid) < 36:
-        return service_uuid
+    if len(service_uuid) == 4:
+        return service_uuid[2:4] + service_uuid[0:2]
     return uuid.UUID(bytes="".join([uuid.UUID(service_uuid).bytes[15-i] for i in range(16)])).hex
 
 # Define service and characteristic UUIDs.
@@ -121,7 +122,6 @@ class DeviceThread(object):
             try:
                 if self.peripheral.waitForNotifications(0.1):
                     # handleNotification() was called
-                    logger.debug("Received %s from %s", self.delegate.last_data, self.name)
                     self.received_data(self.delegate.last_data[0], self.delegate.last_data[1])
                 else:
                     self.no_data_received()
@@ -271,6 +271,43 @@ class ControllerThread(DeviceThread):
         self.add_command(lambda: self.devices_characteristic.write(devices))
         
         
+class ThermostatManager(DeviceManager):
+
+    def __init__(self):
+        SERVICE_UUID = '1234'
+        TEMP_CHAR_UUID = '1235'
+        HUMID_CHAR_UUID = '1236'
+        ONOFF_CHAR_UUID = '1237'
+        TARGET_CHAR_UUID = '1238'
+
+        DeviceManager.__init__(self, [[SERVICE_UUID, TEMP_CHAR_UUID, HUMID_CHAR_UUID, ONOFF_CHAR_UUID, TARGET_CHAR_UUID]], ThermostatThread)
+        
+
+class ThermostatThread(DeviceThread):
+
+    def before_thread(self):
+        service_uuid = self.service_and_char_uuids[0][0]
+        self.temperature_characteristic = self.characteristics[service_uuid][0]
+        self.humidity_characteristic = self.characteristics[service_uuid][1]
+        self.start_notifications(self.temperature_characteristic)
+        self.start_notifications(self.humidity_characteristic)
+        self.temperature = 0
+        self.humidity = 0
+
+
+    def received_data(self, cHandle, data):
+        if cHandle == self.temperature_characteristic.getHandle():
+            self.temperature = float(struct.unpack('<h', data)[0]) / 10
+            logger.debug('Temp: %.1f' % self.temperature)
+        if cHandle == self.humidity_characteristic.getHandle():
+            self.humidity = float(struct.unpack('<h', data)[0]) / 10
+            logger.debug('Hum: %.1f %%' % self.humidity)
+
+
+    def update_connected_devices(self, devices):
+        self.add_command(lambda: self.devices_characteristic.write(devices))
+        
+        
 class PIManager(object):
     def __init__(self):
         self.addr = 'localhost'
@@ -299,6 +336,10 @@ class PIManager(object):
         subprocess.call("gpio write %d 1" % port, shell=True)
         time.sleep(0.3)
         subprocess.call("gpio write %d 0" % port, shell=True)
+
+
+    def found_devices(self, devices):
+        pass
 
 
 class Coordinator(object):
@@ -384,13 +425,17 @@ class Coordinator(object):
 scanner = Scanner()
 uart_manager = UARTManager()
 pi_manager = PIManager()
+thermostat_manager = ThermostatManager()
 controller_manager = ControllerManager()
-coordinator = Coordinator(controller_manager, [uart_manager, pi_manager])
+managers = [uart_manager, pi_manager, thermostat_manager]
+coordinator = Coordinator(controller_manager, managers)
+
 logger.debug("Starting scan")
 while True:
     try:
         devices = scanner.scan(1)
-        uart_manager.found_devices(devices)
+        for manager in managers:
+            manager.found_devices(devices)
         controller_manager.found_devices(devices)
     except Exception, e:
         logger.debug("Exception on main loop: %s\n%s", e, traceback.format_exc())
