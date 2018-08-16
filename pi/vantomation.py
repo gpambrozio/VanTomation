@@ -70,7 +70,7 @@ class DeviceManager(object):
                         self.coordinator.device_connected(t, self.coordinator_identifier)
                 except Exception, e:
                     logger.debug("Exception connecting to %s: %s", dev.addr, e)
-                    logger.debug(traceback.format_exc())
+                    # logger.debug(traceback.format_exc())
 
 
 class NotificationDelegate(DefaultDelegate):
@@ -127,9 +127,11 @@ class DeviceThread(object):
                     self.no_data_received()
 
             except BTLEException, e:
-                logger.debug("BTLEException: %s\n%s", e, traceback.format_exc())
-                if e.code != BTLEException.DISCONNECTED:
+                if e.code == BTLEException.DISCONNECTED:
                     self.peripheral.disconnect()
+                    logger.debug("%s disconnected", self.name)
+                else:
+                    logger.debug("BTLEException: %s\n%s", e, traceback.format_exc())
                 break
 
             except Exception, e:
@@ -162,7 +164,12 @@ class DeviceThread(object):
     def received_data(self, cHandle, data):
         # Do something in subclasses
         pass
+
         
+    def execute_command(self, full_command):
+        # Do something in subclasses
+        pass
+
         
     def no_data_received(self):
         # Just in case a subclass wants to do something about it.
@@ -208,7 +215,7 @@ class UARTThread(DeviceThread):
         self.add_command(lambda: self.tx_characteristic.write(data))
 
 
-    def send_command(self, full_command):
+    def execute_command(self, full_command):
         command = full_command[1]
         if command not in "CRT":
             logger.debug("Unknown command: %s", command)
@@ -289,6 +296,8 @@ class ThermostatThread(DeviceThread):
         service_uuid = self.service_and_char_uuids[0][0]
         self.temperature_characteristic = self.characteristics[service_uuid][0]
         self.humidity_characteristic = self.characteristics[service_uuid][1]
+        self.onoff_characteristic = self.characteristics[service_uuid][2]
+        self.target_characteristic = self.characteristics[service_uuid][3]
         self.start_notifications(self.temperature_characteristic)
         self.start_notifications(self.humidity_characteristic)
         self.temperature = 0
@@ -299,15 +308,33 @@ class ThermostatThread(DeviceThread):
         if cHandle == self.temperature_characteristic.getHandle():
             self.temperature = float(struct.unpack('<h', data)[0]) / 10
             logger.debug('Temp: %.1f' % self.temperature)
-        if cHandle == self.humidity_characteristic.getHandle():
+        elif cHandle == self.humidity_characteristic.getHandle():
             self.humidity = float(struct.unpack('<h', data)[0]) / 10
             logger.debug('Hum: %.1f %%' % self.humidity)
+        else:
+            logger.debug("Unknown handle %d", cHandle)
 
 
     def update_connected_devices(self, devices):
         self.add_command(lambda: self.devices_characteristic.write(devices))
-        
-        
+
+
+    def execute_command(self, full_command):
+        command = full_command[1]
+        if command not in "SO":
+            logger.debug("Unknown command: %s", command)
+            return
+
+        if command == "S":
+            temp = int(full_command[2:])
+            logger.debug("Setting temp to %d", temp)
+            self.add_command(lambda: self.target_characteristic.write(struct.pack('<h', temp)))
+        if command == "O":
+            onoff = int(full_command[2:])
+            logger.debug("Setting onoff to %d", onoff)
+            self.add_command(lambda: self.onoff_characteristic.write('\x01' if onoff else '\x00'))
+
+
 class PIManager(object):
     def __init__(self):
         self.addr = 'localhost'
@@ -320,7 +347,7 @@ class PIManager(object):
         self.coordinator.device_connected(self, self.coordinator_identifier)
 
         
-    def send_command(self, full_command):
+    def execute_command(self, full_command):
         logger.debug("Pi received command %s", full_command)
         command = full_command[1]
         if command not in "LU":
@@ -350,6 +377,7 @@ class Coordinator(object):
         self.devices = {
             'L': 'fd:6e:55:f0:de:06',
             'P': 'localhost',
+            'T': 'c7:be:4a:5b:80:4d'
         }
         
         self.devices_by_addr = {v: k for (k, v) in self.devices.iteritems()}
@@ -410,7 +438,7 @@ class Coordinator(object):
                         logger.debug("connected: %s", all_devices_by_addr)
                         continue
 
-                    device_thread.send_command(full_command)
+                    device_thread.execute_command(full_command)
                         
                 except Queue.Empty:
                     # Nothing available, just move on...
