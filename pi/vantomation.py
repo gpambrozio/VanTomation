@@ -107,6 +107,7 @@ class DeviceThread(object):
             self.characteristics[service_uuid] = [service.getCharacteristics(uuid)[0] for uuid in s[1:]]
         
         self.commands = queue.Queue()
+        self.received_commands = queue.Queue()
         
         self.before_thread()
     
@@ -193,7 +194,7 @@ class UARTManager(DeviceManager):
 class UARTThread(DeviceThread):
 
     def before_thread(self):
-        self.queue = queue.Queue()
+        self.received_data = queue.Queue()
         service_uuid = self.service_and_char_uuids[0][0]
         self.tx_characteristic = self.characteristics[service_uuid][0]
         self.rx_characteristic = self.characteristics[service_uuid][1]
@@ -202,7 +203,7 @@ class UARTThread(DeviceThread):
 
     def received_data(self, cHandle, data):
         # Maybe use this for something..
-        # self.queue.put(data)
+        # self.received_data.put(data)
         pass
 
         
@@ -241,8 +242,8 @@ class UARTThread(DeviceThread):
         None is returned.
         """
         try:
-            read_data = self.queue.get(timeout=timeout_sec)
-            self.queue.task_done()
+            read_data = self.received_data.get(timeout=timeout_sec)
+            self.received_data.task_done()
             return read_data
         except queue.Empty:
             # Timeout exceeded, return None to signify no data received.
@@ -266,16 +267,19 @@ class ControllerThread(DeviceThread):
         self.command_characteristic = self.characteristics[service_uuid][0]
         self.devices_characteristic = self.characteristics[service_uuid][1]
         self.start_notifications(self.command_characteristic)
-        self.queue = queue.Queue()
 
 
     def received_data(self, cHandle, data):
         if cHandle == self.command_characteristic.getHandle():
-            self.queue.put(data)
+            self.received_commands.put(data)
 
 
     def update_connected_devices(self, devices):
         self.add_command(lambda: self.devices_characteristic.write(devices))
+
+
+    def execute_command(self, full_command):
+        self.add_command(lambda: self.command_characteristic.write(full_command))
         
         
 class ThermostatManager(DeviceManager):
@@ -306,17 +310,15 @@ class ThermostatThread(DeviceThread):
 
     def received_data(self, cHandle, data):
         if cHandle == self.temperature_characteristic.getHandle():
-            self.temperature = float(struct.unpack('<h', data)[0]) / 10
-            logger.debug('Temp: %.1f' % self.temperature)
+            self.temperature = float(struct.unpack('<h', data)[0])
+            logger.debug('Temp: %.1f' % (self.temperature / 10))
+            self.received_commands.put("CT%d" % self.temperature)
         elif cHandle == self.humidity_characteristic.getHandle():
-            self.humidity = float(struct.unpack('<h', data)[0]) / 10
-            logger.debug('Hum: %.1f %%' % self.humidity)
+            self.humidity = float(struct.unpack('<h', data)[0])
+            logger.debug('Hum: %.1f %%' % (self.humidity / 10))
+            self.received_commands.put("CH%d" % self.humidity)
         else:
             logger.debug("Unknown handle %d", cHandle)
-
-
-    def update_connected_devices(self, devices):
-        self.add_command(lambda: self.devices_characteristic.write(devices))
 
 
     def execute_command(self, full_command):
@@ -339,6 +341,7 @@ class PIManager(object):
     def __init__(self):
         self.addr = 'localhost'
         self.threads_by_addr = {self.addr: self}
+        self.received_commands = queue.Queue()
 
 
     def set_coordinator(self, coordinator, identifier):
@@ -375,6 +378,7 @@ class Coordinator(object):
         self.connected_devices = set()
         
         self.devices = {
+            'C': 'Controllers',
             'L': 'fd:6e:55:f0:de:06',
             'P': 'localhost',
             'T': 'c7:be:4a:5b:80:4d'
@@ -418,16 +422,24 @@ class Coordinator(object):
         """ Method that runs forever """
 
         while True:
-            for controller in self.controller_manager.threads_by_name.values():
+            all_devices_by_addr = {}
+            for manager in self.device_managers:
+                all_devices_by_addr.update(manager.threads_by_addr)
+
+            device_threads_by_name = self.controller_manager.threads_by_addr.values() + all_devices_by_addr.values()
+            
+            for device_threads in device_threads_by_name:
                 try:
-                    full_command = controller.queue.get(False)
-                    controller.queue.task_done()
+                    full_command = device_threads.received_commands.get(False)
+                    device_threads.received_commands.task_done()
                     
                     logger.debug("Got command %s", full_command)
-                    all_devices_by_addr = {}
-                    for manager in self.device_managers:
-                        all_devices_by_addr.update(manager.threads_by_addr)
                     device_id = full_command[0]
+                    if device_id == "C":
+                        for controller in self.controller_manager.threads_by_addr.values():
+                            controller.execute_command(full_command)
+                        continue
+
                     device_addr = self.devices.get(device_id)
                     if device_addr is None:
                         logger.debug("Device %s unknown", device_id)
@@ -455,7 +467,11 @@ uart_manager = UARTManager()
 pi_manager = PIManager()
 thermostat_manager = ThermostatManager()
 controller_manager = ControllerManager()
-managers = [uart_manager, pi_manager, thermostat_manager]
+managers = [
+    uart_manager,
+    pi_manager,
+    thermostat_manager,
+]
 coordinator = Coordinator(controller_manager, managers)
 
 logger.debug("Starting scan")
