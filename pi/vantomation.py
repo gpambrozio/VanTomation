@@ -381,7 +381,7 @@ class Coordinator(object):
             'C': 'Controllers',
             'L': 'fd:6e:55:f0:de:06',
             'P': 'localhost',
-            'T': 'c7:be:4a:5b:80:4d'
+            'T': 'eb:cc:ee:35:55:c0'
         }
         
         self.devices_by_addr = {v: k for (k, v) in self.devices.iteritems()}
