@@ -39,20 +39,24 @@ public struct ConnectedDevicesCharacteristic: CharacteristicConfigurable {
 
 class MasterManager {
 
+    var isAdvertising = false
+
     public static let shared = MasterManager()
 
     enum Constants {
         static let uuid = "12345678-1234-5678-1234-56789abc0010"
+        static let name = "Vantomation"
     }
 
-    let manager = PeripheralManager(options: [CBPeripheralManagerOptionRestoreIdentifierKey: "br.eng.gustavo.vantomation-controller" as NSString])
+    private let manager = PeripheralManager(options: [CBPeripheralManagerOptionRestoreIdentifierKey: "br.eng.gustavo.vantomation-controller" as NSString])
 
-    let commandService = MutableService(uuid: Constants.uuid)
+    private let commandService = MutableService(uuid: Constants.uuid)
 
     private let commandCharacteristic = MutableCharacteristic(profile: StringCharacteristicProfile<CommandCharacteristic>())
     private let devicesCharacteristic = MutableCharacteristic(profile: StringCharacteristicProfile<ConnectedDevicesCharacteristic>())
 
-    var devicesClosure: ((String) -> Void)? = nil
+    var commandsClosure: ((String) -> Void)? = nil
+    var statusClosure: ((String) -> Void)? = nil
 
     private init() {
         commandService.characteristics = [commandCharacteristic, devicesCharacteristic]
@@ -69,33 +73,49 @@ class MasterManager {
                 return self.manager.add(self.commandService)
             case .poweredOff:
                 throw AppError.poweredOff
-            case .unauthorized:
+            case .unauthorized, .unknown:
                 throw AppError.invalidState
             case .unsupported:
                 throw AppError.unsupported
             case .resetting:
                 throw AppError.resetting
-            case .unknown:
-                throw AppError.unknown
             }
         }.flatMap { [unowned self] _ -> Future<Void> in
-            self.manager.startAdvertising("VanTomation", uuids: [uuid])
+            self.manager.startAdvertising(Constants.name, uuids: [uuid])
         }
 
-        startAdvertiseFuture.onSuccess { _ in
+        startAdvertiseFuture.onSuccess { [unowned self] in
+            self.changeStatus("Is Advertising")
+            self.isAdvertising = true
         }
 
-        startAdvertiseFuture.onFailure { [weak self] error in
-            guard let `self` = self else { return }
-            print("Error: \(error)")
-
+        startAdvertiseFuture.onFailure { [unowned self] error in
             switch error {
-            case AppError.unsupported,
-                 AppError.unknown:
-                break
+            case AppError.poweredOff:
+                self.changeStatus("PeripheralManager powered off") {
+                    self.isAdvertising = false
+                    _ = self.manager.stopAdvertising()
+                    self.manager.reset()
+                }
+            case AppError.resetting:
+                let message = "PeripheralManager state \"\(self.manager.state)\". The connection with the system bluetooth service was momentarily lost.\n Restart advertising."
+                self.changeStatus(message) {
+                    _ = self.manager.stopAdvertising()
+                    self.manager.reset()
+                }
+            case AppError.unsupported:
+                self.changeStatus("Bluetooth not supported") {
+                    self.isAdvertising = false
+                }
+            case PeripheralManagerError.isAdvertising:
+                self.changeStatus("Bluetooth not supported") {
+                    self.isAdvertising = false
+                    _ = self.manager.stopAdvertising()
+                    self.manager.reset()
+                }
             default:
-                _ = self.manager.stopAdvertising()
-                DispatchQueue.main.async {
+                self.changeStatus("Error: \(String(describing: error))") {
+                    _ = self.manager.stopAdvertising()
                     self.manager.reset()
                 }
             }
@@ -111,9 +131,18 @@ class MasterManager {
             }
             self.devicesCharacteristic.value = value
             self.devicesCharacteristic.respondToRequest(request, withResult:CBATTError.success)
-            self.devicesClosure?(String(data: value, encoding: .ascii) ?? "!")
-            print("Devices updated to \(value)")
+            guard let command = String(data: value, encoding: .ascii) else {
+                return
+            }
+            self.commandsClosure?(command)
+            print("Command received \(command)")
         }
+    }
+
+    private func changeStatus(_ message: String, handler: @escaping (() -> Void) = {}) {
+        print("Something happened: \(message)")
+        statusClosure?(message)
+        DispatchQueue.main.async(execute: handler)
     }
 
     func send(command: String) {

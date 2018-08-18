@@ -19,13 +19,13 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="QhJ-gA-s7H">
-                                <rect key="frame" x="15" y="30" width="345" height="608.5"/>
+                                <rect key="frame" x="15" y="30" width="345" height="637"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="cbN-0g-kQ4">
-                                        <rect key="frame" x="0.0" y="0.0" width="345" height="573"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="345" height="572"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="ub9-EX-oGO">
-                                                <rect key="frame" x="102" y="0.0" width="141" height="26"/>
+                                                <rect key="frame" x="81" y="0.0" width="183.5" height="26"/>
                                                 <subviews>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="X77-8x-iJ4">
                                                         <rect key="frame" x="0.0" y="0.0" width="53" height="26"/>
@@ -35,8 +35,14 @@
                                                             <action selector="lock" destination="BYZ-38-t0r" eventType="touchUpInside" id="27W-U1-AWI"/>
                                                         </connections>
                                                     </button>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="? F" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9fV-4f-j9G">
+                                                        <rect key="frame" x="73" y="0.0" width="22.5" height="26"/>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                        <nil key="textColor"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5k7-zf-KHF">
-                                                        <rect key="frame" x="73" y="0.0" width="68" height="26"/>
+                                                        <rect key="frame" x="115.5" y="0.0" width="68" height="26"/>
                                                         <inset key="contentEdgeInsets" minX="10" minY="4" maxX="10" maxY="4"/>
                                                         <state key="normal" title="Unlock"/>
                                                         <connections>
@@ -86,7 +92,7 @@
                                                 </connections>
                                             </view>
                                             <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFit" insetsLayoutMarginsFromSafeArea="NO" image="ColorPicker" translatesAutoresizingMaskIntoConstraints="NO" id="vzX-ke-q7g" customClass="ColorPickerImageView" customModule="VanTomation" customModuleProvider="target">
-                                                <rect key="frame" x="2.5" y="232" width="340" height="341"/>
+                                                <rect key="frame" x="2.5" y="232" width="340" height="340"/>
                                             </imageView>
                                         </subviews>
                                         <constraints>
@@ -97,8 +103,8 @@
                                         </constraints>
                                         <variation key="heightClass=compact-widthClass=compact" spacing="10"/>
                                     </stackView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="X9T-af-A7M">
-                                        <rect key="frame" x="0.0" y="588" width="345" height="20.5"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="X9T-af-A7M">
+                                        <rect key="frame" x="0.0" y="587" width="345" height="50"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
@@ -122,6 +128,7 @@
                         <outlet property="ledColorMode" destination="fs5-0g-hxd" id="70Z-Eh-uIB"/>
                         <outlet property="speedSlider" destination="WZG-Q6-zYF" id="rOC-Nb-FZv"/>
                         <outlet property="stripSelection" destination="DJY-s8-9xM" id="eIR-WE-IID"/>
+                        <outlet property="temperatureLabel" destination="9fV-4f-j9G" id="XuM-Do-AWp"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

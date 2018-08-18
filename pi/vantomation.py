@@ -194,7 +194,7 @@ class UARTManager(DeviceManager):
 class UARTThread(DeviceThread):
 
     def before_thread(self):
-        self.received_data = queue.Queue()
+        self.received_uart_data = queue.Queue()
         service_uuid = self.service_and_char_uuids[0][0]
         self.tx_characteristic = self.characteristics[service_uuid][0]
         self.rx_characteristic = self.characteristics[service_uuid][1]
@@ -203,7 +203,7 @@ class UARTThread(DeviceThread):
 
     def received_data(self, cHandle, data):
         # Maybe use this for something..
-        # self.received_data.put(data)
+        # self.received_uart_data.put(data)
         pass
 
         
@@ -242,8 +242,8 @@ class UARTThread(DeviceThread):
         None is returned.
         """
         try:
-            read_data = self.received_data.get(timeout=timeout_sec)
-            self.received_data.task_done()
+            read_data = self.received_uart_data.get(timeout=timeout_sec)
+            self.received_uart_data.task_done()
             return read_data
         except queue.Empty:
             # Timeout exceeded, return None to signify no data received.
@@ -275,11 +275,11 @@ class ControllerThread(DeviceThread):
 
 
     def update_connected_devices(self, devices):
-        self.add_command(lambda: self.devices_characteristic.write(devices))
+        self.add_command(lambda: self.devices_characteristic.write("CD" + devices))
 
 
     def execute_command(self, full_command):
-        self.add_command(lambda: self.command_characteristic.write(full_command))
+        self.add_command(lambda: self.devices_characteristic.write(full_command))
         
         
 class ThermostatManager(DeviceManager):
