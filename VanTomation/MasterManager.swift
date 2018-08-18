@@ -55,8 +55,14 @@ class MasterManager {
     private let commandCharacteristic = MutableCharacteristic(profile: StringCharacteristicProfile<CommandCharacteristic>())
     private let devicesCharacteristic = MutableCharacteristic(profile: StringCharacteristicProfile<ConnectedDevicesCharacteristic>())
 
-    var commandsClosure: ((String) -> Void)? = nil
-    var statusClosure: ((String) -> Void)? = nil
+    private let commandsPromise = StreamPromise<String>(capacity: 10)
+    private let statusPromise = StreamPromise<String>(capacity: 10)
+    public var commandsStream: FutureStream<String> {
+        return commandsPromise.stream
+    }
+    public var statusStream: FutureStream<String> {
+        return statusPromise.stream
+    }
 
     private init() {
         commandService.characteristics = [commandCharacteristic, devicesCharacteristic]
@@ -106,6 +112,8 @@ class MasterManager {
             case AppError.unsupported:
                 self.changeStatus("Bluetooth not supported") {
                     self.isAdvertising = false
+                    _ = self.manager.stopAdvertising()
+                    self.manager.reset()
                 }
             case PeripheralManagerError.isAdvertising:
                 self.changeStatus("Bluetooth not supported") {
@@ -134,14 +142,14 @@ class MasterManager {
             guard let command = String(data: value, encoding: .ascii) else {
                 return
             }
-            self.commandsClosure?(command)
+            self.commandsPromise.success(command)
             print("Command received \(command)")
         }
     }
 
     private func changeStatus(_ message: String, handler: @escaping (() -> Void) = {}) {
         print("Something happened: \(message)")
-        statusClosure?(message)
+        statusPromise.success(message)
         DispatchQueue.main.async(execute: handler)
     }
 

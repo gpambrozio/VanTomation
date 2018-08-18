@@ -9,7 +9,7 @@
 import UIKit
 import fluid_slider
 
-class ViewController: UIViewController {
+class LightsViewController: UIViewController {
 
     private let masterManager = MasterManager.shared
     private var pickedColor: UIColor?
@@ -19,8 +19,6 @@ class ViewController: UIViewController {
     @IBOutlet private var colorPicker: ColorPickerImageView!
     @IBOutlet private var brightnessSlider: Slider!
     @IBOutlet private var speedSlider: Slider!
-    @IBOutlet private var connectedLabel: UILabel!
-    @IBOutlet private var temperatureLabel: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -59,34 +57,6 @@ class ViewController: UIViewController {
         speedSlider.fraction = 0.5
         speedSlider.contentViewColor = .clear
         speedSlider.valueViewColor = .white
-
-        masterManager.commandsClosure = { [connectedLabel] command in
-            let commandData = command[command.index(command.startIndex, offsetBy: 2)...]
-            if command.starts(with: "CD") {
-                connectedLabel?.text = "Connected: \(commandData)"
-            } else if command.starts(with: "CT") {
-                self.temperatureLabel.text = "\(32.0 + (Double(commandData) ?? 0) * 9.0 / 50.0) F"
-            } else if command.starts(with: "CH") {
-            } else {
-                print("command: \(command)")
-
-            }
-        }
-        masterManager.statusClosure = { [connectedLabel] status in
-            connectedLabel?.text = status
-        }
-    }
-
-    deinit {
-        masterManager.commandsClosure = nil
-    }
-
-    @IBAction func lock() {
-        masterManager.send(command: "PL")
-    }
-
-    @IBAction func unlock() {
-        masterManager.send(command: "PU")
     }
 
     @IBAction func didChangeLedMode() {

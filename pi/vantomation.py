@@ -323,18 +323,15 @@ class ThermostatThread(DeviceThread):
 
     def execute_command(self, full_command):
         command = full_command[1]
-        if command not in "SO":
+        if command not in "T":
             logger.debug("Unknown command: %s", command)
             return
 
-        if command == "S":
-            temp = int(full_command[2:])
-            logger.debug("Setting temp to %d", temp)
-            self.add_command(lambda: self.target_characteristic.write(struct.pack('<h', temp)))
-        if command == "O":
-            onoff = int(full_command[2:])
-            logger.debug("Setting onoff to %d", onoff)
-            self.add_command(lambda: self.onoff_characteristic.write('\x01' if onoff else '\x00'))
+        onoff = int(full_command[2])
+        temp = int(full_command[3:], 16)
+        logger.debug("Setting temp to %d, onoff to %d", temp, onoff)
+        self.add_command(lambda: self.target_characteristic.write(struct.pack('<h', temp)))
+        self.add_command(lambda: self.onoff_characteristic.write('\x01' if onoff else '\x00'))
 
 
 class PIManager(object):
