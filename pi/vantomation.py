@@ -304,19 +304,27 @@ class ThermostatThread(DeviceThread):
         self.target_characteristic = self.characteristics[service_uuid][3]
         self.start_notifications(self.temperature_characteristic)
         self.start_notifications(self.humidity_characteristic)
+        self.start_notifications(self.onoff_characteristic)
+        self.start_notifications(self.target_characteristic)
         self.temperature = 0
         self.humidity = 0
+        self.onoff = 0
+        self.target = 0
 
 
     def received_data(self, cHandle, data):
         if cHandle == self.temperature_characteristic.getHandle():
             self.temperature = float(struct.unpack('<h', data)[0])
-            logger.debug('Temp: %.1f' % (self.temperature / 10))
             self.received_commands.put("CT%d" % self.temperature)
         elif cHandle == self.humidity_characteristic.getHandle():
             self.humidity = float(struct.unpack('<h', data)[0])
-            logger.debug('Hum: %.1f %%' % (self.humidity / 10))
             self.received_commands.put("CH%d" % self.humidity)
+        elif cHandle == self.onoff_characteristic.getHandle():
+            self.onoff = struct.unpack('B', data)[0]
+            self.received_commands.put("Ct%01d%d" % (self.onoff, self.target))
+        elif cHandle == self.target_characteristic.getHandle():
+            self.target = float(struct.unpack('<h', data)[0])
+            self.received_commands.put("Ct%01d%d" % (self.onoff, self.target))
         else:
             logger.debug("Unknown handle %d", cHandle)
 

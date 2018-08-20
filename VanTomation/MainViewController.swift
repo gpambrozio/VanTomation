@@ -41,14 +41,17 @@ class MainViewController: UIViewController {
             if command.starts(with: "CD") {
                 self.connectedLabel.text = "Connected: \(commandData)"
             } else if command.starts(with: "CT") {
-                let temperatureC = (Double(commandData) ?? 0) / 10.0
-                let temperatureF = 32.0 + temperatureC * 9.0 / 5.0
+                let temperatureF = (Double(commandData) ?? 0) / 10.0
+                let temperatureC = (temperatureF - 32.0) / 9.0 * 5.0
                 self.temperatureFahrenheitLabel.text = String(format: "%.1f°F", temperatureF)
                 self.temperatureCelsiusLabel.text = String(format: "%.1f°C", temperatureC)
                 self.navigationController?.tabBarItem.badgeValue = "\(temperatureF)"
             } else if command.starts(with: "CH") {
                 let humidity = (Double(commandData) ?? 0) / 10.0
                 self.humidityLabel.text = String(format: "%.1f%%", humidity)
+            } else if command.starts(with: "Ct") {
+                self.thermostatSwitch.isOn = commandData[commandData.startIndex] == "0"
+                self.targetTemperature = (Int(commandData[commandData.index(commandData.startIndex, offsetBy: 1)...]) ?? 0) / 10
             } else {
                 print("command: \(command)")
             }
@@ -80,7 +83,7 @@ class MainViewController: UIViewController {
     }
 
     private func sendThermostatCommand() {
-        let target = (targetTemperature - 32) * 50 / 9
+        let target = targetTemperature * 10
         let command = String(format: "TT\(thermostatOn ? "1" : "0")%04X", target)
         masterManager.send(command: command)
     }
