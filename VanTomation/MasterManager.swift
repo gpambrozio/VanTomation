@@ -91,42 +91,35 @@ class MasterManager {
         }
 
         startAdvertiseFuture.onSuccess { [unowned self] in
-            self.changeStatus("Is Advertising")
-            self.isAdvertising = true
+            self.present(UIAlertController.alertWithMessage("poweredOn and started advertising"))
         }
 
         startAdvertiseFuture.onFailure { [unowned self] error in
             switch error {
             case AppError.poweredOff:
-                self.changeStatus("PeripheralManager powered off") {
-                    self.isAdvertising = false
-                    _ = self.manager.stopAdvertising()
+                self.present(UIAlertController.alertWithMessage("PeripheralManager powered off") { _ in
                     self.manager.reset()
-                }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        self.startAdvertising()
+                    }
+                })
             case AppError.resetting:
                 let message = "PeripheralManager state \"\(self.manager.state)\". The connection with the system bluetooth service was momentarily lost.\n Restart advertising."
-                self.changeStatus(message) {
-                    _ = self.manager.stopAdvertising()
+                self.present(UIAlertController.alertWithMessage(message) { _ in
                     self.manager.reset()
-                }
+                })
             case AppError.unsupported:
-                self.changeStatus("Bluetooth not supported") {
-                    self.isAdvertising = false
-                    _ = self.manager.stopAdvertising()
-                    self.manager.reset()
-                }
-            case PeripheralManagerError.isAdvertising:
-                self.changeStatus("Bluetooth not supported") {
-                    self.isAdvertising = false
-                    _ = self.manager.stopAdvertising()
-                    self.manager.reset()
-                }
+                self.present(UIAlertController.alertWithMessage("Bluetooth not supported") { _ in
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        self.startAdvertising()
+                    }
+                })
             default:
-                self.changeStatus("Error: \(String(describing: error))") {
-                    _ = self.manager.stopAdvertising()
+                self.present(UIAlertController.alertOnError(error) { _ in
                     self.manager.reset()
-                }
+                })
             }
+            _ = self.manager.stopAdvertising()
         }
 
         let devicesFuture = startAdvertiseFuture.flatMap { [unowned self] in
@@ -145,6 +138,10 @@ class MasterManager {
             self.commandsPromise.success(command)
             print("Command received \(command)")
         }
+    }
+
+    private func present(_ vc: UIAlertController) {
+        UIApplication.shared.keyWindow?.rootViewController?.present(vc, animated: true, completion: nil)
     }
 
     private func changeStatus(_ message: String, handler: @escaping (() -> Void) = {}) {

@@ -11,6 +11,7 @@
 		A6C8A7378DE3A1E0B9E107D1 /* Pods_VanTomation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 224B247CA41DBCFEA61576AF /* Pods_VanTomation.framework */; };
 		B19F9D25BB5C133422BEE01D /* Pods_VanTomationUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7622A07071BC303034BCD6DE /* Pods_VanTomationUITests.framework */; };
 		EC3D3EB62128BAFB00E2E7EE /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC3D3EB52128BAFB00E2E7EE /* MainViewController.swift */; };
+		EC3D3EB8213104C300E2E7EE /* UIAlertControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC3D3EB7213104C300E2E7EE /* UIAlertControllerExtensions.swift */; };
 		EC8F568720EB2E82005D6959 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8F568620EB2E82005D6959 /* AppDelegate.swift */; };
 		EC8F568920EB2E82005D6959 /* LightsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8F568820EB2E82005D6959 /* LightsViewController.swift */; };
 		EC8F568C20EB2E82005D6959 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EC8F568A20EB2E82005D6959 /* Main.storyboard */; };
@@ -50,6 +51,7 @@
 		C01FC24EC56D386209E14D14 /* Pods-VanTomation.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VanTomation.debug.xcconfig"; path = "Pods/Target Support Files/Pods-VanTomation/Pods-VanTomation.debug.xcconfig"; sourceTree = "<group>"; };
 		DD5AB710BB35CE5026ED0398 /* Pods-VanTomationUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VanTomationUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-VanTomationUITests/Pods-VanTomationUITests.release.xcconfig"; sourceTree = "<group>"; };
 		EC3D3EB52128BAFB00E2E7EE /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
+		EC3D3EB7213104C300E2E7EE /* UIAlertControllerExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIAlertControllerExtensions.swift; sourceTree = "<group>"; };
 		EC8F568320EB2E82005D6959 /* VanTomation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VanTomation.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EC8F568620EB2E82005D6959 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		EC8F568820EB2E82005D6959 /* LightsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightsViewController.swift; sourceTree = "<group>"; };
@@ -155,6 +157,7 @@
 				EC8F569220EB2E84005D6959 /* Info.plist */,
 				ECADEAE320FAED5A00E42F17 /* ColorPickerLens.swift */,
 				ECADEAE520FAF75600E42F17 /* ColorPickerImageView.swift */,
+				EC3D3EB7213104C300E2E7EE /* UIAlertControllerExtensions.swift */,
 			);
 			path = VanTomation;
 			sourceTree = "<group>";
@@ -398,6 +401,7 @@
 			files = (
 				EC8F568920EB2E82005D6959 /* LightsViewController.swift in Sources */,
 				EC8F568720EB2E82005D6959 /* AppDelegate.swift in Sources */,
+				EC3D3EB8213104C300E2E7EE /* UIAlertControllerExtensions.swift in Sources */,
 				EC8F56B520EB35B3005D6959 /* MasterManager.swift in Sources */,
 				EC3D3EB62128BAFB00E2E7EE /* MainViewController.swift in Sources */,
 				ECADEAE620FAF75600E42F17 /* ColorPickerImageView.swift in Sources */,
