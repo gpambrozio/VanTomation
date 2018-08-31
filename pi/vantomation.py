@@ -324,7 +324,7 @@ class ThermostatThread(DeviceThread):
             self.received_commands.put("Ct%01d%d" % (self.onoff, self.target))
         elif cHandle == self.target_characteristic.getHandle():
             self.target = float(struct.unpack('<h', data)[0])
-            self.received_commands.put("Ct%01d%d" % (self.onoff, self.target))
+            self.received_commands.put("Ct%01d%.0f" % (self.onoff, self.target))
         else:
             logger.debug("Unknown handle %d", cHandle)
 
@@ -467,6 +467,7 @@ class Coordinator(object):
             time.sleep(0.2)
 
 
+subprocess.call("hciconfig hci0 up", shell=True)
 scanner = Scanner()
 uart_manager = UARTManager()
 pi_manager = PIManager()
