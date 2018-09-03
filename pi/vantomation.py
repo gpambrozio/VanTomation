@@ -344,6 +344,10 @@ class ThermostatThread(DeviceThread):
 
 class PIManager(object):
     def __init__(self):
+        subprocess.call("gpio write 0 0", shell=True)
+        subprocess.call("gpio write 7 0", shell=True)
+        subprocess.call("gpio mode 0 out", shell=True)
+        subprocess.call("gpio mode 7 out", shell=True)
         self.addr = 'localhost'
         self.threads_by_addr = {self.addr: self}
         self.received_commands = queue.Queue()
