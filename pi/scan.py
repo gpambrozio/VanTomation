@@ -61,8 +61,37 @@ def dump_services(dev):
                 except btle.BTLEException:
                     break
 
+class ScanPrint(btle.DefaultDelegate):
 
-scanner = Scanner()
+    def __init__(self):
+        btle.DefaultDelegate.__init__(self)
+
+    def handleDiscovery(self, dev, isNewDev, isNewData):
+        if isNewDev:
+            status = "new"
+        elif isNewData:
+            status = "update"
+        else:
+            status = "old"
+
+        print ('    Device (%s): %s (%s), %d dBm %s' %
+               (status,
+                   ANSI_WHITE + dev.addr + ANSI_OFF,
+                   dev.addrType,
+                   dev.rssi,
+                   ('' if dev.connectable else '(not connectable)'))
+               )
+        for (sdid, desc, val) in dev.getScanData():
+            if sdid in [8, 9]:
+                print ('\t' + desc + ': \'' + ANSI_CYAN + val + ANSI_OFF + '\'')
+            else:
+                print ('\t' + desc + ': <' + val + '>')
+        if not dev.scanData:
+            print ('\t(no data)')
+        print
+
+
+scanner = Scanner()#.withDelegate(ScanPrint())
 print("Starting scan")
 scanner.start()
 scanner.clear()
@@ -78,7 +107,10 @@ while True:
         # if len(flags) == 0 or flags[0] != '1a':
         #     continue
             
-        print("Found device %s (%s) scan_data %s" % (dev.addr, dev.getValueText(9), scan_data))
+        try:
+            print("Found device %s (%s) scan_data %s" % (dev.addr, dev.getValueText(9), scan_data))
+        except:
+            print("Error printing info for %s" % dev.addr)
 
         interested_uuid = 'AAAA'
         if interested_uuid in services:
