@@ -45,7 +45,7 @@ class MasterManager {
 
     enum Constants {
         static let uuid = "12345678-1234-5678-1234-56789abc0010"
-        static let name = "Vantomation"
+        static let name = "VanTomation"
     }
 
     private let manager = PeripheralManager(options: [CBPeripheralManagerOptionRestoreIdentifierKey: "br.eng.gustavo.vantomation-controller" as NSString])
@@ -70,13 +70,10 @@ class MasterManager {
     }
 
     func startAdvertising() {
-        let uuid = CBUUID(string: Constants.uuid)
-
         let startAdvertiseFuture = manager.whenStateChanges().flatMap { [unowned self] state -> Future<Void> in
             switch state {
             case .poweredOn:
-                self.manager.removeAllServices()
-                return self.manager.add(self.commandService)
+                return self.manager.stopAdvertising()
             case .poweredOff:
                 throw AppError.poweredOff
             case .unauthorized, .unknown:
@@ -87,7 +84,10 @@ class MasterManager {
                 throw AppError.resetting
             }
         }.flatMap { [unowned self] _ -> Future<Void> in
-            self.manager.startAdvertising(Constants.name, uuids: [uuid])
+            self.manager.removeAllServices()
+            return self.manager.add(self.commandService)
+        }.flatMap { [unowned self] _ -> Future<Void> in
+            return self.manager.startAdvertising(Constants.name, uuids: [CBUUID(string: Constants.uuid)])
         }
 
         startAdvertiseFuture.onSuccess { [unowned self] in
