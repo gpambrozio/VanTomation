@@ -12,6 +12,9 @@ import traceback
 import logging
 import subprocess
 import struct
+import socket
+import sys
+import os
 
 FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(format=FORMAT)
@@ -381,15 +384,81 @@ class PIManager(object):
         pass
 
 
+class SocketManager(object):
+    def __init__(self):
+        server_address = '/tmp/vantomation.socket'
+
+        self.addr = 'localsocket'
+        self.threads_by_addr = {self.addr: self}
+        self.received_commands = queue.Queue()
+
+        # Make sure the socket does not already exist
+        try:
+            os.unlink(server_address)
+        except OSError:
+            if os.path.exists(server_address):
+                raise
+
+        # Create a UDS socket
+        self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        self.sock.bind(server_address)
+
+        # Listen for incoming connections
+        self.sock.listen(1)
+        self.thread = threading.Thread(target=self.run)
+        self.thread.daemon = True                            # Daemonize thread
+        self.thread.start()                                  # Start the execution
+
+
+    def set_coordinator(self, coordinator, identifier):
+        self.coordinator = coordinator
+        self.coordinator_identifier = identifier
+        self.coordinator.device_connected(self, self.coordinator_identifier)
+
+
+    def execute_command(self, full_command):
+        logger.debug("Socket received command %s. Ignoring", full_command)
+
+
+    def run(self):
+        """ Method that runs forever """
+        while True:
+            # Wait for a connection
+            connection, client_address = self.sock.accept()
+            try:
+                logger.debug("connection from %s", client_address)
+
+                # Receive the data in small chunks and retransmit it
+                past_data = ""
+                while True:
+                    data = connection.recv(256)
+                    if data == '':
+                        continue
+                    past_data += data
+                    lines = past_data.split("\n")
+                    past_data = lines[-1]
+                    for command in lines[0:-1]:
+                        self.received_commands.put("C"+command)
+            
+            finally:
+                # Clean up the connection
+                connection.close()
+
+
+    def found_devices(self, devices):
+        pass
+
+
 class Coordinator(object):
-    
+
     def __init__(self, controller_manager, device_managers):
         self.connected_devices = set()
-        
+
         self.devices = {
             'C': 'Controllers',
-            'L': 'fd:6e:55:f0:de:06',
             'P': 'localhost',
+            'S': 'localsocket',
+            'L': 'fd:6e:55:f0:de:06',
             'T': 'eb:cc:ee:35:55:c0'
         }
         
@@ -477,10 +546,12 @@ uart_manager = UARTManager()
 pi_manager = PIManager()
 thermostat_manager = ThermostatManager()
 controller_manager = ControllerManager()
+socket_manager = SocketManager()
 managers = [
     uart_manager,
     pi_manager,
     thermostat_manager,
+    socket_manager,
 ]
 coordinator = Coordinator(controller_manager, managers)
 
