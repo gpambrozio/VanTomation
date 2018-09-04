@@ -507,35 +507,36 @@ class Coordinator(object):
             device_threads_by_name = self.controller_manager.threads_by_addr.values() + all_devices_by_addr.values()
             
             for device_threads in device_threads_by_name:
-                try:
-                    full_command = device_threads.received_commands.get(False)
-                    device_threads.received_commands.task_done()
+                while True:
+                    try:
+                        full_command = device_threads.received_commands.get(False)
+                        device_threads.received_commands.task_done()
                     
-                    logger.debug("Got command %s", full_command)
-                    device_id = full_command[0]
-                    if device_id == "C":
-                        for controller in self.controller_manager.threads_by_addr.values():
-                            controller.execute_command(full_command)
-                        continue
+                        logger.debug("Got command %s", full_command)
+                        device_id = full_command[0]
+                        if device_id == "C":
+                            for controller in self.controller_manager.threads_by_addr.values():
+                                controller.execute_command(full_command)
+                            continue
 
-                    device_addr = self.devices.get(device_id)
-                    if device_addr is None:
-                        logger.debug("Device %s unknown", device_id)
-                        continue
-                    device_thread = all_devices_by_addr.get(device_addr)
-                    if device_thread is None:
-                        logger.debug("Device %s (%s) not connected", device_id, device_addr)
-                        logger.debug("connected: %s", all_devices_by_addr)
-                        continue
+                        device_addr = self.devices.get(device_id)
+                        if device_addr is None:
+                            logger.debug("Device %s unknown", device_id)
+                            continue
+                        device_thread = all_devices_by_addr.get(device_addr)
+                        if device_thread is None:
+                            logger.debug("Device %s (%s) not connected", device_id, device_addr)
+                            logger.debug("connected: %s", all_devices_by_addr)
+                            continue
 
-                    device_thread.execute_command(full_command)
+                        device_thread.execute_command(full_command)
                         
-                except Queue.Empty:
-                    # Nothing available, just move on...
-                    pass
+                    except Queue.Empty:
+                        # Nothing available, just move on...
+                        break
                     
-                except Exception, e:
-                    logger.debug("Exception: %s\n%s", e, traceback.format_exc())
+                    except Exception, e:
+                        logger.debug("Exception: %s\n%s", e, traceback.format_exc())
 
             time.sleep(0.2)
 
