@@ -12,7 +12,7 @@ import fluid_slider
 class LightsViewController: UIViewController {
 
     private let masterManager = MasterManager.shared
-    private var pickedColor: UIColor?
+    private var pickedColor = UIColor.white
 
     @IBOutlet private var stripSelection: UISegmentedControl!
     @IBOutlet private var ledColorMode: UISegmentedControl!
@@ -71,26 +71,25 @@ class LightsViewController: UIViewController {
         switch ledColorMode.selectedSegmentIndex {
         case 0:
             speedSlider.isHidden = true
-            guard let color = pickedColor,
-                color.getRed(colors.advanced(by: 0),
-                             green: colors.advanced(by: 1),
-                             blue: colors.advanced(by: 2),
-                             alpha: nil) else { return }
+            guard pickedColor.getRed(colors.advanced(by: 0),
+                                     green: colors.advanced(by: 1),
+                                     blue: colors.advanced(by: 2),
+                                     alpha: nil) else { return }
 
-            command = String(format: "LC\(strip)%02X%02X%02X%02X",
+            command = String(format: "L\(strip)C%02X%02X%02X%02X",
                              Int(brightnessSlider.fraction * 40),
                              Int(colors[0] * 255),
                              Int(colors[1] * 255),
                              Int(colors[2] * 255))
         case 1:
             speedSlider.isHidden = false
-            command = String(format: "LR\(strip)%02X%02X",
+            command = String(format: "L\(strip)R%02X%02X",
                              Int(brightnessSlider.fraction * 40),
                              Int(speedSlider.fraction * 200))
 
         case 2:
             speedSlider.isHidden = false
-            command = String(format: "LT\(strip)%02X%02X",
+            command = String(format: "L\(strip)T%02X%02X",
                 Int(brightnessSlider.fraction * 40),
                 Int(speedSlider.fraction * 200 + 24))
         default:

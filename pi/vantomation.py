@@ -15,6 +15,8 @@ import struct
 import socket
 import sys
 import os
+import datetime
+
 
 FORMAT = '%(asctime)-15s %(message)s'
 logging.basicConfig(format=FORMAT)
@@ -37,10 +39,13 @@ class DeviceManager(object):
         self.thread_class = thread_class
         self.coordinator = None
 
-        
-    def set_coordinator(self, coordinator, identifier):
+
+    def all_broadcasters(self):
+        return self.threads_by_addr.values()
+
+
+    def set_coordinator(self, coordinator):
         self.coordinator = coordinator
-        self.coordinator_identifier = identifier
         
         
     def found_devices(self, devices):
@@ -49,7 +54,7 @@ class DeviceManager(object):
             t = self.threads_by_addr[addr]
             if not t.is_alive():
                 if self.coordinator is not None:
-                    self.coordinator.device_disconnected(t, self.coordinator_identifier)
+                    self.coordinator.device_disconnected(t)
                 del self.threads_by_name[t.name]
                 del self.threads_by_addr[addr]
                 logger.debug("Device %s thread died... Removing", t.name)
@@ -70,7 +75,7 @@ class DeviceManager(object):
                     self.threads_by_addr[dev.addr] = t
                     self.threads_by_name[name] = t
                     if self.coordinator is not None:
-                        self.coordinator.device_connected(t, self.coordinator_identifier)
+                        self.coordinator.device_connected(t)
                 except Exception, e:
                     logger.debug("Exception connecting to %s: %s", dev.addr, e)
                     # logger.debug(traceback.format_exc())
@@ -81,18 +86,59 @@ class NotificationDelegate(DefaultDelegate):
         DefaultDelegate.__init__(self)
         self.last_data = None
 
+
     def handleNotification(self, cHandle, data):
         self.last_data = (cHandle, data)
 
 
-class DeviceThread(object):
+class BroadcastMessage(object):
+    def __init__(self, destination, prop, value):
+        self.destination = destination
+        self.prop = prop
+        self.value = value
+        
+        
+    def __str__(self):
+        return "Broadcast to %s, %s = %s" % (self.destination, self.prop, self.value)
+
+        
+
+class SenderReceiver(object):
+    def __init__(self):
+        self.broadcast_messages = queue.Queue()
+        
+
+    def found_devices(self, devices):
+        pass
+
+
+    def broadcast_received(self, broadcast):
+        pass
+
+
+    def add_broadcast(self, destination, prop, value):
+        self.broadcast_messages.put(BroadcastMessage(destination, prop, value))
+
+
+    def all_broadcasters(self):
+        return [self]
+
+
+    def set_coordinator(self, coordinator):
+        pass
+
+
+
+class DeviceThread(SenderReceiver):
     def __init__(self, manager, dev, name, service_and_char_uuids):
         """ Constructor
         """
+        SenderReceiver.__init__(self)
+
         self.manager = manager
         self.dev = dev
         self.service_and_char_uuids = service_and_char_uuids
-        
+
         self.addr = dev.addr
         self.name = name
 
@@ -110,7 +156,6 @@ class DeviceThread(object):
             self.characteristics[service_uuid] = [service.getCharacteristics(uuid)[0] for uuid in s[1:]]
         
         self.commands = queue.Queue()
-        self.received_commands = queue.Queue()
         
         self.before_thread()
     
@@ -170,11 +215,6 @@ class DeviceThread(object):
         pass
 
         
-    def execute_command(self, full_command):
-        # Do something in subclasses
-        pass
-
-        
     def no_data_received(self):
         # Just in case a subclass wants to do something about it.
         pass
@@ -210,31 +250,31 @@ class UARTThread(DeviceThread):
         pass
 
         
-    def no_data_received(self):
-        pass
-
-
     def write(self, data):
         """Write a string of data to the UART device."""
         self.add_command(lambda: self.tx_characteristic.write(data))
 
 
-    def execute_command(self, full_command):
-        command = full_command[1]
-        if command not in "CRT":
-            logger.debug("Unknown command: %s", command)
-            return
-        color = binascii.unhexlify(full_command[3:])
-        command = full_command[1:3] + color
+    def broadcast_received(self, broadcast):
+        if broadcast.destination is not None and broadcast.destination.startswith("Light:") and broadcast.prop == "Mode":
+            strip = broadcast.destination[-1]
+        
+            mode = broadcast.value[0]
+            if mode not in "CRT":
+                logger.debug("Unknown mode: %s", mode)
+                return
 
-        logger.debug("Sending command %s to %s", binascii.hexlify(command), self.name)
-        full_command = "!" + chr(len(command) + 3) + command
-        checksum = 0
-        for c in full_command:
-            checksum += ord(c)
-        checksum = (checksum & 0xFF) ^ 0xFF
-        full_command += chr(checksum)
-        self.write(full_command)
+            color = binascii.unhexlify(broadcast.value[1:])
+            command = mode + strip + color
+
+            logger.debug("Sending command %s to %s", binascii.hexlify(command), self.name)
+            full_command = "!" + chr(len(command) + 3) + command
+            checksum = 0
+            for c in full_command:
+                checksum += ord(c)
+            checksum = (checksum & 0xFF) ^ 0xFF
+            full_command += chr(checksum)
+            self.write(full_command)
 
 
     def read(self, timeout_sec=None):
@@ -274,16 +314,29 @@ class ControllerThread(DeviceThread):
 
     def received_data(self, cHandle, data):
         if cHandle == self.command_characteristic.getHandle():
-            self.received_commands.put(data)
+            destination = data[0]
+            if destination == "L":
+                strip = data[1]
+                value = data[2:]
+                self.add_broadcast("Light:%s" % strip, "Mode", value)
+            elif destination == "P":
+                self.add_broadcast("Locks", "State", data[1])
+            elif destination == "T":
+                self.add_broadcast("Thermostat", "Target", data[2:])
+            else:
+                logger.info("Unknown destination: %s" % data)
 
 
-    def update_connected_devices(self, devices):
-        self.add_command(lambda: self.devices_characteristic.write("CD" + devices))
+    def broadcast_received(self, broadcast):
+        if broadcast.destination == None and broadcast.prop == "Devices":
+            self.add_command(lambda: self.devices_characteristic.write("CD" + broadcast.value))
+        elif broadcast.destination == None and broadcast.prop == "Temperature":
+            self.add_command(lambda: self.devices_characteristic.write("CT%.0f" % (broadcast.value * 10)))
+        elif broadcast.destination == None and broadcast.prop == "Humidity":
+            self.add_command(lambda: self.devices_characteristic.write("CH%.0f" % (broadcast.value * 10)))
+        elif broadcast.destination == None and broadcast.prop == "ThermostatState":
+            self.add_command(lambda: self.devices_characteristic.write("Ct" + broadcast.value))
 
-
-    def execute_command(self, full_command):
-        self.add_command(lambda: self.devices_characteristic.write(full_command))
-        
         
 class ThermostatManager(DeviceManager):
 
@@ -317,80 +370,58 @@ class ThermostatThread(DeviceThread):
 
     def received_data(self, cHandle, data):
         if cHandle == self.temperature_characteristic.getHandle():
-            self.temperature = float(struct.unpack('<h', data)[0])
-            self.received_commands.put("CT%d" % self.temperature)
+            self.temperature = float(struct.unpack('<h', data)[0]) / 10
+            self.add_broadcast(None, "Temperature", self.temperature)
         elif cHandle == self.humidity_characteristic.getHandle():
-            self.humidity = float(struct.unpack('<h', data)[0])
-            self.received_commands.put("CH%d" % self.humidity)
+            self.humidity = float(struct.unpack('<h', data)[0]) / 10
+            self.add_broadcast(None, "Humidity", self.humidity)
         elif cHandle == self.onoff_characteristic.getHandle():
             self.onoff = struct.unpack('B', data)[0]
-            self.received_commands.put("Ct%01d%d" % (self.onoff, self.target))
+            self.add_broadcast(None, "ThermostatState", "%01d%d" % (self.onoff, self.target))
         elif cHandle == self.target_characteristic.getHandle():
             self.target = float(struct.unpack('<h', data)[0])
-            self.received_commands.put("Ct%01d%.0f" % (self.onoff, self.target))
+            self.add_broadcast(None, "ThermostatState", "%01d%d" % (self.onoff, self.target))
         else:
             logger.debug("Unknown handle %d", cHandle)
 
 
-    def execute_command(self, full_command):
-        command = full_command[1]
-        if command not in "T":
-            logger.debug("Unknown command: %s", command)
-            return
-
-        onoff = int(full_command[2])
-        temp = int(full_command[3:], 16)
-        logger.debug("Setting temp to %d, onoff to %d", temp, onoff)
-        self.add_command(lambda: self.target_characteristic.write(struct.pack('<h', temp)))
-        self.add_command(lambda: self.onoff_characteristic.write('\x01' if onoff else '\x00'))
+    def broadcast_received(self, broadcast):
+        if broadcast.destination == "Thermostat" and broadcast.prop == "Target":
+            onoff = int(broadcast.value[0])
+            temp = int(broadcast.value[1:], 16)
+            logger.debug("Setting temp to %d, onoff to %d", temp, onoff)
+            self.add_command(lambda: self.target_characteristic.write(struct.pack('<h', temp)))
+            self.add_command(lambda: self.onoff_characteristic.write('\x01' if onoff else '\x00'))
 
 
-class PIManager(object):
+class PIManager(SenderReceiver):
     def __init__(self):
+        SenderReceiver.__init__(self)
         subprocess.call("gpio write 0 0", shell=True)
         subprocess.call("gpio write 7 0", shell=True)
         subprocess.call("gpio mode 0 out", shell=True)
         subprocess.call("gpio mode 7 out", shell=True)
-        self.addr = 'localhost'
-        self.threads_by_addr = {self.addr: self}
-        self.received_commands = queue.Queue()
 
 
-    def set_coordinator(self, coordinator, identifier):
-        self.coordinator = coordinator
-        self.coordinator_identifier = identifier
-        self.coordinator.device_connected(self, self.coordinator_identifier)
-
-        
-    def execute_command(self, full_command):
-        logger.debug("Pi received command %s", full_command)
-        command = full_command[1]
-        if command not in "LU":
-            logger.debug("Unknown command: %s", command)
-            return
+    def broadcast_received(self, broadcast):
+        if broadcast.destination == "Locks" and broadcast.prop == "State":
+            logger.debug("Pi received command %s", broadcast.value)
             
-        port = 7 if command == "L" else 0
-        subprocess.call("gpio mode %d out" % port, shell=True)
-        subprocess.call("gpio write %d 1" % port, shell=True)
-        time.sleep(0.3)
-        subprocess.call("gpio write %d 0" % port, shell=True)
-        time.sleep(0.2)
-        subprocess.call("gpio write %d 1" % port, shell=True)
-        time.sleep(0.3)
-        subprocess.call("gpio write %d 0" % port, shell=True)
+            port = 7 if broadcast.value == "L" else 0
+            subprocess.call("gpio mode %d out" % port, shell=True)
+            subprocess.call("gpio write %d 1" % port, shell=True)
+            time.sleep(0.3)
+            subprocess.call("gpio write %d 0" % port, shell=True)
+            time.sleep(0.2)
+            subprocess.call("gpio write %d 1" % port, shell=True)
+            time.sleep(0.3)
+            subprocess.call("gpio write %d 0" % port, shell=True)
 
 
-    def found_devices(self, devices):
-        pass
-
-
-class SocketManager(object):
+class SocketManager(SenderReceiver):
     def __init__(self):
+        SenderReceiver.__init__(self)
         server_address = '/tmp/vantomation.socket'
-
-        self.addr = 'localsocket'
-        self.threads_by_addr = {self.addr: self}
-        self.received_commands = queue.Queue()
 
         # Make sure the socket does not already exist
         try:
@@ -408,16 +439,6 @@ class SocketManager(object):
         self.thread = threading.Thread(target=self.run)
         self.thread.daemon = True                            # Daemonize thread
         self.thread.start()                                  # Start the execution
-
-
-    def set_coordinator(self, coordinator, identifier):
-        self.coordinator = coordinator
-        self.coordinator_identifier = identifier
-        self.coordinator.device_connected(self, self.coordinator_identifier)
-
-
-    def execute_command(self, full_command):
-        logger.debug("Socket received command %s. Ignoring", full_command)
 
 
     def run(self):
@@ -438,98 +459,96 @@ class SocketManager(object):
                     lines = past_data.split("\n")
                     past_data = lines[-1]
                     for command in lines[0:-1]:
-                        self.received_commands.put("C"+command)
-            
+                        if command[0] == "L":
+                            components = command[1:].split(',')
+                            self.add_broadcast(None, "Location", (float(components[0]) / 10000, float(components[1]) / 10000))
+                        elif command[0] == "A":
+                            components = command[1:].split(',')
+                            self.add_broadcast(None, "Altitude", int(components[0]))
+                            self.add_broadcast(None, "Speed", int(components[1]))
+                            self.add_broadcast(None, "Heading", int(components[2]))
+                            
             finally:
                 # Clean up the connection
                 connection.close()
 
 
-    def found_devices(self, devices):
-        pass
+class DisplayManager(SenderReceiver):
+    def __init__(self):
+        SenderReceiver.__init__(self)
+        self.current_state = {}
 
 
-class Coordinator(object):
+    def broadcast_received(self, broadcast):
+        if broadcast.destination is None:
+            self.current_state = self.coordinator.current_state
 
-    def __init__(self, controller_manager, device_managers):
+
+    def set_coordinator(self, coordinator):
+        self.coordinator = coordinator
+        self.current_state = self.coordinator.current_state
+
+
+
+class Coordinator(SenderReceiver):
+
+    def __init__(self, device_managers):
+        SenderReceiver.__init__(self)
         self.connected_devices = set()
 
         self.devices = {
-            'C': 'Controllers',
-            'P': 'localhost',
-            'S': 'localsocket',
             'L': 'fd:6e:55:f0:de:06',
             'T': 'eb:cc:ee:35:55:c0'
         }
         
         self.devices_by_addr = {v: k for (k, v) in self.devices.iteritems()}
         
-        self.controller_manager = controller_manager
+        self.current_state = {}
+        
         self.device_managers = device_managers
         for manager in device_managers:
-            manager.set_coordinator(self, "D")
+            manager.set_coordinator(self)
 
-        controller_manager.set_coordinator(self, "C")
-        
         self.thread = threading.Thread(target=self.run)
         self.thread.daemon = True                            # Daemonize thread
         self.thread.start()                                  # Start the execution
         
 
-    def device_connected(self, thread, coordinator_identifier):
-        if coordinator_identifier == "D":
-            self.connected_devices.add(thread.addr)
-
+    def device_connected(self, thread):
+        self.connected_devices.add(thread.addr)
         self.update_connected_devices()
 
 
-    def device_disconnected(self, thread, coordinator_identifier):
-        if coordinator_identifier == "D":
-            self.connected_devices.remove(thread.addr)
-            self.update_connected_devices()
+    def device_disconnected(self, thread):
+        self.connected_devices.remove(thread.addr)
+        self.update_connected_devices()
 
 
     def update_connected_devices(self):
         connected = "!" + ("".join(sorted([self.devices_by_addr[addr] for addr in self.connected_devices if addr in self.devices_by_addr])))
-        for controller in self.controller_manager.threads_by_name.values():
-            logger.debug("Updating devices: %s to %s", connected, controller.name)
-            controller.update_connected_devices(connected)
+        self.add_broadcast(None, "Devices", connected)
 
 
     def run(self):
         """ Method that runs forever """
 
         while True:
-            all_devices_by_addr = {}
+            broadcasters = [self]
             for manager in self.device_managers:
-                all_devices_by_addr.update(manager.threads_by_addr)
-
-            device_threads_by_name = self.controller_manager.threads_by_addr.values() + all_devices_by_addr.values()
+                broadcasters += manager.all_broadcasters()
             
-            for device_threads in device_threads_by_name:
+            for broadcaster in broadcasters:
                 while True:
                     try:
-                        full_command = device_threads.received_commands.get(False)
-                        device_threads.received_commands.task_done()
-                    
-                        logger.debug("Got command %s", full_command)
-                        device_id = full_command[0]
-                        if device_id == "C":
-                            for controller in self.controller_manager.threads_by_addr.values():
-                                controller.execute_command(full_command)
-                            continue
+                        broadcast = broadcaster.broadcast_messages.get(False)
+                        broadcaster.broadcast_messages.task_done()
 
-                        device_addr = self.devices.get(device_id)
-                        if device_addr is None:
-                            logger.debug("Device %s unknown", device_id)
-                            continue
-                        device_thread = all_devices_by_addr.get(device_addr)
-                        if device_thread is None:
-                            logger.debug("Device %s (%s) not connected", device_id, device_addr)
-                            logger.debug("connected: %s", all_devices_by_addr)
-                            continue
+                        logger.debug("Got %s", broadcast)
+                        if broadcast.destination is None:
+                            self.current_state[broadcast.prop] = (datetime.datetime.now(), broadcast.value)
 
-                        device_thread.execute_command(full_command)
+                        for receiver in broadcasters:
+                            receiver.broadcast_received(broadcast)
                         
                     except Queue.Empty:
                         # Nothing available, just move on...
@@ -548,13 +567,16 @@ pi_manager = PIManager()
 thermostat_manager = ThermostatManager()
 controller_manager = ControllerManager()
 socket_manager = SocketManager()
+display_manager = DisplayManager()
 managers = [
     uart_manager,
     pi_manager,
     thermostat_manager,
+    controller_manager,
     socket_manager,
+    display_manager,
 ]
-coordinator = Coordinator(controller_manager, managers)
+coordinator = Coordinator(managers)
 
 logger.debug("Starting scan")
 while True:
@@ -562,7 +584,6 @@ while True:
         devices = scanner.scan(1)
         for manager in managers:
             manager.found_devices(devices)
-        controller_manager.found_devices(devices)
     except Exception, e:
         logger.debug("Exception on main loop: %s\n%s", e, traceback.format_exc())
         scanner.clear()
