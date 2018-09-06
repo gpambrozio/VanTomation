@@ -33,6 +33,8 @@ lines = [
 
 title = tk.Label(root, text="Hello NonVanLifers!", font="Helvetica 24")
 title.pack()
+spacer = tk.Label(root, text=" ", font="Helvetica 10")
+spacer.pack()
 
 ui = [tk.Label(root, text=line[0] + ": ?", font="Helvetica 18") for line in lines]
 for element in ui:

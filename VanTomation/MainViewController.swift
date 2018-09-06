@@ -22,13 +22,11 @@ class MainViewController: UIViewController {
     private var thermostatOn = false {
         didSet {
             thermostatSwitch.isOn = thermostatOn
-            sendThermostatCommand()
         }
     }
     private var targetTemperature = 71 {
         didSet {
             targetTemperatureLabel.text = "\(targetTemperature)°F"
-            sendThermostatCommand()
         }
     }
 
@@ -50,8 +48,8 @@ class MainViewController: UIViewController {
                 let humidity = (Double(commandData) ?? 0) / 10.0
                 self.humidityLabel.text = String(format: "%.1f%%", humidity)
             } else if command.starts(with: "Ct") {
-//                self.thermostatSwitch.isOn = commandData[commandData.startIndex] == "0"
-//                self.targetTemperature = (Int(commandData[commandData.index(commandData.startIndex, offsetBy: 1)...]) ?? 0) / 10
+                self.thermostatSwitch.isOn = commandData[commandData.startIndex] == "1"
+                self.targetTemperature = (Int(commandData[commandData.index(commandData.startIndex, offsetBy: 1)...]) ?? 0) / 10
             } else {
                 print("command: \(command)")
             }
@@ -72,14 +70,17 @@ class MainViewController: UIViewController {
 
     @IBAction func targetPlus() {
         targetTemperature += 1
+        sendThermostatCommand()
     }
 
     @IBAction func targetMinus() {
         targetTemperature -= 1
+        sendThermostatCommand()
     }
 
     @IBAction func thermostatSwitchChanged() {
         thermostatOn = thermostatSwitch.isOn
+        sendThermostatCommand()
     }
 
     private func sendThermostatCommand() {

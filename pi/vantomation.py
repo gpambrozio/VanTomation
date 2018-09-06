@@ -76,9 +76,12 @@ class DeviceManager(object):
                     self.threads_by_name[name] = t
                     if self.coordinator is not None:
                         self.coordinator.device_connected(t)
+                        state = self.coordinator.current_state
+                        for s in state.values():
+                            t.broadcast_received(s[1])
+
                 except Exception, e:
                     logger.debug("Exception connecting to %s: %s", dev.addr, e)
-                    # logger.debug(traceback.format_exc())
 
 
 class NotificationDelegate(DefaultDelegate):
@@ -96,8 +99,8 @@ class BroadcastMessage(object):
         self.destination = destination
         self.prop = prop
         self.value = value
-        
-        
+
+
     def __str__(self):
         return "Broadcast to %s, %s = %s" % (self.destination, self.prop, self.value)
 
@@ -106,7 +109,7 @@ class BroadcastMessage(object):
 class SenderReceiver(object):
     def __init__(self):
         self.broadcast_messages = queue.Queue()
-        
+
 
     def found_devices(self, devices):
         pass
