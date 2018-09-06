@@ -15,7 +15,7 @@ import struct
 import socket
 import sys
 import os
-import datetime
+import json
 
 
 FORMAT = '%(asctime)-15s %(message)s'
@@ -473,7 +473,7 @@ class SocketManager(SenderReceiver):
                 connection.close()
 
 
-class DisplayManager(SenderReceiver):
+class StateManager(SenderReceiver):
     def __init__(self):
         SenderReceiver.__init__(self)
         self.current_state = {}
@@ -482,11 +482,20 @@ class DisplayManager(SenderReceiver):
     def broadcast_received(self, broadcast):
         if broadcast.destination is None:
             self.current_state = self.coordinator.current_state
+            self.dump_state()
 
 
     def set_coordinator(self, coordinator):
         self.coordinator = coordinator
         self.current_state = self.coordinator.current_state
+        self.dump_state()
+        
+        
+    def dump_state(self):
+        state = {k: {'ts': v[0], 'value': v[1].value } for (k, v) in self.current_state.iteritems()}
+        state_file = open("/tmp/vantomation.state.json", "w+")
+        state_file.write(json.dumps(state))
+        state_file.close()
 
 
 
@@ -545,7 +554,7 @@ class Coordinator(SenderReceiver):
 
                         logger.debug("Got %s", broadcast)
                         if broadcast.destination is None:
-                            self.current_state[broadcast.prop] = (datetime.datetime.now(), broadcast.value)
+                            self.current_state[broadcast.prop] = (time.time(), broadcast)
 
                         for receiver in broadcasters:
                             receiver.broadcast_received(broadcast)
@@ -562,19 +571,13 @@ class Coordinator(SenderReceiver):
 
 subprocess.call("hciconfig hci0 up", shell=True)
 scanner = Scanner()
-uart_manager = UARTManager()
-pi_manager = PIManager()
-thermostat_manager = ThermostatManager()
-controller_manager = ControllerManager()
-socket_manager = SocketManager()
-display_manager = DisplayManager()
 managers = [
-    uart_manager,
-    pi_manager,
-    thermostat_manager,
-    controller_manager,
-    socket_manager,
-    display_manager,
+    UARTManager(),
+    PIManager(),
+    ThermostatManager(),
+    ControllerManager(),
+    SocketManager(),
+    StateManager(),
 ]
 coordinator = Coordinator(managers)
 
