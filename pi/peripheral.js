@@ -106,10 +106,20 @@ bleno.on('servicesSetError', (err) => {
   console.log(err);
 });
 
+var interval = null;
+
 bleno.on('accept', function(clientAddress) {
   console.log("Accepted connection from: " + clientAddress);
+  interval = setInterval(function() {
+    bleno.updateRssi();
+  }, 5000);
 });
 
 bleno.on('disconnect', function(clientAddress) {
+  clearInterval(interval);
   console.log("Disconnected from: " + clientAddress);
+});
+
+bleno.on('rssiUpdate', function(rssi) {
+    console.log("RSSI: " + rssi);
 });
