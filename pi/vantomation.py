@@ -573,6 +573,7 @@ class Coordinator(SenderReceiver):
 
 
 subprocess.call("hciconfig hci0 up", shell=True)
+subprocess.call("hciconfig hci1 up", shell=True)
 scanner = Scanner()
 managers = [
     UARTManager(),
