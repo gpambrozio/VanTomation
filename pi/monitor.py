@@ -1,14 +1,46 @@
 #!/usr/bin/python
 
-import tkinter as tk
+import Tkinter as tk
 import json
+
+from PIL import ImageTk
+from PIL import Image
 
 # if you are still working under a Python 2 version, 
 # comment out the previous line and uncomment the following line
-# import Tkinter as tk
 
-state_file = open("/tmp/vantomation.state.json", "r")
+root = tk.Tk()
+root.title("Hello NonVanLifers!")
 
+canvas = tk.Canvas(root, width=100, height=100)
+
+compass = Image.open("./compass.png").resize((100, 100), Image.ANTIALIAS)
+compass_image = ImageTk.PhotoImage(compass)
+compass_object = canvas.create_image(50, 50, image=compass_image)
+
+compass_arrow = Image.open("./compass-arrow.png").resize((150, 150), Image.ANTIALIAS)
+compass_arrow_image = ImageTk.PhotoImage(compass_arrow)
+compass_arrow_object = canvas.create_image(50, 50, image=compass_arrow_image)
+
+lines = {
+    "Temperature": [34, lambda x: "%.1f F" % x],
+    "Humidity": [34, lambda x: "%.1f%%" % x],
+    "Speed": [60, lambda x: "%d mph" % x],
+    "Heading": [34, lambda x: "%d" % x],
+    "Altitude": [34, lambda x: "%d ft\n%d m" % (x * 3.281, x)],
+}
+
+ui = {k: tk.Label(root, text=v[1](0), font="Helvetica %d" % v[0]) for (k, v) in lines.iteritems()}
+
+ui["Temperature"].grid(row=0, column=0, sticky=tk.W, padx=5)
+
+ui["Humidity"].grid(row=1, column=0, sticky=tk.W, padx=5)
+
+ui["Speed"].grid(row=0, column=1, rowspan=2, padx=15, pady=5)
+canvas.grid(row=0, column=2, rowspan=2, padx=5, pady=5)
+ui["Altitude"].grid(row=0, column=3, rowspan=2, padx=5, pady=5)
+
+state_file = None
 state = {}
 def read_state():
     global state
@@ -19,35 +51,23 @@ def read_state():
         print("Error: %s" % e)
         pass
 
-root = tk.Tk()
-root.title("VanTomation")
-
-lines = [
-    ["Temperature", "%.1f F", 1.0],
-    ["Humidity", "%.1f %%", 1.0],
-    ["Speed", "%d mph", 1],
-    ["Heading", "%d", 1],
-    ["Altitude", "%d ft", 3.281],
-    ["Altitude", "%d m", 1.0],
-]
-
-title = tk.Label(root, text="Hello NonVanLifers!", font="Helvetica 30")
-title.grid(row=0, columnspan=2)
-spacer = tk.Label(root, text=" ", font="Helvetica 10")
-spacer.grid(row=1, columnspan=2)
-
-ui = [tk.Label(root, text="", font="Helvetica 24") for line in lines]
-for (n, line) in enumerate(lines):
-    title = tk.Label(root, text=line[0], font="Helvetica 24")
-    title.grid(row=n+2, column=0, sticky=tk.W)
-    ui[n].grid(row=n+2, column=1, sticky=tk.W)
-
 def reload():
+    global compass_arrow_image, compass_arrow_object
     read_state()
-    for (n, line) in enumerate(lines):
-        if line[0] in state:
-            ui[n].config(text=line[1] % (line[2] * state[line[0]]["value"]))
+    for (k, v) in lines.iteritems():
+        if k in state:
+            ui[k].config(text=v[1](state[k]["value"]))
+    if "Heading" in state:
+        heading = state["Heading"]["value"]
+        canvas.delete(compass_arrow_object)
+        compass_arrow_image = ImageTk.PhotoImage(compass_arrow.rotate(-heading))
+        compass_arrow_object = canvas.create_image(50, 50, image=compass_arrow_image)
     root.after(1000, reload)
 
-reload()
+try:
+    state_file = open("/tmp/vantomation.state.json", "r")
+    reload()
+except:
+    pass
+
 root.mainloop()
