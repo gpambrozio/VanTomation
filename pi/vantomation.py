@@ -593,4 +593,6 @@ while True:
             manager.found_devices(devices)
     except Exception, e:
         logger.debug("Exception on main loop: %s\n%s", e, traceback.format_exc())
-        scanner.clear()
+        subprocess.call("hciconfig hci0 up", shell=True)
+        subprocess.call("hciconfig hci1 up", shell=True)
+        scanner = Scanner()
