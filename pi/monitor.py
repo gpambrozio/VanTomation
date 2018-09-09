@@ -25,20 +25,20 @@ compass_arrow_object = canvas.create_image(50, 50, image=compass_arrow_image)
 lines = {
     "Temperature": [34, lambda x: "%.1f F" % x],
     "Humidity": [34, lambda x: "%.1f%%" % x],
-    "Speed": [60, lambda x: "%d mph" % x],
-    "Heading": [34, lambda x: "%d" % x],
+    "Speed": [60, lambda x: "%d" % x],
     "Altitude": [34, lambda x: "%d ft\n%d m" % (x * 3.281, x)],
 }
 
 ui = {k: tk.Label(root, text=v[1](0), font="Helvetica %d" % v[0]) for (k, v) in lines.iteritems()}
 
-ui["Temperature"].grid(row=0, column=0, sticky=tk.W, padx=5)
+ui["Temperature"].grid(row=0, column=0, sticky=tk.W, padx=20)
 
-ui["Humidity"].grid(row=1, column=0, sticky=tk.W, padx=5)
+ui["Humidity"].grid(row=1, column=0, sticky=tk.W, padx=20)
 
-ui["Speed"].grid(row=0, column=1, rowspan=2, padx=15, pady=5)
-canvas.grid(row=0, column=2, rowspan=2, padx=5, pady=5)
-ui["Altitude"].grid(row=0, column=3, rowspan=2, padx=5, pady=5)
+ui["Speed"].grid(row=0, column=1, rowspan=2, padx=2, pady=5)
+tk.Label(root, text="m\np\nh", font="Helvetica 20").grid(row=0, column=2, rowspan=2, padx=2, pady=5)
+canvas.grid(row=0, column=3, rowspan=2, padx=5, pady=20)
+ui["Altitude"].grid(row=0, column=4, rowspan=2, padx=5, pady=5)
 
 state_file = None
 state = {}
@@ -60,7 +60,7 @@ def reload():
     if "Heading" in state:
         heading = state["Heading"]["value"]
         canvas.delete(compass_arrow_object)
-        compass_arrow_image = ImageTk.PhotoImage(compass_arrow.rotate(-heading))
+        compass_arrow_image = ImageTk.PhotoImage(compass_arrow.rotate(heading))
         compass_arrow_object = canvas.create_image(50, 50, image=compass_arrow_image)
     root.after(1000, reload)
 
