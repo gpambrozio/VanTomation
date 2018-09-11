@@ -16,6 +16,7 @@ import socket
 import sys
 import os
 import json
+import datetime
 
 
 FORMAT = '%(asctime)-15s %(message)s'
@@ -95,19 +96,22 @@ class NotificationDelegate(DefaultDelegate):
 
 
 class BroadcastMessage(object):
-    def __init__(self, destination, prop, value):
+    def __init__(self, source, destination, prop, value):
+        self.source = source
         self.destination = destination
         self.prop = prop
         self.value = value
+        self.key = "%s:%s" % (prop, source)
 
 
     def __str__(self):
-        return "Broadcast to %s, %s = %s" % (self.destination, self.prop, self.value)
+        return "Broadcast from %s to %s, %s = %s" % (self.source, self.destination, self.prop, self.value)
 
         
 
 class SenderReceiver(object):
-    def __init__(self):
+    def __init__(self, name):
+        self.name = name
         self.broadcast_messages = queue.Queue()
 
 
@@ -120,7 +124,7 @@ class SenderReceiver(object):
 
 
     def add_broadcast(self, destination, prop, value):
-        self.broadcast_messages.put(BroadcastMessage(destination, prop, value))
+        self.broadcast_messages.put(BroadcastMessage(self.name, destination, prop, value))
 
 
     def all_broadcasters(self):
@@ -136,7 +140,7 @@ class DeviceThread(SenderReceiver):
     def __init__(self, manager, dev, name, service_and_char_uuids):
         """ Constructor
         """
-        SenderReceiver.__init__(self)
+        SenderReceiver.__init__(self, name)
 
         self.manager = manager
         self.dev = dev
@@ -225,6 +229,47 @@ class DeviceThread(SenderReceiver):
         
     def add_command(self, command):
         self.commands.put(command)
+
+
+class BeanManager(DeviceManager):
+
+    def __init__(self):
+        SERVICE_UUID = 'a495ff10-c5b1-4b44-b512-1370f02d74de'
+        TX_CHAR_UUID = 'a495ff11-c5b1-4b44-b512-1370f02d74de'
+
+        DeviceManager.__init__(self, [[SERVICE_UUID, TX_CHAR_UUID]], BeanThread)
+        
+
+class BeanThread(DeviceThread):
+
+    def before_thread(self):
+        self.received_uart_data = queue.Queue()
+        service_uuid = self.service_and_char_uuids[0][0]
+        self.tx_characteristic = self.characteristics[service_uuid][0]
+        self.start_notifications(self.tx_characteristic)
+        self.next_temp_read = datetime.datetime.now()
+
+
+    def no_data_received(self):
+        if datetime.datetime.now() > self.next_temp_read:
+            self.next_temp_read = datetime.datetime.now() + datetime.timedelta(seconds=30)
+            self.add_command(lambda: self.tx_characteristic.write(binascii.unhexlify("a0020020115e6d")))
+
+
+    def received_data(self, cHandle, data):
+        data_type = ord(data[4])
+        if data_type == 0x91:
+            temperature = 32.0 + float(ord(data[5])) * 9.0 / 5.0
+            self.add_command(lambda: self.tx_characteristic.write(binascii.unhexlify("a0020020107f7d")))
+            self.add_broadcast(None, "Temperature", temperature)
+        elif data_type == 0x90:
+            x = struct.unpack('<h', data[5:7])[0]
+            y = struct.unpack('<h', data[7:9])[0]
+            z = struct.unpack('<h', data[9:11])[0]
+            self.add_broadcast(None, "Accelerometer", (x, y, z))
+        else:
+            logger.error("Unkown type: %d (%s)" % (data_type, binascii.hexlify(data)))
+            
 
 
 class UARTManager(DeviceManager):
@@ -333,14 +378,14 @@ class ControllerThread(DeviceThread):
     def broadcast_received(self, broadcast):
         if broadcast.destination == None and broadcast.prop == "Devices":
             self.add_command(lambda: self.devices_characteristic.write("CD" + broadcast.value))
-        elif broadcast.destination == None and broadcast.prop == "Temperature":
+        elif broadcast.destination == None and broadcast.prop == "Temperature" and broadcast.source == "Thermostat":
             self.add_command(lambda: self.devices_characteristic.write("CT%.0f" % (broadcast.value * 10)))
-        elif broadcast.destination == None and broadcast.prop == "Humidity":
+        elif broadcast.destination == None and broadcast.prop == "Humidity" and broadcast.source == "Thermostat":
             self.add_command(lambda: self.devices_characteristic.write("CH%.0f" % (broadcast.value * 10)))
         elif broadcast.destination == None and broadcast.prop == "ThermostatState":
             self.add_command(lambda: self.devices_characteristic.write("Ct" + broadcast.value))
 
-        
+
 class ThermostatManager(DeviceManager):
 
     def __init__(self):
@@ -399,7 +444,7 @@ class ThermostatThread(DeviceThread):
 
 class PIManager(SenderReceiver):
     def __init__(self):
-        SenderReceiver.__init__(self)
+        SenderReceiver.__init__(self, "Pi")
         subprocess.call("gpio write 0 0", shell=True)
         subprocess.call("gpio write 7 0", shell=True)
         subprocess.call("gpio mode 0 out", shell=True)
@@ -423,7 +468,7 @@ class PIManager(SenderReceiver):
 
 class SocketManager(SenderReceiver):
     def __init__(self):
-        SenderReceiver.__init__(self)
+        SenderReceiver.__init__(self, "Socket")
         server_address = '/tmp/vantomation.socket'
 
         # Make sure the socket does not already exist
@@ -478,7 +523,7 @@ class SocketManager(SenderReceiver):
 
 class StateManager(SenderReceiver):
     def __init__(self):
-        SenderReceiver.__init__(self)
+        SenderReceiver.__init__(self, "StateManager")
         self.current_state = {}
 
 
@@ -492,25 +537,28 @@ class StateManager(SenderReceiver):
         self.coordinator = coordinator
         self.current_state = self.coordinator.current_state
         self.dump_state()
-        
-        
+
+
     def dump_state(self):
         state = {k: {'ts': v[0], 'value': v[1].value } for (k, v) in self.current_state.iteritems()}
-        state_file = open("/tmp/vantomation.state.json", "w+")
+        state_file = open("/tmp/vantomation.state.json.temp", "w+")
         state_file.write(json.dumps(state))
         state_file.close()
+        os.rename("/tmp/vantomation.state.json.temp", "/tmp/vantomation.state.json")
 
 
 
 class Coordinator(SenderReceiver):
 
     def __init__(self, device_managers):
-        SenderReceiver.__init__(self)
+        SenderReceiver.__init__(self, "Coordinator")
         self.connected_devices = set()
 
         self.devices = {
             'L': 'fd:6e:55:f0:de:06',
-            'T': 'eb:cc:ee:35:55:c0'
+            'T': 'eb:cc:ee:35:55:c0',
+            'O': '98:7b:f3:59:1e:d4',
+            'I': '98:7b:f3:5a:d2:3f',
         }
         
         self.devices_by_addr = {v: k for (k, v) in self.devices.iteritems()}
@@ -557,7 +605,7 @@ class Coordinator(SenderReceiver):
 
                         logger.debug("Got %s", broadcast)
                         if broadcast.destination is None:
-                            self.current_state[broadcast.prop] = (time.time(), broadcast)
+                            self.current_state[broadcast.key] = (time.time(), broadcast)
 
                         for receiver in broadcasters:
                             receiver.broadcast_received(broadcast)
@@ -579,6 +627,7 @@ managers = [
     UARTManager(),
     PIManager(),
     ThermostatManager(),
+    BeanManager(),
     ControllerManager(),
     SocketManager(),
     StateManager(),
@@ -588,7 +637,7 @@ coordinator = Coordinator(managers)
 logger.debug("Starting scan")
 while True:
     try:
-        devices = scanner.scan(1)
+        devices = scanner.scan(2)
         for manager in managers:
             manager.found_devices(devices)
     except Exception, e:

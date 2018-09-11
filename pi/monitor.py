@@ -2,6 +2,7 @@
 
 import Tkinter as tk
 import json
+import datetime
 
 from PIL import ImageTk
 from PIL import Image
@@ -23,22 +24,28 @@ compass_arrow_image = ImageTk.PhotoImage(compass_arrow)
 compass_arrow_object = canvas.create_image(50, 50, image=compass_arrow_image)
 
 lines = {
-    "Temperature": [34, lambda x: "%.1f F" % x],
-    "Humidity": [34, lambda x: "%.1f%%" % x],
-    "Speed": [60, lambda x: "%d" % x],
-    "Altitude": [34, lambda x: "%d ft\n%d m" % (x * 3.281, x)],
+    "Temperature:Thermostat": [34, lambda x: u"b %.1f \N{DEGREE SIGN}F" % x],
+    "Temperature:AgnesInside": [34, lambda x: u"f %.1f \N{DEGREE SIGN}F" % x],
+    "Temperature:AgnesOutside": [34, lambda x: u"o %.1f \N{DEGREE SIGN}F" % x],
+    "Humidity:Thermostat": [34, lambda x: "%.1f%%" % x],
+    "Speed:Socket": [60, lambda x: "%d" % x],
+    "Altitude:Socket": [34, lambda x: "%d ft\n%d m" % (x * 3.281, x)],
 }
 
 ui = {k: tk.Label(root, text=v[1](0), font="Helvetica %d" % v[0]) for (k, v) in lines.iteritems()}
 
-ui["Temperature"].grid(row=0, column=0, sticky=tk.W, padx=20)
+ui["Speed:Socket"].grid(row=0, column=0, padx=2, pady=5, columnspan=2, sticky=tk.E)
+tk.Label(root, text="m\np\nh", font="Helvetica 20").grid(row=0, column=2, padx=2, pady=5, columnspan=1, sticky=tk.W)
+canvas.grid(row=0, column=3, padx=5, pady=20, columnspan=3)
 
-ui["Humidity"].grid(row=1, column=0, sticky=tk.W, padx=20)
+time_label = tk.Label(root, text="00:00 PM", font="Helvetica 50")
+time_label.grid(row=1, column=0, columnspan=6)
 
-ui["Speed"].grid(row=0, column=1, rowspan=2, padx=2, pady=5)
-tk.Label(root, text="m\np\nh", font="Helvetica 20").grid(row=0, column=2, rowspan=2, padx=2, pady=5)
-canvas.grid(row=0, column=3, rowspan=2, padx=5, pady=20)
-ui["Altitude"].grid(row=0, column=4, rowspan=2, padx=5, pady=5)
+ui["Temperature:Thermostat"].grid(row=2, column=0, sticky=tk.E, padx=20, columnspan=3)
+ui["Temperature:AgnesInside"].grid(row=3, column=0, sticky=tk.E, padx=20, columnspan=3)
+ui["Temperature:AgnesOutside"].grid(row=4, column=0, sticky=tk.E, padx=20, columnspan=3)
+ui["Humidity:Thermostat"].grid(row=2, column=3, sticky=tk.W, padx=20, columnspan=3)
+ui["Altitude:Socket"].grid(row=3, column=3, rowspan=2, padx=5, columnspan=3)
 
 state_file = None
 state = {}
@@ -53,12 +60,13 @@ def read_state():
 
 def reload():
     global compass_arrow_image, compass_arrow_object
+    time_label.config(text=datetime.datetime.now().strftime("%I:%M %p"))
     read_state()
     for (k, v) in lines.iteritems():
         if k in state:
             ui[k].config(text=v[1](state[k]["value"]))
-    if "Heading" in state:
-        heading = state["Heading"]["value"]
+    if "Heading:Socket" in state:
+        heading = state["Heading:Socket"]["value"]
         canvas.delete(compass_arrow_object)
         compass_arrow_image = ImageTk.PhotoImage(compass_arrow.rotate(heading))
         compass_arrow_object = canvas.create_image(50, 50, image=compass_arrow_image)
@@ -67,7 +75,8 @@ def reload():
 try:
     state_file = open("/tmp/vantomation.state.json", "r")
     reload()
-except:
+except Exception as e:
+    print("Exception: %s" % e)
     pass
 
 root.mainloop()
