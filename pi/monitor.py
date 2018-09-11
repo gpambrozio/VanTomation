@@ -47,13 +47,13 @@ ui["Temperature:AgnesOutside"].grid(row=4, column=0, sticky=tk.E, padx=20, colum
 ui["Humidity:Thermostat"].grid(row=2, column=3, sticky=tk.W, padx=20, columnspan=3)
 ui["Altitude:Socket"].grid(row=3, column=3, rowspan=2, padx=5, columnspan=3)
 
-state_file = None
 state = {}
 def read_state():
     global state
     try:
-        state_file.seek(0)
+        state_file = open("/tmp/vantomation.state.json", "r")
         state = json.load(state_file)
+        state_file.close()
     except Exception as e:
         print("Error: %s" % e)
         pass
@@ -73,7 +73,6 @@ def reload():
     root.after(1000, reload)
 
 try:
-    state_file = open("/tmp/vantomation.state.json", "r")
     reload()
 except Exception as e:
     print("Exception: %s" % e)
