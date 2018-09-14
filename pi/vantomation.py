@@ -304,7 +304,7 @@ class UARTThread(DeviceThread):
         self.add_command(lambda: self.tx_characteristic.write(data))
 
 
-    def send_command(seld, command):
+    def send_command(self, command):
         logger.debug("Sending command %s to %s", binascii.hexlify(command), self.name)
         full_command = "!" + chr(len(command) + 3) + command
         checksum = 0
