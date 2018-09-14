@@ -77,9 +77,9 @@ class DeviceManager(object):
                     self.threads_by_name[name] = t
                     if self.coordinator is not None:
                         self.coordinator.device_connected(t)
-                        state = self.coordinator.current_state
-                        for s in state.values():
-                            t.broadcast_received(s[1])
+                        # Send all currently known states
+                        for s in self.coordinator.current_state.values():
+                            t.broadcast_received(s)
 
                 except Exception, e:
                     logger.debug("Exception connecting to %s: %s", dev.addr, e)
@@ -102,6 +102,7 @@ class BroadcastMessage(object):
         self.prop = prop
         self.value = value
         self.key = "%s:%s" % (prop, source)
+        self.ts = time.time()
 
 
     def __str__(self):
@@ -169,7 +170,7 @@ class DeviceThread(SenderReceiver):
         self.thread = threading.Thread(target=self.run)
         self.thread.daemon = True                            # Daemonize thread
         self.thread.start()                                  # Start the execution
-    
+
         
     def run(self):
         """ Method that runs forever """
@@ -549,7 +550,7 @@ class StateManager(SenderReceiver):
 
 
     def dump_state(self):
-        state = {k: {'ts': v[0], 'value': v[1].value } for (k, v) in self.current_state.iteritems()}
+        state = {k: {'ts': v.ts, 'value': v.value} for (k, v) in self.current_state.iteritems()}
         state_file = open("/tmp/vantomation.state.json.temp", "w+")
         state_file.write(json.dumps(state))
         state_file.close()
@@ -614,7 +615,7 @@ class Coordinator(SenderReceiver):
 
                         logger.debug("Got %s", broadcast)
                         if broadcast.destination is None:
-                            self.current_state[broadcast.key] = (time.time(), broadcast)
+                            self.current_state[broadcast.key] = broadcast
 
                         for receiver in broadcasters:
                             receiver.broadcast_received(broadcast)
