@@ -3,6 +3,7 @@
 import Tkinter as tk
 import json
 import datetime
+import time
 
 from PIL import ImageTk
 from PIL import Image
@@ -24,12 +25,12 @@ compass_arrow_image = ImageTk.PhotoImage(compass_arrow)
 compass_arrow_object = canvas.create_image(50, 50, image=compass_arrow_image)
 
 lines = {
-    "Temperature:Thermostat": [34, lambda x: u"b %.1f \N{DEGREE SIGN}F" % x],
-    "Temperature:AgnesInside": [34, lambda x: u"f %.1f \N{DEGREE SIGN}F" % x],
-    "Temperature:AgnesOutside": [34, lambda x: u"o %.1f \N{DEGREE SIGN}F" % x],
-    "Humidity:Thermostat": [34, lambda x: "%.1f%%" % x],
-    "Speed:Socket": [60, lambda x: "%d" % x],
-    "Altitude:Socket": [34, lambda x: "%d ft\n%d m" % (x * 3.281, x)],
+    "Temperature:Thermostat": [34, lambda x: "b ?" if x is None else u"b %.1f \N{DEGREE SIGN}F" % x],
+    "Temperature:AgnesInside": [34, lambda x: "f ?" if x is None else u"f %.1f \N{DEGREE SIGN}F" % x],
+    "Temperature:AgnesOutside": [34, lambda x: "o ?" if x is None else u"o %.1f \N{DEGREE SIGN}F" % x],
+    "Humidity:Thermostat": [34, lambda x: "? %%" if x is None else "%.1f%%" % x],
+    "Speed:Socket": [60, lambda x: "?" if x is None else "%d" % x],
+    "Altitude:Socket": [34, lambda x: "?" if x is None else "%d ft\n%d m" % (x * 3.281, x)],
 }
 
 ui = {k: tk.Label(root, text=v[1](0), font="Helvetica %d" % v[0]) for (k, v) in lines.iteritems()}
@@ -64,7 +65,11 @@ def reload():
     read_state()
     for (k, v) in lines.iteritems():
         if k in state:
-            ui[k].config(text=v[1](state[k]["value"]))
+            ts = state[k]["ts"]
+            if (time.time() - ts > 2*60000):
+                ui[k].config(text=v[1](None))
+            else:
+                ui[k].config(text=v[1](state[k]["value"]))
     if "Heading:Socket" in state:
         heading = state["Heading:Socket"]["value"]
         canvas.delete(compass_arrow_object)
