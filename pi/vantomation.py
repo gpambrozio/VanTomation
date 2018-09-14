@@ -303,6 +303,17 @@ class UARTThread(DeviceThread):
         self.add_command(lambda: self.tx_characteristic.write(data))
 
 
+    def send_command(seld, command):
+        logger.debug("Sending command %s to %s", binascii.hexlify(command), self.name)
+        full_command = "!" + chr(len(command) + 3) + command
+        checksum = 0
+        for c in full_command:
+            checksum += ord(c)
+        checksum = (checksum & 0xFF) ^ 0xFF
+        full_command += chr(checksum)
+        self.write(full_command)
+
+
     def broadcast_received(self, broadcast):
         if broadcast.destination is not None and broadcast.destination.startswith("Light:") and broadcast.prop == "Mode":
             strip = broadcast.destination[-1]
@@ -313,16 +324,11 @@ class UARTThread(DeviceThread):
                 return
 
             color = binascii.unhexlify(broadcast.value[1:])
-            command = mode + strip + color
-
-            logger.debug("Sending command %s to %s", binascii.hexlify(command), self.name)
-            full_command = "!" + chr(len(command) + 3) + command
-            checksum = 0
-            for c in full_command:
-                checksum += ord(c)
-            checksum = (checksum & 0xFF) ^ 0xFF
-            full_command += chr(checksum)
-            self.write(full_command)
+            self.send_command(mode + strip + color)
+        elif broadcast.prop == "Speed" and broadcast.source == "Socket" and broadcast.value > 15:
+            # Turn light off
+            self.send_command("CI\x00\x00\x00\x00")
+            self.send_command("CO\x00\x00\x00\x00")
 
 
     def read(self, timeout_sec=None):
@@ -440,6 +446,9 @@ class ThermostatThread(DeviceThread):
             logger.debug("Setting temp to %d, onoff to %d", temp, onoff)
             self.add_command(lambda: self.target_characteristic.write(struct.pack('<h', temp)))
             self.add_command(lambda: self.onoff_characteristic.write('\x01' if onoff else '\x00'))
+        elif broadcast.prop == "Speed" and broadcast.source == "Socket" and broadcast.value > 15:
+            # Turn thermostat off
+            self.add_command(lambda: self.onoff_characteristic.write('\x00'))
 
 
 class PIManager(SenderReceiver):
@@ -627,7 +636,7 @@ managers = [
     UARTManager(),
     PIManager(),
     ThermostatManager(),
-    BeanManager(),
+    # BeanManager(),
     ControllerManager(),
     SocketManager(),
     StateManager(),
