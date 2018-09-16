@@ -36,20 +36,22 @@ class MainViewController: UIViewController {
         masterManager.commandsStream.onSuccess { [weak self] command in
             guard let `self` = self else { return }
             let commandData = command[command.index(command.startIndex, offsetBy: 2)...]
-            if command.starts(with: "CD") {
+            if command.starts(with: "Dv") {
                 self.connectedLabel.text = "Connected: \(commandData)"
-            } else if command.starts(with: "CT") {
+            } else if command.starts(with: "Ti") {
                 let temperatureF = (Double(commandData) ?? 0) / 10.0
-                let temperatureC = (temperatureF - 32.0) / 9.0 * 5.0
-                self.temperatureFahrenheitLabel.text = String(format: "%.1f°F", temperatureF)
-                self.temperatureCelsiusLabel.text = String(format: "%.1f°C", temperatureC)
+                self.temperatureFahrenheitLabel.text = String(format: "i %.1f°F", temperatureF)
                 self.navigationController?.tabBarItem.badgeValue = "\(temperatureF)"
-            } else if command.starts(with: "CH") {
+            } else if command.starts(with: "To") {
+                let temperatureF = (Double(commandData) ?? 0) / 10.0
+                self.temperatureCelsiusLabel.text = String(format: "o %.1f°F", temperatureF)
+            } else if command.starts(with: "Hm") {
                 let humidity = (Double(commandData) ?? 0) / 10.0
                 self.humidityLabel.text = String(format: "%.1f%%", humidity)
-            } else if command.starts(with: "Ct") {
+            } else if command.starts(with: "To") {
                 self.thermostatSwitch.isOn = commandData[commandData.startIndex] == "1"
-                self.targetTemperature = (Int(commandData[commandData.index(commandData.startIndex, offsetBy: 1)...]) ?? 0) / 10
+            } else if command.starts(with: "Tt") {
+                self.targetTemperature = (Int(commandData) ?? 0) / 10
             } else {
                 print("command: \(command)")
             }

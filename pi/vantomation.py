@@ -386,20 +386,25 @@ class ControllerThread(DeviceThread):
             elif destination == "P":
                 self.add_broadcast("Locks", "State", data[1])
             elif destination == "T":
-                self.add_broadcast("Thermostat", "Target", data[2:])
+                self.add_broadcast("Thermostat", "On", int(data[2]))
+                self.add_broadcast("Thermostat", "Target", int(data[3:], 16))
             else:
                 logger.info("Unknown destination: %s" % data)
 
 
     def broadcast_received(self, broadcast):
         if broadcast.destination == None and broadcast.prop == "Devices":
-            self.add_command(lambda: self.devices_characteristic.write("CD" + broadcast.value))
+            self.add_command(lambda: self.devices_characteristic.write("Dv" + broadcast.value))
         elif broadcast.destination == None and broadcast.prop == "Temperature" and broadcast.source == "Thermostat":
-            self.add_command(lambda: self.devices_characteristic.write("CT%.0f" % (broadcast.value * 10)))
+            self.add_command(lambda: self.devices_characteristic.write("Ti%.0f" % (broadcast.value * 10)))
+        elif broadcast.destination == None and broadcast.prop == "Temperature" and broadcast.source == "AgnesOutside":
+            self.add_command(lambda: self.devices_characteristic.write("To%.0f" % (broadcast.value * 10)))
         elif broadcast.destination == None and broadcast.prop == "Humidity" and broadcast.source == "Thermostat":
-            self.add_command(lambda: self.devices_characteristic.write("CH%.0f" % (broadcast.value * 10)))
-        elif broadcast.destination == None and broadcast.prop == "ThermostatState":
-            self.add_command(lambda: self.devices_characteristic.write("Ct" + broadcast.value))
+            self.add_command(lambda: self.devices_characteristic.write("Hm%.0f" % (broadcast.value * 10)))
+        elif broadcast.destination == None and broadcast.prop == "On" and broadcast.source == "Thermostat":
+            self.add_command(lambda: self.devices_characteristic.write("To%d" % broadcast.value))
+        elif broadcast.destination == None and broadcast.prop == "Target" and broadcast.source == "Thermostat":
+            self.add_command(lambda: self.devices_characteristic.write("Tt%.0f" % (broadcast.value * 10)))
 
 
 class ThermostatManager(DeviceManager):
@@ -418,6 +423,10 @@ class ThermostatThread(DeviceThread):
 
     def before_thread(self):
         service_uuid = self.service_and_char_uuids[0][0]
+        self.temperature = None
+        self.humidity = None
+        self.onoff = None
+        self.target = None
         self.temperature_characteristic = self.characteristics[service_uuid][0]
         self.humidity_characteristic = self.characteristics[service_uuid][1]
         self.onoff_characteristic = self.characteristics[service_uuid][2]
@@ -426,10 +435,10 @@ class ThermostatThread(DeviceThread):
         self.start_notifications(self.humidity_characteristic)
         self.start_notifications(self.onoff_characteristic)
         self.start_notifications(self.target_characteristic)
-        self.temperature = 0
-        self.humidity = 0
-        self.onoff = 0
-        self.target = 0
+        self.onoff = int(struct.unpack('B', self.onoff_characteristic.read())[0])
+        self.target = float(struct.unpack('<h', self.target_characteristic.read())[0]) / 10
+        self.add_broadcast(None, "On", self.onoff)
+        self.add_broadcast(None, "Target", self.target) 
 
 
     def received_data(self, cHandle, data):
@@ -440,22 +449,24 @@ class ThermostatThread(DeviceThread):
             self.humidity = float(struct.unpack('<h', data)[0]) / 10
             self.add_broadcast(None, "Humidity", self.humidity)
         elif cHandle == self.onoff_characteristic.getHandle():
-            self.onoff = struct.unpack('B', data)[0]
-            self.add_broadcast(None, "ThermostatState", "%01d%d" % (self.onoff, self.target))
+            self.onoff = int(struct.unpack('B', data)[0])
+            self.add_broadcast(None, "On", self.onoff)
         elif cHandle == self.target_characteristic.getHandle():
-            self.target = float(struct.unpack('<h', data)[0])
-            self.add_broadcast(None, "ThermostatState", "%01d%d" % (self.onoff, self.target))
+            self.target = float(struct.unpack('<h', data)[0]) / 10
+            self.add_broadcast(None, "Target", self.target)
         else:
             logger.debug("Unknown handle %d", cHandle)
 
 
     def broadcast_received(self, broadcast):
-        if broadcast.destination == "Thermostat" and broadcast.prop == "Target":
-            onoff = int(broadcast.value[0])
-            temp = int(broadcast.value[1:], 16)
-            logger.debug("Setting temp to %d, onoff to %d", temp, onoff)
-            self.add_command(lambda: self.target_characteristic.write(struct.pack('<h', temp)))
+        if broadcast.destination == "Thermostat" and broadcast.prop == "On":
+            onoff = broadcast.value
+            logger.debug("Setting onoff to %d", onoff)
             self.add_command(lambda: self.onoff_characteristic.write('\x01' if onoff else '\x00'))
+        elif broadcast.destination == "Thermostat" and broadcast.prop == "Target":
+            temp = broadcast.value
+            logger.debug("Setting temp to %d", temp)
+            self.add_command(lambda: self.target_characteristic.write(struct.pack('<h', temp)))
         elif broadcast.prop == "Speed" and broadcast.source == "Socket" and broadcast.value > 10:
             # Turn thermostat off
             self.add_command(lambda: self.onoff_characteristic.write('\x00'))
