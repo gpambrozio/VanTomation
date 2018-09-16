@@ -84,7 +84,7 @@ def reload():
     for (k, v) in lines.iteritems():
         if k in state:
             ts = state[k]["ts"]
-            if (time.time() - ts > 2*60000):
+            if (time.time() - ts > 2*60):
                 ui[k].config(text=v[1](None))
             else:
                 ui[k].config(text=v[1](state[k]["value"]))
