@@ -47,8 +47,12 @@ class DeviceManager(object):
 
     def set_coordinator(self, coordinator):
         self.coordinator = coordinator
-        
-        
+
+
+    def should_connect_to(self, device, device_name):
+        return True
+
+
     def found_devices(self, devices):
         # Check if everything is OK
         for addr in self.threads_by_addr.keys():   # .keys() creates a copy and avoids error due to removing key
@@ -66,6 +70,7 @@ class DeviceManager(object):
 
             name = dev.getValueText(9) or dev.getValueText(8)
             if (name is not None and
+                self.should_connect_to(dev, name) and
                 self.required_services <= services and
                 dev.addr not in self.threads_by_addr and 
                 name not in self.threads_by_name):
@@ -239,7 +244,11 @@ class BeanManager(DeviceManager):
         TX_CHAR_UUID = 'a495ff11-c5b1-4b44-b512-1370f02d74de'
 
         DeviceManager.__init__(self, [[SERVICE_UUID, TX_CHAR_UUID]], BeanThread)
-        
+
+
+    def should_connect_to(self, device, device_name):
+        return device_name != "AgnesInside"
+
 
 class BeanThread(DeviceThread):
 
@@ -637,7 +646,7 @@ managers = [
     UARTManager(),
     PIManager(),
     ThermostatManager(),
-    # BeanManager(),
+    BeanManager(),
     ControllerManager(),
     SocketManager(),
     StateManager(),
