@@ -335,7 +335,7 @@ class UARTThread(DeviceThread):
 
             color = binascii.unhexlify(broadcast.value[1:])
             self.send_command(mode + strip + color)
-        elif broadcast.prop == "Speed" and broadcast.source == "Socket" and broadcast.value > 15:
+        elif broadcast.prop == "Speed" and broadcast.source == "Socket" and broadcast.value > 10:
             # Turn light off
             self.send_command("CI\x00\x00\x00\x00")
             self.send_command("CO\x00\x00\x00\x00")
@@ -456,7 +456,7 @@ class ThermostatThread(DeviceThread):
             logger.debug("Setting temp to %d, onoff to %d", temp, onoff)
             self.add_command(lambda: self.target_characteristic.write(struct.pack('<h', temp)))
             self.add_command(lambda: self.onoff_characteristic.write('\x01' if onoff else '\x00'))
-        elif broadcast.prop == "Speed" and broadcast.source == "Socket" and broadcast.value > 15:
+        elif broadcast.prop == "Speed" and broadcast.source == "Socket" and broadcast.value > 10:
             # Turn thermostat off
             self.add_command(lambda: self.onoff_characteristic.write('\x00'))
 
