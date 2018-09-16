@@ -4,12 +4,30 @@ import Tkinter as tk
 import json
 import datetime
 import time
+import ephem
 
 from PIL import ImageTk
 from PIL import Image
 
-# if you are still working under a Python 2 version, 
-# comment out the previous line and uncomment the following line
+sunset = None
+sunrise = None
+next_ss_calculation = 0
+def sunrise_sunset(location):
+    global next_ss_calculation, sunrise, sunset
+    if time.time() >= next_ss_calculation:
+        next_ss_calculation = time.time() + 60 * 60
+        o = ephem.Observer()
+        o.lat = "%f" % location[0]
+        o.long = "%f" % location[1]
+        s = ephem.Sun()
+        s.compute()  
+        sunrise = ephem.localtime(o.next_rising(s))
+        sunset = ephem.localtime(o.next_setting(s))
+    return u"\N{UPWARDS ARROW} %s\n\N{DOWNWARDS ARROW} %s" % (
+        sunrise.strftime("%I:%M"),
+        sunset.strftime("%I:%M")
+    )
+
 
 root = tk.Tk()
 root.title("Hello NonVanLifers!")
@@ -25,15 +43,15 @@ compass_arrow_image = ImageTk.PhotoImage(compass_arrow)
 compass_arrow_object = canvas.create_image(50, 50, image=compass_arrow_image)
 
 lines = {
-    "Temperature:Thermostat": [34, lambda x: "b ?" if x is None else u"b %.1f \N{DEGREE SIGN}F" % x],
-    "Temperature:AgnesInside": [34, lambda x: "f ?" if x is None else u"f %.1f \N{DEGREE SIGN}F" % x],
+    "Temperature:Thermostat": [34, lambda x: "i ?" if x is None else u"i %.1f \N{DEGREE SIGN}F" % x],
     "Temperature:AgnesOutside": [34, lambda x: "o ?" if x is None else u"o %.1f \N{DEGREE SIGN}F" % x],
     "Humidity:Thermostat": [34, lambda x: "? %%" if x is None else "%.1f%%" % x],
     "Speed:Socket": [60, lambda x: "?" if x is None else "%d" % x],
     "Altitude:Socket": [34, lambda x: "?" if x is None else "%d ft\n%d m" % (x * 3.281, x)],
+    "Location:Socket": [16, lambda x: "?" if x is None else sunrise_sunset(x)]
 }
 
-ui = {k: tk.Label(root, text=v[1](0), font="Helvetica %d" % v[0]) for (k, v) in lines.iteritems()}
+ui = {k: tk.Label(root, text=v[1](None), font="Helvetica %d" % v[0]) for (k, v) in lines.iteritems()}
 
 ui["Speed:Socket"].grid(row=0, column=0, padx=2, pady=5, columnspan=2, sticky=tk.E)
 tk.Label(root, text="m\np\nh", font="Helvetica 20").grid(row=0, column=2, padx=2, pady=5, columnspan=1, sticky=tk.W)
@@ -43,9 +61,9 @@ time_label = tk.Label(root, text="00:00 PM", font="Helvetica 50")
 time_label.grid(row=1, column=0, columnspan=6)
 
 ui["Temperature:Thermostat"].grid(row=2, column=0, sticky=tk.E, padx=20, columnspan=3)
-ui["Temperature:AgnesInside"].grid(row=3, column=0, sticky=tk.E, padx=20, columnspan=3)
-ui["Temperature:AgnesOutside"].grid(row=4, column=0, sticky=tk.E, padx=20, columnspan=3)
-ui["Humidity:Thermostat"].grid(row=2, column=3, sticky=tk.W, padx=20, columnspan=3)
+ui["Temperature:AgnesOutside"].grid(row=3, column=0, sticky=tk.E, padx=20, columnspan=3)
+ui["Humidity:Thermostat"].grid(row=4, column=0, sticky=tk.E, padx=20, columnspan=3)
+ui["Location:Socket"].grid(row=2, column=3, sticky=tk.E, padx=20)
 ui["Altitude:Socket"].grid(row=3, column=3, rowspan=2, padx=5, columnspan=3)
 
 state = {}
