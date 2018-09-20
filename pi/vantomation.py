@@ -4,7 +4,6 @@ from bluepy.btle import Scanner, DefaultDelegate, BTLEException
 from bluepy import btle
 import threading
 import queue
-import Queue
 import uuid
 import time
 import binascii
@@ -668,7 +667,7 @@ class Coordinator(SenderReceiver):
                         for receiver in broadcasters:
                             receiver.broadcast_received(broadcast)
                         
-                    except Queue.Empty:
+                    except queue.Empty:
                         # Nothing available, just move on...
                         break
                     
