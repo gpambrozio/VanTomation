@@ -7,6 +7,8 @@ import time
 import os
 import logging
 import traceback
+import threading
+import Queue as queue
 
 import ephem
 import pyowm
@@ -21,12 +23,11 @@ logging.basicConfig(format=FORMAT)
 logger = logging.getLogger()
 logger.setLevel(logging.WARNING)
 
+state = {}
+
 OWM_API_KEY = os.getenv('OWM_API_KEY')
 if OWM_API_KEY is None:
     logger.warning('OWM_API_KEY not set. Weather data won\'t be fetched')
-    owm = None
-else:
-    owm = pyowm.OWM(OWM_API_KEY)
 
 
 sunset = None
@@ -47,20 +48,6 @@ def sunrise_sunset(location):
         sunrise.strftime("%I:%M"),
         sunset.strftime("%I:%M")
     )
-
-
-def weather_icon(icon_name):
-    icon_file_name = "./owm_icons/%s.png" % icon_name
-    if not os.path.exists(icon_file_name):
-        icon = requests.get("http://openweathermap.org/img/w/%s.png" % icon_name)
-        if icon.status_code == 200:
-            f = file(icon_file_name, "w")
-            f.write(icon.content)
-            f.close()
-        else:
-            logger.error("Error getting http://openweathermap.org/img/w/%s.png %d", icon_name, icon.status_code)
-            return None
-    return Image.open(icon_file_name)
 
 
 root = tk.Tk()
@@ -116,51 +103,101 @@ def fill_heading(state):
         compass_arrow_object = heading_canvas.create_image(50, 50, image=compass_arrow_image)
 
 ## Weather
-weather_current_label = tk.Label(root, text="?", font="Helvetica 20")
-weather_current_label.grid(row=5, column=1, columnspan=3)
-weather_temp_label = tk.Label(root, text="?", font="Helvetica 20")
-weather_temp_label.grid(row=5, column=4, columnspan=2)
+weather_canvas = tk.Canvas(root, width=70, height=70)
+weather_canvas.grid(row=5, column=0, columnspan=2)
 
-weather_canvas = tk.Canvas(root, width=30, height=30)
-weather_canvas.grid(row=5, column=0, columnspan=1)
+weather_current_label = tk.Label(root, text="?", font="Helvetica 20")
+weather_current_label.grid(row=5, column=2, columnspan=4)
 
 weather_current_image = None
 weather_current_object = None
 
+class WeatherThread:
+    def __init__(self, api_key, weather_data_queue):
+        self.owm = pyowm.OWM(api_key)
+        self.weather_data_queue = weather_data_queue
+        self.thread = threading.Thread(target=self.run)
+        self.thread.daemon = True                            # Daemonize thread
+        self.thread.start()                                  # Start the execution
+
+    def download_weather_icon(self, icon_name):
+        icon_file_name = "./owm_icons/%s.png" % icon_name
+        if not os.path.exists(icon_file_name):
+            icon = requests.get("http://openweathermap.org/img/w/%s.png" % icon_name)
+            if icon.status_code == 200:
+                f = file(icon_file_name, "w")
+                f.write(icon.content)
+                f.close()
+            else:
+                logger.error("Error getting http://openweathermap.org/img/w/%s.png %d", icon_name, icon.status_code)
+                return None
+        return icon_file_name
+
+    def run(self):
+        # Sleep a bit to make sure we get a state in the beginning
+        time.sleep(2)
+        while True:
+            location = state.get("Location:Socket")
+            if location is None:
+                time.sleep(30 * 60)
+            else:
+                location = location["value"]
+                try:
+                    weather_data = {}
+                    obs = self.owm.weather_at_coords(location[0], location[1])
+                    weather = obs.get_weather()
+
+                    weather_data['current'] = weather.get_detailed_status().capitalize()
+                    weather_data['temperature'] = weather.get_temperature('fahrenheit')['temp']
+                    weather_data['icon_file'] = self.download_weather_icon(weather.get_weather_icon_name())
+
+                    # forecast = self.owm.three_hours_forecast_at_coords(location[0], location[1])
+
+                    self.weather_data_queue.put(weather_data)
+                    # No need to refetch for a while
+                    time.sleep(15 * 60 * 60)
+
+                except pyowm.exceptions.api_call_error.APICallTimeoutError as e:
+                    logger.error("Exception: %s\n%s", e, traceback.format_exc())
+                    # normal...
+                    # Try again in 5 minues
+                    time.sleep(5 * 60 * 60)
+
+                except Exception as e:
+                    logger.error("Exception: %s\n%s", e, traceback.format_exc())
+                    # Try again in 5 minues
+                    time.sleep(5 * 60 * 60)
+
+
+weather_data_queue = queue.LifoQueue()
 def fill_weather(state):
-    global weather_current_image, weather_current_object
-    if owm is None:
-        return
+    global weather_current_image, weather_current_object, weather_data_queue
 
-    location = state.get("Location:Socket")
-    if location is not None:
-        location = location["value"]
-        try:
-            obs = owm.weather_at_coords(location[0], location[1])
-            weather = obs.get_weather()
-            weather_current_label.config(text=weather.get_detailed_status().capitalize())
-            temp = weather.get_temperature('fahrenheit')
-            weather_temp_label.config(text=u"%.0f \N{DEGREE SIGN}F" % temp['temp'])
+    try:
+        weather_data = weather_data_queue.get_nowait()
 
-            icon_name = weather.get_weather_icon_name()
-            icon = weather_icon(icon_name)
-            if weather_current_object is not None:
-                weather_canvas.delete(weather_current_object)
-                weather_current_image = None
-                weather_current_object = None
+        weather_current_label.config(text=u"%s\n%.0f \N{DEGREE SIGN}F" % (weather_data['current'], weather_data['temperature']))
 
-            if icon is not None:
-                weather_current_image = ImageTk.PhotoImage(icon.resize((30, 30), Image.ANTIALIAS))
-                weather_current_object = weather_canvas.create_image(15, 15, image=weather_current_image)
+        icon = Image.open(weather_data['icon_file'])
+        if weather_current_object is not None:
+            weather_canvas.delete(weather_current_object)
+            weather_current_image = None
+            weather_current_object = None
 
-#            forecast = owm.three_hours_forecast_at_coords(location[0], location[1])
+        if icon is not None:
+            weather_current_image = ImageTk.PhotoImage(icon.resize((70, 70), Image.ANTIALIAS))
+            weather_current_object = weather_canvas.create_image(35, 35, image=weather_current_image)
 
-        except pyowm.exceptions.api_call_error.APICallTimeoutError:
-            # normal...
-            pass
+        # empty the queue
+        while True:
+            weather_data_queue.get_nowait()
 
-        except Exception as e:
-            logger.error("Exception: %s\n%s", e, traceback.format_exc())
+    except queue.Empty:
+        # normal...
+        pass
+
+
+weather_thread = WeatherThread(OWM_API_KEY, weather_data_queue) if OWM_API_KEY is not None else None
 
 
 def read_state():
@@ -175,6 +212,7 @@ def read_state():
 
 
 def reload():
+    global state
     state = read_state()
     for (k, v) in lines.iteritems():
         if k in state:
