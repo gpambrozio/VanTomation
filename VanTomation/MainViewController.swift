@@ -19,8 +19,32 @@ class MainViewController: UIViewController {
 
     @IBOutlet private var targetTemperatureLabel: UILabel!
     @IBOutlet private var thermostatSwitch: UISwitch!
+    @IBOutlet private var wifiLabel: UILabel!
 
     private let disposeBag = DisposeBag()
+
+    private func updateWifiLabel() {
+        guard let wifiNetwork = wifiNetwork else {
+            wifiLabel.text = "Disconnected"
+            return
+        }
+        guard let wifiIp = wifiIp else {
+            wifiLabel.text = wifiNetwork
+            return
+        }
+        wifiLabel.text = "\(wifiNetwork) (\(wifiIp))"
+    }
+
+    private var wifiNetwork: String? {
+        didSet {
+            updateWifiLabel()
+        }
+    }
+    private var wifiIp: String? {
+        didSet {
+            updateWifiLabel()
+        }
+    }
 
     private var thermostatOn = false {
         didSet {
@@ -55,6 +79,10 @@ class MainViewController: UIViewController {
                 self.thermostatSwitch.isOn = commandData[commandData.startIndex] == "1"
             } else if command.starts(with: "Tt") {
                 self.targetTemperature = (Int(commandData) ?? 0) / 10
+            } else if command.starts(with: "WS") {
+                self.wifiNetwork = commandData.isEmpty ? nil : "\(commandData)"
+            } else if command.starts(with: "Wi") {
+                self.wifiIp = "\(commandData)"
             } else {
                 print("command: \(command)")
             }
@@ -64,6 +92,8 @@ class MainViewController: UIViewController {
             guard let self = self else { return }
             self.connectedLabel.text = status
         }).disposed(by: disposeBag)
+
+        updateWifiLabel()
     }
 
     @IBAction func lock() {
