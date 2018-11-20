@@ -36,8 +36,8 @@ class MainViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        masterManager.commandsStream.asObservable().subscribe(onNext: { [weak self] command in
-            guard let `self` = self else { return }
+        masterManager.commandsStream.subscribe(onNext: { [weak self] command in
+            guard let self = self else { return }
             let commandData = command[command.index(command.startIndex, offsetBy: 2)...]
             if command.starts(with: "Dv") {
                 self.connectedLabel.text = "Connected: \(commandData)"
@@ -60,8 +60,8 @@ class MainViewController: UIViewController {
             }
         }).disposed(by: disposeBag)
 
-        masterManager.statusStream.asObservable().subscribe(onNext: { [weak self] status in
-            guard let `self` = self else { return }
+        masterManager.statusStream.subscribe(onNext: { [weak self] status in
+            guard let self = self else { return }
             self.connectedLabel.text = status
         }).disposed(by: disposeBag)
     }

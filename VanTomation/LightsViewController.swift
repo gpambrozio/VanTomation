@@ -23,7 +23,7 @@ class LightsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         colorPicker.pickedColorClosure = { [weak self] color in
-            guard let `self` = self else { return }
+            guard let self = self else { return }
             self.ledColorMode.selectedSegmentIndex = 0
             self.pickedColor = color
             self.brightnessSlider.contentViewColor = color
