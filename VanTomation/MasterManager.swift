@@ -9,33 +9,8 @@
 import Foundation
 import CoreBluetooth
 
-import BlueCapKit
-
-enum AppError: Error {
-    case invalidState
-    case resetting
-    case poweredOff
-    case unsupported
-    case unknown
-}
-
-public struct CommandCharacteristic: CharacteristicConfigurable {
-    // CharacteristicConfigurable
-    public static let uuid                                     = "12345679-1234-5678-1234-56789abc0010"
-    public static let name                                     = "Command"
-    public static let permissions: CBAttributePermissions      = [.readable, .writeable]
-    public static let properties: CBCharacteristicProperties   = [.read, .notify]
-    public static let initialValue                             = SerDe.serialize("")
-}
-
-public struct ConnectedDevicesCharacteristic: CharacteristicConfigurable {
-    // CharacteristicConfigurable
-    public static let uuid                                     = "1234567a-1234-5678-1234-56789abc0010"
-    public static let name                                     = "Devices"
-    public static let permissions: CBAttributePermissions      = [.readable, .writeable]
-    public static let properties: CBCharacteristicProperties   = [.read, .write, .writeWithoutResponse]
-    public static let initialValue                             = SerDe.serialize("")
-}
+import RxBluetoothKit
+import RxSwift
 
 class MasterManager {
 
@@ -43,101 +18,97 @@ class MasterManager {
 
     public static let shared = MasterManager()
 
-    enum Constants {
-        static let uuid = "12345678-1234-5678-1234-56789abc0010"
-        static let name = "VanTomation"
-    }
+    private let peripheralManager = PeripheralManager(options: [CBPeripheralManagerOptionRestoreIdentifierKey: "br.eng.gustavo.vantomation" as AnyObject])
 
-    private let manager = PeripheralManager(options: [CBPeripheralManagerOptionRestoreIdentifierKey: "br.eng.gustavo.vantomation-controller" as NSString])
+    private let serviceUUID = CBUUID(string: "12345678-1234-5678-1234-56789abc0010")
+    private let commandCharacteristicUUID = CBUUID(string: "12345679-1234-5678-1234-56789abc0010")
+    private let devicesCharacteristicUUID = CBUUID(string: "1234567a-1234-5678-1234-56789abc0010")
+    private let commandCharacterictic: CBMutableCharacteristic
+    private let devicesCharacterictic: CBMutableCharacteristic
+    private let service: CBMutableService
 
-    private let commandService = MutableService(uuid: Constants.uuid)
+    private var centrals = [CBCentral]()
 
-    private let commandCharacteristic = MutableCharacteristic(profile: StringCharacteristicProfile<CommandCharacteristic>())
-    private let devicesCharacteristic = MutableCharacteristic(profile: StringCharacteristicProfile<ConnectedDevicesCharacteristic>())
+    private let disposeBag = DisposeBag()
 
-    private let commandsPromise = StreamPromise<String>(capacity: 10)
-    private let statusPromise = StreamPromise<String>(capacity: 10)
-    public var commandsStream: FutureStream<String> {
-        return commandsPromise.stream
-    }
-    public var statusStream: FutureStream<String> {
-        return statusPromise.stream
-    }
+    let statusStream = PublishSubject<String>()
+    let commandsStream = PublishSubject<String>()
 
     private init() {
-        commandService.characteristics = [commandCharacteristic, devicesCharacteristic]
+        service = CBMutableService(type: serviceUUID, primary: true)
+        commandCharacterictic = CBMutableCharacteristic(type: commandCharacteristicUUID,
+                                                        properties: [.read, .notify],
+                                                        value: nil,
+                                                        permissions: [.readable, .writeable])
+        devicesCharacterictic = CBMutableCharacteristic(type: devicesCharacteristicUUID,
+                                                        properties: [.read, .write, .writeWithoutResponse],
+                                                        value: nil,
+                                                        permissions: [.readable, .writeable])
+        service.characteristics = [commandCharacterictic, devicesCharacterictic]
+
         startAdvertising()
     }
 
     func startAdvertising() {
-        let startAdvertiseFuture = manager.whenStateChanges().flatMap { [unowned self] state -> Future<Void> in
-            switch state {
-            case .poweredOn:
-                return self.manager.stopAdvertising()
-            case .poweredOff:
-                throw AppError.poweredOff
-            case .unauthorized, .unknown:
-                throw AppError.invalidState
-            case .unsupported:
-                throw AppError.unsupported
-            case .resetting:
-                throw AppError.resetting
-            }
-        }.flatMap { [unowned self] _ -> Future<Void> in
-            self.manager.removeAllServices()
-            return self.manager.add(self.commandService)
-        }.flatMap { [unowned self] _ -> Future<Void> in
-            return self.manager.startAdvertising(Constants.name, uuids: [CBUUID(string: Constants.uuid)])
-        }
+        peripheralManager.observeState()
+            .startWith(peripheralManager.state)
+            .filter { $0 == .poweredOn }
+            .take(1)
+            .flatMap { _ in self.peripheralManager.add(self.service) }
+            .flatMap { [serviceUUID, peripheralManager, disposeBag] _ -> Observable<StartAdvertisingResult> in
+                peripheralManager.observeOnSubscribe()
+                    .subscribe(onNext: { [weak self] (central, characteristic) in
+                        guard let self = self else { return }
+                        self.centrals.append(central)
+                        print("central: \(central), char: \(characteristic)")
+                    })
+                    .disposed(by: disposeBag)
 
-        startAdvertiseFuture.onSuccess { [unowned self] in
-            self.present(UIAlertController.alertWithMessage("poweredOn and started advertising"))
-        }
+                peripheralManager.observeOnUnsubscribe()
+                    .subscribe(onNext: { [weak self] (central, characteristic) in
+                        guard let self = self else { return }
+                        self.centrals.removeAll(where: { (otherCentral) -> Bool in
+                            central.identifier == otherCentral.identifier
+                        })
+                        print("central: \(central), char: \(characteristic)")
+                    })
+                    .disposed(by: disposeBag)
 
-        startAdvertiseFuture.onFailure { [unowned self] error in
-            switch error {
-            case AppError.poweredOff:
-                self.present(UIAlertController.alertWithMessage("PeripheralManager powered off") { _ in
-                    self.manager.reset()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                        self.startAdvertising()
-                    }
-                })
-            case AppError.resetting:
-                let message = "PeripheralManager state \"\(self.manager.state)\". The connection with the system bluetooth service was momentarily lost.\n Restart advertising."
-                self.present(UIAlertController.alertWithMessage(message) { _ in
-                    self.manager.reset()
-                })
-            case AppError.unsupported:
-                self.present(UIAlertController.alertWithMessage("Bluetooth not supported") { _ in
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                        self.startAdvertising()
-                    }
-                })
-            default:
-                self.present(UIAlertController.alertOnError(error) { _ in
-                    self.manager.reset()
-                })
-            }
-            _ = self.manager.stopAdvertising()
-        }
+                peripheralManager.observeDidReceiveRead()
+                    .subscribe(onNext: { [peripheralManager] (request) in
+                        print("Read: \(request)")
+                        peripheralManager.respond(to: request, withResult: .success)
+                    })
+                    .disposed(by: disposeBag)
 
-        let devicesFuture = startAdvertiseFuture.flatMap { [unowned self] in
-            self.devicesCharacteristic.startRespondingToWriteRequests()
-        }
-        devicesFuture.onSuccess { [unowned self] (request, _) in
-            guard let value = request.value, value.count > 0 && value.count <= 16 else {
-                self.devicesCharacteristic.respondToRequest(request, withResult:CBATTError.invalidAttributeValueLength)
-                return
+                peripheralManager.observeDidReceiveWrite()
+                    .subscribe(onNext: { [weak self] (requests) in
+                        guard let self = self else { return }
+                        print("Write: \(requests)")
+                        for request in requests {
+                            self.peripheralManager.respond(to: request, withResult: .success)
+                            if request.characteristic == self.devicesCharacterictic {
+                                guard let value = request.value, let command = String(data: value, encoding: .ascii) else {
+                                    return
+                                }
+                                self.commandsStream.onNext(command)
+                                print("Command received \(command)")
+                            }
+                        }
+                    })
+                    .disposed(by: disposeBag)
+
+                return peripheralManager.startAdvertising(
+                    [
+                        CBAdvertisementDataLocalNameKey: "Van",
+                        CBAdvertisementDataServiceUUIDsKey: [serviceUUID],
+                        ]
+                )
             }
-            self.devicesCharacteristic.value = value
-            self.devicesCharacteristic.respondToRequest(request, withResult:CBATTError.success)
-            guard let command = String(data: value, encoding: .ascii) else {
-                return
+            .subscribe { (event) in
+                print("\(event)")
             }
-            self.commandsPromise.success(command)
-            print("Command received \(command)")
-        }
+            .disposed(by: disposeBag)
     }
 
     private func present(_ vc: UIAlertController) {
@@ -146,16 +117,14 @@ class MasterManager {
 
     private func changeStatus(_ message: String, handler: @escaping (() -> Void) = {}) {
         print("Something happened: \(message)")
-        statusPromise.success(message)
+        statusStream.onNext(message)
         DispatchQueue.main.async(execute: handler)
     }
 
     func send(command: String) {
         print("Sending command \(command)")
-        do {
-            try self.commandCharacteristic.update(withData: command.data(using: .utf8)!)
-        } catch let e {
-            print("Exception \(e)")
-        }
+        _ = peripheralManager.updateValue(command.data(using: .utf8)!,
+                                          for: commandCharacterictic,
+                                          onSubscribedCentrals: centrals)
     }
 }

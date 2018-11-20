@@ -1,24 +1,28 @@
 PODS:
-  - BlueCapKit (0.7.0)
   - fluid-slider (0.0.6):
     - pop
   - pop (1.0.10)
+  - RxBluetoothKit (5.1.4):
+    - RxSwift (~> 4.0)
+  - RxSwift (4.3.1)
 
 DEPENDENCIES:
-  - BlueCapKit
   - fluid-slider
+  - RxBluetoothKit
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
-    - BlueCapKit
     - fluid-slider
     - pop
+    - RxBluetoothKit
+    - RxSwift
 
 SPEC CHECKSUMS:
-  BlueCapKit: b13b8715d4de6f325971c4dd5bc33598697dad2f
   fluid-slider: 3aeb48bd7f875dc0431963fde12674e69c7c0ed2
   pop: 82ca6b068ce9278fd350fd9dd09482a0ce9492e6
+  RxBluetoothKit: d18f7beb5fd4d2b24659d57548e38d5d2fac885b
+  RxSwift: fe0fd770a43acdb7d0a53da411c9b892e69bb6e4
 
-PODFILE CHECKSUM: 0a17f84d1ad88e93e298e50aef4b3d35b50090f6
+PODFILE CHECKSUM: 62a51e5b2a0aff6d5673101dc52756e19d262b3f
 
 COCOAPODS: 1.5.3

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import RxSwift
 
 class MainViewController: UIViewController {
     private let masterManager = MasterManager.shared
@@ -18,6 +19,8 @@ class MainViewController: UIViewController {
 
     @IBOutlet private var targetTemperatureLabel: UILabel!
     @IBOutlet private var thermostatSwitch: UISwitch!
+
+    private let disposeBag = DisposeBag()
 
     private var thermostatOn = false {
         didSet {
@@ -33,7 +36,7 @@ class MainViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        masterManager.commandsStream.onSuccess { [weak self] command in
+        masterManager.commandsStream.asObservable().subscribe(onNext: { [weak self] command in
             guard let `self` = self else { return }
             let commandData = command[command.index(command.startIndex, offsetBy: 2)...]
             if command.starts(with: "Dv") {
@@ -55,11 +58,12 @@ class MainViewController: UIViewController {
             } else {
                 print("command: \(command)")
             }
-        }
-        masterManager.statusStream.onSuccess { [weak self] status in
+        }).disposed(by: disposeBag)
+
+        masterManager.statusStream.asObservable().subscribe(onNext: { [weak self] status in
             guard let `self` = self else { return }
             self.connectedLabel.text = status
-        }
+        }).disposed(by: disposeBag)
     }
 
     @IBAction func lock() {
