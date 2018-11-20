@@ -59,6 +59,7 @@ class MasterManager {
                 peripheralManager.observeOnSubscribe()
                     .subscribe(onNext: { [weak self] (central, characteristic) in
                         guard let self = self else { return }
+                        self.changeStatus("Connected")
                         self.centrals.append(central)
                         print("central: \(central), char: \(characteristic)")
                     })
@@ -67,6 +68,7 @@ class MasterManager {
                 peripheralManager.observeOnUnsubscribe()
                     .subscribe(onNext: { [weak self] (central, characteristic) in
                         guard let self = self else { return }
+                        self.changeStatus("Disconnected")
                         self.centrals.removeAll(where: { (otherCentral) -> Bool in
                             central.identifier == otherCentral.identifier
                         })
@@ -84,15 +86,14 @@ class MasterManager {
                 peripheralManager.observeDidReceiveWrite()
                     .subscribe(onNext: { [weak self] (requests) in
                         guard let self = self else { return }
-                        print("Write: \(requests)")
                         for request in requests {
                             self.peripheralManager.respond(to: request, withResult: .success)
                             if request.characteristic == self.devicesCharacterictic {
                                 guard let value = request.value, let command = String(data: value, encoding: .ascii) else {
                                     return
                                 }
-                                self.commandsStream.onNext(command)
                                 print("Command received \(command)")
+                                self.commandsStream.onNext(command)
                             }
                         }
                     })
@@ -106,13 +107,10 @@ class MasterManager {
                 )
             }
             .subscribe { (event) in
+                self.changeStatus("Advertising")
                 print("\(event)")
             }
             .disposed(by: disposeBag)
-    }
-
-    private func present(_ vc: UIAlertController) {
-        UIApplication.shared.keyWindow?.rootViewController?.present(vc, animated: true, completion: nil)
     }
 
     private func changeStatus(_ message: String, handler: @escaping (() -> Void) = {}) {
