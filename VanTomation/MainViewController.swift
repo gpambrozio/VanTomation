@@ -28,7 +28,7 @@ class MainViewController: UIViewController {
             wifiLabel.text = "Disconnected"
             return
         }
-        guard let wifiIp = wifiIp else {
+        guard let wifiIp = wifiIp, !wifiIp.isEmpty else {
             wifiLabel.text = wifiNetwork
             return
         }
@@ -79,7 +79,7 @@ class MainViewController: UIViewController {
                 self.thermostatSwitch.isOn = commandData[commandData.startIndex] == "1"
             } else if command.starts(with: "Tt") {
                 self.targetTemperature = (Int(commandData) ?? 0) / 10
-            } else if command.starts(with: "WS") {
+            } else if command.starts(with: "Ws") {
                 self.wifiNetwork = commandData.isEmpty ? nil : "\(commandData)"
             } else if command.starts(with: "Wi") {
                 self.wifiIp = "\(commandData)"
