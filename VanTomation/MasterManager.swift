@@ -18,7 +18,7 @@ class MasterManager {
 
     public static let shared = MasterManager()
 
-    private let peripheralManager = PeripheralManager(options: [CBPeripheralManagerOptionRestoreIdentifierKey: "br.eng.gustavo.vantomation" as AnyObject])
+    private let peripheralManager = PeripheralManager()
 
     private let serviceUUID = CBUUID(string: "12345678-1234-5678-1234-56789abc0010")
     private let commandCharacteristicUUID = CBUUID(string: "12345679-1234-5678-1234-56789abc0010")
