@@ -36,6 +36,7 @@ class MasterManager {
 
     private let disposeBag = DisposeBag()
 
+    private var pastData = ""
     let statusStream = PublishSubject<String>()
     let commandsStream = PublishSubject<String>()
 
@@ -97,8 +98,14 @@ class MasterManager {
                                 guard let value = request.value, let command = String(data: value, encoding: .ascii) else {
                                     return
                                 }
-                                print("Command received \(command)")
-                                self.commandsStream.onNext(command)
+
+                                self.pastData += command
+                                let lines = self.pastData.split(separator: "\n", omittingEmptySubsequences: false)
+                                self.pastData = "\(lines.last ?? "")"
+                                for line in lines.dropLast() {
+                                    print("Line received '\(line)'")
+                                    self.commandsStream.onNext("\(line)")
+                                }
                             }
                         }
                     })
@@ -126,8 +133,15 @@ class MasterManager {
 
     func send(command: String) {
         print("Sending command \(command)")
-        _ = peripheralManager.updateValue(command.data(using: .utf8)!,
-                                          for: sendCharacterictic,
-                                          onSubscribedCentrals: centrals)
+        var data = "\(command)\n".data(using: .utf8)!
+        while !data.isEmpty {
+            if !peripheralManager.updateValue(data.subdata(in: 0..<min(20, data.count)),
+                                              for: sendCharacterictic,
+                                              onSubscribedCentrals: centrals) {
+                break
+            }
+            guard data.count > 20 else { break }
+            data = data.subdata(in: 20..<data.count)
+        }
     }
 }
