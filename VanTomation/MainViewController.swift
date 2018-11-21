@@ -75,7 +75,7 @@ class MainViewController: UIViewController {
             } else if command.starts(with: "Hm") {
                 let humidity = (Double(commandData) ?? 0) / 10.0
                 self.humidityLabel.text = String(format: "%.1f%%", humidity)
-            } else if command.starts(with: "To") {
+            } else if command.starts(with: "TO") {
                 self.thermostatSwitch.isOn = commandData[commandData.startIndex] == "1"
             } else if command.starts(with: "Tt") {
                 self.targetTemperature = (Int(commandData) ?? 0) / 10
