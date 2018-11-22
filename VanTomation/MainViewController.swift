@@ -20,6 +20,9 @@ class MainViewController: UIViewController {
     @IBOutlet private var targetTemperatureLabel: UILabel!
     @IBOutlet private var thermostatSwitch: UISwitch!
     @IBOutlet private var wifiLabel: UILabel!
+    @IBOutlet private var wifiTable: UITableView!
+
+    private var wifiNetworks = [WifiNetwork]()
 
     private let disposeBag = DisposeBag()
 
@@ -83,6 +86,16 @@ class MainViewController: UIViewController {
                 self.wifiNetwork = commandData.isEmpty ? nil : "\(commandData)"
             } else if command.starts(with: "Wi") {
                 self.wifiIp = "\(commandData)"
+            } else if command.starts(with: "WS") {
+                do {
+                    if let data = commandData.data(using: .utf8) {
+                        let networks = try JSONDecoder().decode([[String]].self, from: data)
+                        self.wifiNetworks = networks.compactMap { WifiNetwork(from: $0) }.sorted()
+                        self.wifiTable.reloadData()
+                    }
+                } catch let error {
+                    print("\(error)")
+                }
             } else {
                 print("command: \(command)")
             }
@@ -123,5 +136,61 @@ class MainViewController: UIViewController {
         let target = targetTemperature * 10
         let command = String(format: "TT\(thermostatOn ? "1" : "0")%04X", target)
         masterManager.send(command: command)
+    }
+}
+
+extension MainViewController: UITableViewDelegate {
+
+}
+
+extension MainViewController: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return wifiNetworks.count
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "WifiCell", for: indexPath) as! WifiCell
+        cell.fill(with: wifiNetworks[indexPath.row])
+        return cell
+    }
+}
+
+struct WifiNetwork {
+    let name: String
+    let open: Bool
+    let strength: Int
+    let frequency: Int
+
+    init?(from network: [String]) {
+        name = network[4]
+        open = network[3] == "[ESS]" || network[3].isEmpty
+        guard !name.isEmpty,
+            name != "agnes",
+            let strength = Int(network[2]),
+            let frequency = Int(network[1]) else { return nil }
+        self.strength = strength
+        self.frequency = frequency
+    }
+}
+
+extension WifiNetwork: Comparable {
+    static func < (lhs: WifiNetwork, rhs: WifiNetwork) -> Bool {
+        if lhs.open && !rhs.open {
+            return true
+        }
+        if !lhs.open && rhs.open {
+            return false
+        }
+        return lhs.strength > rhs.strength
+    }
+}
+
+class WifiCell: UITableViewCell {
+    @IBOutlet private var networkName: UILabel!
+    @IBOutlet private var networkSecurity: UILabel!
+
+    func fill(with network: WifiNetwork) {
+        networkName.text = network.name
+        networkSecurity.text = "\(network.strength)\(network.open ? "O" : "L")"
     }
 }

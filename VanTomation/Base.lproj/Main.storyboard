@@ -36,7 +36,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="49h-sq-VTO">
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" alignment="center" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="49h-sq-VTO">
                                 <rect key="frame" x="10" y="25" width="355" height="203"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Status: ?" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="H7r-05-41Q">
@@ -158,13 +158,59 @@
                                     </stackView>
                                 </subviews>
                             </stackView>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="CUV-Qm-Npz">
+                                <rect key="frame" x="10" y="238" width="355" height="380"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="WifiCell" id="27R-Dw-Jtt" customClass="WifiCell" customModule="VanTomation" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="28" width="355" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="27R-Dw-Jtt" id="8yF-hT-qvE">
+                                            <rect key="frame" x="0.0" y="0.0" width="355" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vLr-Et-9XI">
+                                                    <rect key="frame" x="15" y="11.5" width="42" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YYJ-JO-vxG">
+                                                    <rect key="frame" x="298" y="11.5" width="42" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="YYJ-JO-vxG" firstAttribute="trailing" secondItem="8yF-hT-qvE" secondAttribute="trailingMargin" id="1sZ-Kz-u23"/>
+                                                <constraint firstItem="vLr-Et-9XI" firstAttribute="leading" secondItem="8yF-hT-qvE" secondAttribute="leadingMargin" id="PDV-rx-Wcd"/>
+                                                <constraint firstItem="YYJ-JO-vxG" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="vLr-Et-9XI" secondAttribute="trailing" constant="5" id="dWD-kX-1h7"/>
+                                                <constraint firstItem="YYJ-JO-vxG" firstAttribute="centerY" secondItem="8yF-hT-qvE" secondAttribute="centerY" id="exu-Od-1Se"/>
+                                                <constraint firstItem="vLr-Et-9XI" firstAttribute="centerY" secondItem="8yF-hT-qvE" secondAttribute="centerY" id="kUo-ly-NPx"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="networkName" destination="vLr-Et-9XI" id="WoS-yt-qT6"/>
+                                            <outlet property="networkSecurity" destination="YYJ-JO-vxG" id="ZhF-de-cvl"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </prototypes>
+                                <connections>
+                                    <outlet property="dataSource" destination="KkJ-Sv-4nI" id="Eep-Is-zZz"/>
+                                    <outlet property="delegate" destination="KkJ-Sv-4nI" id="ygH-PJ-Nxc"/>
+                                </connections>
+                            </tableView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
+                            <constraint firstItem="CUV-Qm-Npz" firstAttribute="leading" secondItem="a24-UZ-E6i" secondAttribute="leading" constant="10" id="LP9-5n-tBV"/>
                             <constraint firstItem="49h-sq-VTO" firstAttribute="centerX" secondItem="CLo-kK-7uV" secondAttribute="centerX" id="TCF-de-tTb"/>
                             <constraint firstItem="49h-sq-VTO" firstAttribute="leading" secondItem="a24-UZ-E6i" secondAttribute="leading" constant="10" id="fl4-US-4H2"/>
-                            <constraint firstItem="a24-UZ-E6i" firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="49h-sq-VTO" secondAttribute="bottom" constant="5" id="kRM-hR-V5x"/>
+                            <constraint firstItem="a24-UZ-E6i" firstAttribute="bottom" secondItem="CUV-Qm-Npz" secondAttribute="bottom" id="jUZ-i7-096"/>
                             <constraint firstItem="49h-sq-VTO" firstAttribute="top" secondItem="a24-UZ-E6i" secondAttribute="top" constant="5" id="lxK-EW-zbt"/>
+                            <constraint firstItem="CUV-Qm-Npz" firstAttribute="centerX" secondItem="CLo-kK-7uV" secondAttribute="centerX" id="nho-3R-0iG"/>
+                            <constraint firstItem="CUV-Qm-Npz" firstAttribute="top" secondItem="49h-sq-VTO" secondAttribute="bottom" constant="10" id="pnF-9z-HJ5"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="a24-UZ-E6i"/>
                     </view>
@@ -177,11 +223,12 @@
                         <outlet property="temperatureFahrenheitLabel" destination="9fV-4f-j9G" id="cLN-nf-1KG"/>
                         <outlet property="thermostatSwitch" destination="WwL-eN-Tsl" id="L1A-up-CO6"/>
                         <outlet property="wifiLabel" destination="iYn-p7-csP" id="AKW-G4-gml"/>
+                        <outlet property="wifiTable" destination="CUV-Qm-Npz" id="lvk-wY-MZs"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="b0g-68-vux" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-527" y="-457"/>
+            <point key="canvasLocation" x="-527.20000000000005" y="-457.42128935532236"/>
         </scene>
         <!--Lights-->
         <scene sceneID="tne-QT-ifu">
