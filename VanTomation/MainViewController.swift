@@ -186,8 +186,8 @@ struct WifiNetwork {
     let frequency: Int
 
     init?(from network: [String]) {
-        name = network[4]
-        open = network[3] == "[ESS]" || network[3].isEmpty
+        name = network[0]
+        open = network[3] == "O"
         guard !name.isEmpty,
             name != "agnes",
             let strength = Int(network[2]),
