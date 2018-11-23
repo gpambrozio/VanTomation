@@ -111,6 +111,12 @@ class MasterManager {
                     })
                     .disposed(by: self.disposeBag)
 
+                self.peripheralManager.observeIsReadyToUpdateSubscribers()
+                    .subscribe(onNext: { Void in
+                        self.sendPendingPackets()
+                    })
+                    .disposed(by: self.disposeBag)
+
                 return self.peripheralManager.startAdvertising(
                     [
                         CBAdvertisementDataLocalNameKey: "Van",
@@ -131,17 +137,37 @@ class MasterManager {
         DispatchQueue.main.async(execute: handler)
     }
 
+    private var pendingDataToSend = Data()
+    private func sendPendingPackets() {
+        objc_sync_enter(pendingDataToSend)
+        defer { objc_sync_exit(pendingDataToSend) }
+        if pendingDataToSend.isEmpty {
+            return
+        }
+
+        let subData = pendingDataToSend.subdata(in: pendingDataToSend.startIndex..<pendingDataToSend.index(pendingDataToSend.startIndex, offsetBy: min(20, pendingDataToSend.count)))
+
+        if peripheralManager.updateValue(subData,
+                                         for: sendCharacterictic,
+                                         onSubscribedCentrals: nil) {
+
+            if pendingDataToSend.count > 20 {
+                pendingDataToSend = pendingDataToSend.subdata(in: pendingDataToSend.index(after: 19)..<pendingDataToSend.endIndex)
+            } else {
+                pendingDataToSend = Data()
+            }
+            DispatchQueue.global().async { [weak self] in
+                self?.sendPendingPackets()
+            }
+        }
+    }
+
     func send(command: String) {
         print("Sending command \(command)")
-        var data = "\(command)\n".data(using: .utf8)!
-        while !data.isEmpty {
-            if !peripheralManager.updateValue(data.subdata(in: 0..<min(20, data.count)),
-                                              for: sendCharacterictic,
-                                              onSubscribedCentrals: centrals) {
-                break
-            }
-            guard data.count > 20 else { break }
-            data = data.subdata(in: 20..<data.count)
-        }
+        let data = "\(command)\n".data(using: .utf8)!
+        objc_sync_enter(pendingDataToSend)
+        pendingDataToSend += data
+        objc_sync_exit(pendingDataToSend)
+        self.sendPendingPackets()
     }
 }
