@@ -89,7 +89,7 @@ class MainViewController: UIViewController {
             } else if command.starts(with: "WS") {
                 do {
                     if let data = commandData.data(using: .utf8) {
-                        let networks = try JSONDecoder().decode([[String]].self, from: data)
+                        let networks = try JSONDecoder().decode([[StringOrInt]].self, from: data)
                         self.wifiNetworks = networks.compactMap { WifiNetwork(from: $0) }.sorted()
                         self.wifiTable.reloadData()
                     }
@@ -143,6 +143,17 @@ class MainViewController: UIViewController {
     }
 }
 
+struct StringOrInt: Decodable {
+    let asString: String?
+    let asInt: Int?
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        asInt = try? container.decode(Int.self)
+        asString = try? container.decode(String.self)
+    }
+}
+
 extension MainViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         let network = wifiNetworks[indexPath.row]
@@ -185,13 +196,15 @@ struct WifiNetwork {
     let strength: Int
     let frequency: Int
 
-    init?(from network: [String]) {
-        name = network[0]
-        open = network[3] == "O"
-        guard !name.isEmpty,
+    init?(from network: [StringOrInt]) {
+        guard let name = network[0].asString,
+            !name.isEmpty,
             name != "agnes",
-            let strength = Int(network[2]),
-            let frequency = Int(network[1]) else { return nil }
+            let open = network[3].asInt,
+            let strength = network[2].asInt,
+            let frequency = network[1].asInt else { return nil }
+        self.name = name
+        self.open = open != 0
         self.strength = strength
         self.frequency = frequency
     }
