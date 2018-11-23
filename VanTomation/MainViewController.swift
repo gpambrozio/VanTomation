@@ -224,10 +224,14 @@ extension WifiNetwork: Comparable {
 
 class WifiCell: UITableViewCell {
     @IBOutlet private var networkName: UILabel!
-    @IBOutlet private var networkSecurity: UILabel!
+    @IBOutlet private var networkStrenght: UILabel!
+    @IBOutlet private var networkFrequency: UILabel!
+    @IBOutlet private var openImage: UIImageView!
 
     fileprivate func fill(with network: WifiNetwork) {
         networkName.text = network.name
-        networkSecurity.text = "\(network.strength)\(network.open ? "O" : "L")"
+        networkStrenght.text = "\(network.strength)"
+        networkFrequency.text = network.frequency >= 5000 ? "5k" : "2k"
+        openImage.image = UIImage.init(named: network.open ? "unlocked" : "locked")!
     }
 }
