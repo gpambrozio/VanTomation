@@ -94,10 +94,10 @@ class MainViewController: UIViewController {
                         self.wifiTable.reloadData()
                     }
                 } catch let error {
-                    print("\(error)")
+                    print("Error decoding json: \(error)")
                 }
             } else {
-                print("command: \(command)")
+                print("unknown command: \(command)")
             }
         }).disposed(by: disposeBag)
 
@@ -137,10 +137,34 @@ class MainViewController: UIViewController {
         let command = String(format: "TT\(thermostatOn ? "1" : "0")%04X", target)
         masterManager.send(command: command)
     }
+
+    private func addNetwork(_ network: WifiNetwork, password: String = "") {
+        masterManager.send(command: "WA\(network.name),\(password)")
+    }
 }
 
 extension MainViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        let network = wifiNetworks[indexPath.row]
+        if network.open {
+            self.addNetwork(network)
+        } else {
+            let alert = UIAlertController(title: nil,
+                                          message: "What's the password?",
+                                          preferredStyle: .alert)
+            alert.addTextField()
+            alert.addAction(.init(title: "Cancel", style: .cancel, handler: { _ in alert.dismiss(animated: true) }))
+            alert.addAction(.init(title: "OK", style: .default, handler: { [weak self] _ in
+                guard let textField = alert.textFields?.first, let text = textField.text else { return }
+                guard let self = self else { return }
+                self.addNetwork(network, password: text)
+                alert.dismiss(animated: true)
+            }))
+            self.present(alert, animated: true)
+        }
 
+        return nil
+    }
 }
 
 extension MainViewController: UITableViewDataSource {
