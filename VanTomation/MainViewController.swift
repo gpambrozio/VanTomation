@@ -63,6 +63,20 @@ class MainViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        masterManager.connectedStream.subscribe(onNext: { [weak self] connected in
+            guard let self = self else { return }
+            self.connectedLabel.text = connected ? "Connected" : "Disconnected"
+            if !connected {
+                self.wifiNetworks = []
+                self.wifiTable.reloadData()
+                self.wifiIp = nil
+                self.wifiNetwork = nil
+                self.temperatureFahrenheitLabel.text = "?"
+                self.temperatureCelsiusLabel.text = "?"
+                self.humidityLabel.text = "?"
+            }
+        }).disposed(by: disposeBag)
+
         masterManager.commandsStream.subscribe(onNext: { [weak self] command in
             guard let self = self else { return }
             let commandData = command[command.index(command.startIndex, offsetBy: 2)...]

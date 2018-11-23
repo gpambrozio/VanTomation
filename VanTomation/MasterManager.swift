@@ -39,6 +39,7 @@ class MasterManager {
     private var pastData = ""
     let statusStream = PublishSubject<String>()
     let commandsStream = PublishSubject<String>()
+    let connectedStream = PublishSubject<Bool>()
 
     private init() {
         service = CBMutableService(type: CBUUID(string: Constants.serviceUUID), primary: true)
@@ -66,7 +67,7 @@ class MasterManager {
                 self.peripheralManager.observeOnSubscribe()
                     .subscribe(onNext: { [weak self] (central, characteristic) in
                         guard let self = self else { return }
-                        self.changeStatus("Connected")
+                        self.connectedStream.onNext(true)
                         self.centrals.append(central)
                         print("central: \(central), char: \(characteristic)")
                     })
@@ -75,7 +76,7 @@ class MasterManager {
                 self.peripheralManager.observeOnUnsubscribe()
                     .subscribe(onNext: { [weak self] (central, characteristic) in
                         guard let self = self else { return }
-                        self.changeStatus("Disconnected")
+                        self.connectedStream.onNext(false)
                         self.centrals.removeAll(where: { (otherCentral) -> Bool in
                             central.identifier == otherCentral.identifier
                         })
