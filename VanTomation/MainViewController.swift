@@ -143,7 +143,7 @@ class MainViewController: UIViewController {
     }
 }
 
-struct StringOrInt: Decodable {
+private struct StringOrInt: Decodable {
     let asString: String?
     let asInt: Int?
 
@@ -190,7 +190,7 @@ extension MainViewController: UITableViewDataSource {
     }
 }
 
-struct WifiNetwork {
+private struct WifiNetwork {
     let name: String
     let open: Bool
     let strength: Int
@@ -226,7 +226,7 @@ class WifiCell: UITableViewCell {
     @IBOutlet private var networkName: UILabel!
     @IBOutlet private var networkSecurity: UILabel!
 
-    func fill(with network: WifiNetwork) {
+    fileprivate func fill(with network: WifiNetwork) {
         networkName.text = network.name
         networkSecurity.text = "\(network.strength)\(network.open ? "O" : "L")"
     }
