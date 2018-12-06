@@ -95,7 +95,7 @@ class MainViewController: UIViewController {
             } else if command.starts(with: "TO") {
                 self.thermostatSwitch.isOn = commandData[commandData.startIndex] == "1"
             } else if command.starts(with: "Tt") {
-                self.targetTemperature = (Int(commandData) ?? 0) / 10
+                self.targetTemperature = Int(commandData) ?? 0
             } else if command.starts(with: "Ws") {
                 self.wifiNetwork = commandData.isEmpty ? nil : "\(commandData)"
             } else if command.starts(with: "Wi") {
@@ -147,8 +147,7 @@ class MainViewController: UIViewController {
     }
 
     private func sendThermostatCommand() {
-        let target = targetTemperature * 10
-        let command = String(format: "TT\(thermostatOn ? "1" : "0")%04X", target)
+        let command = String(format: "TT\(thermostatOn ? "1" : "0")%04X", targetTemperature)
         masterManager.send(command: command)
     }
 
@@ -245,7 +244,7 @@ class WifiCell: UITableViewCell {
     fileprivate func fill(with network: WifiNetwork) {
         networkName.text = network.name
         networkStrenght.text = "\(network.strength)"
-        networkFrequency.text = network.frequency >= 5000 ? "5k" : "2k"
+        networkFrequency.text = network.frequency >= 5000 ? "5G" : "2G"
         openImage.image = UIImage.init(named: network.open ? "unlocked" : "locked")!
     }
 }
