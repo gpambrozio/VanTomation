@@ -1,6 +1,9 @@
 PODS:
   - fluid-slider (0.0.6):
     - pop
+  - MMWormhole (2.0.0):
+    - MMWormhole/Core (= 2.0.0)
+  - MMWormhole/Core (2.0.0)
   - pop (1.0.10)
   - RxBluetoothKit (5.1.4):
     - RxSwift (~> 4.0)
@@ -8,21 +11,24 @@ PODS:
 
 DEPENDENCIES:
   - fluid-slider
+  - MMWormhole (~> 2.0.0)
   - RxBluetoothKit
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - fluid-slider
+    - MMWormhole
     - pop
     - RxBluetoothKit
     - RxSwift
 
 SPEC CHECKSUMS:
   fluid-slider: 3aeb48bd7f875dc0431963fde12674e69c7c0ed2
+  MMWormhole: 0cd3fd35a9118b2e2d762b499f54eeaace0be791
   pop: 82ca6b068ce9278fd350fd9dd09482a0ce9492e6
   RxBluetoothKit: d18f7beb5fd4d2b24659d57548e38d5d2fac885b
   RxSwift: fe0fd770a43acdb7d0a53da411c9b892e69bb6e4
 
-PODFILE CHECKSUM: 62a51e5b2a0aff6d5673101dc52756e19d262b3f
+PODFILE CHECKSUM: b376aad6fbaf6187a45c7e8dcfc0041f61da2260
 
 COCOAPODS: 1.5.3

@@ -8,7 +8,19 @@
 
 /* Begin PBXBuildFile section */
 		671680447B9AAF27D48CB121 /* Pods_VanTomationTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF0657AD084F29454B02218E /* Pods_VanTomationTests.framework */; };
+		81CA7BBD21B9A45200344D45 /* IntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CA7BBC21B9A45200344D45 /* IntentHandler.swift */; };
+		81CA7BC121B9A45200344D45 /* AutomationIntents.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 81CA7BBA21B9A45200344D45 /* AutomationIntents.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		81DEA22B21BB407700D1D4EF /* IntercomManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81DEA22A21BB407700D1D4EF /* IntercomManager.swift */; };
+		81DEA22C21BB43A900D1D4EF /* AutomationIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 81FF8B4721B9F096009DC68F /* AutomationIntents.intentdefinition */; };
+		81FF8B4821B9F096009DC68F /* AutomationIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 81FF8B4721B9F096009DC68F /* AutomationIntents.intentdefinition */; settings = {ATTRIBUTES = (no_codegen, ); }; };
+		81FF8B4921B9F096009DC68F /* AutomationIntents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 81FF8B4721B9F096009DC68F /* AutomationIntents.intentdefinition */; settings = {ATTRIBUTES = (no_codegen, ); }; };
+		81FF8B4D21BA0105009DC68F /* LightsIntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81FF8B4C21BA0105009DC68F /* LightsIntentHandler.swift */; };
+		81FF8B5721BA033E009DC68F /* VanTomationCommons.h in Headers */ = {isa = PBXBuildFile; fileRef = 81FF8B5521BA033E009DC68F /* VanTomationCommons.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		81FF8B5A21BA033E009DC68F /* VanTomationCommons.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81FF8B5321BA033E009DC68F /* VanTomationCommons.framework */; };
+		81FF8B5B21BA033E009DC68F /* VanTomationCommons.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 81FF8B5321BA033E009DC68F /* VanTomationCommons.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		81FF8B6221BA037D009DC68F /* VanTomationCommons.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81FF8B5321BA033E009DC68F /* VanTomationCommons.framework */; };
 		A6C8A7378DE3A1E0B9E107D1 /* Pods_VanTomation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 224B247CA41DBCFEA61576AF /* Pods_VanTomation.framework */; };
+		AF079BB29DC37BD37C0AD1EF /* Pods_VanTomationCommons.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 51C74603B8430F4CE17E180E /* Pods_VanTomationCommons.framework */; };
 		B19F9D25BB5C133422BEE01D /* Pods_VanTomationUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7622A07071BC303034BCD6DE /* Pods_VanTomationUITests.framework */; };
 		EC3D3EB62128BAFB00E2E7EE /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC3D3EB52128BAFB00E2E7EE /* MainViewController.swift */; };
 		EC3D3EB8213104C300E2E7EE /* UIAlertControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC3D3EB7213104C300E2E7EE /* UIAlertControllerExtensions.swift */; };
@@ -25,6 +37,27 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		81CA7BBF21B9A45200344D45 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EC8F567B20EB2E82005D6959 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 81CA7BB921B9A45200344D45;
+			remoteInfo = AutomationIntents;
+		};
+		81FF8B5821BA033E009DC68F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EC8F567B20EB2E82005D6959 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 81FF8B5221BA033E009DC68F;
+			remoteInfo = VanTonationCommons;
+		};
+		81FF8B6021BA0352009DC68F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EC8F567B20EB2E82005D6959 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 81FF8B5221BA033E009DC68F;
+			remoteInfo = VanTonationCommons;
+		};
 		EC8F569820EB2E84005D6959 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EC8F567B20EB2E82005D6959 /* Project object */;
@@ -41,11 +74,50 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		81CA7BC521B9A45200344D45 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				81CA7BC121B9A45200344D45 /* AutomationIntents.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		81FF8B5F21BA033E009DC68F /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				81FF8B5B21BA033E009DC68F /* VanTomationCommons.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		103484006F8E181F5DEB5DEC /* Pods-VanTomationUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VanTomationUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-VanTomationUITests/Pods-VanTomationUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		1687BDEF7B2AA700588DC514 /* Pods-VanTomationCommons.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VanTomationCommons.debug.xcconfig"; path = "Pods/Target Support Files/Pods-VanTomationCommons/Pods-VanTomationCommons.debug.xcconfig"; sourceTree = "<group>"; };
 		224B247CA41DBCFEA61576AF /* Pods_VanTomation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VanTomation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		368C196598E59C2C19274BCE /* Pods-VanTomation.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VanTomation.release.xcconfig"; path = "Pods/Target Support Files/Pods-VanTomation/Pods-VanTomation.release.xcconfig"; sourceTree = "<group>"; };
+		51C74603B8430F4CE17E180E /* Pods_VanTomationCommons.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VanTomationCommons.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7622A07071BC303034BCD6DE /* Pods_VanTomationUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VanTomationUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		81CA7BBA21B9A45200344D45 /* AutomationIntents.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = AutomationIntents.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		81CA7BBC21B9A45200344D45 /* IntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentHandler.swift; sourceTree = "<group>"; };
+		81CA7BBE21B9A45200344D45 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		81DEA22A21BB407700D1D4EF /* IntercomManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntercomManager.swift; sourceTree = "<group>"; };
+		81FF8B4721B9F096009DC68F /* AutomationIntents.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = AutomationIntents.intentdefinition; sourceTree = "<group>"; };
+		81FF8B4A21B9F342009DC68F /* VanTomation.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = VanTomation.entitlements; sourceTree = "<group>"; };
+		81FF8B4B21B9F37C009DC68F /* AutomationIntents.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AutomationIntents.entitlements; sourceTree = "<group>"; };
+		81FF8B4C21BA0105009DC68F /* LightsIntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightsIntentHandler.swift; sourceTree = "<group>"; };
+		81FF8B5321BA033E009DC68F /* VanTomationCommons.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = VanTomationCommons.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		81FF8B5521BA033E009DC68F /* VanTomationCommons.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VanTomationCommons.h; sourceTree = "<group>"; };
+		81FF8B5621BA033E009DC68F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8BFC22E0E299E4253CE6A0E8 /* Pods-VanTomationCommons.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VanTomationCommons.release.xcconfig"; path = "Pods/Target Support Files/Pods-VanTomationCommons/Pods-VanTomationCommons.release.xcconfig"; sourceTree = "<group>"; };
 		BA6C123B898D8A8469E88FAD /* Pods-VanTomationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VanTomationTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-VanTomationTests/Pods-VanTomationTests.debug.xcconfig"; sourceTree = "<group>"; };
 		BE7180F0C42A373ED079BB3B /* Pods-VanTomationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VanTomationTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-VanTomationTests/Pods-VanTomationTests.release.xcconfig"; sourceTree = "<group>"; };
 		C01FC24EC56D386209E14D14 /* Pods-VanTomation.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VanTomation.debug.xcconfig"; path = "Pods/Target Support Files/Pods-VanTomation/Pods-VanTomation.debug.xcconfig"; sourceTree = "<group>"; };
@@ -72,11 +144,28 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		81CA7BB721B9A45200344D45 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				81FF8B6221BA037D009DC68F /* VanTomationCommons.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		81FF8B5021BA033E009DC68F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AF079BB29DC37BD37C0AD1EF /* Pods_VanTomationCommons.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		EC8F568020EB2E82005D6959 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				A6C8A7378DE3A1E0B9E107D1 /* Pods_VanTomation.framework in Frameworks */,
+				81FF8B5A21BA033E009DC68F /* VanTomationCommons.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -108,6 +197,8 @@
 				BE7180F0C42A373ED079BB3B /* Pods-VanTomationTests.release.xcconfig */,
 				103484006F8E181F5DEB5DEC /* Pods-VanTomationUITests.debug.xcconfig */,
 				DD5AB710BB35CE5026ED0398 /* Pods-VanTomationUITests.release.xcconfig */,
+				1687BDEF7B2AA700588DC514 /* Pods-VanTomationCommons.debug.xcconfig */,
+				8BFC22E0E299E4253CE6A0E8 /* Pods-VanTomationCommons.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -118,8 +209,30 @@
 				224B247CA41DBCFEA61576AF /* Pods_VanTomation.framework */,
 				FF0657AD084F29454B02218E /* Pods_VanTomationTests.framework */,
 				7622A07071BC303034BCD6DE /* Pods_VanTomationUITests.framework */,
+				51C74603B8430F4CE17E180E /* Pods_VanTomationCommons.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		81CA7BBB21B9A45200344D45 /* AutomationIntents */ = {
+			isa = PBXGroup;
+			children = (
+				81FF8B4B21B9F37C009DC68F /* AutomationIntents.entitlements */,
+				81CA7BBC21B9A45200344D45 /* IntentHandler.swift */,
+				81FF8B4C21BA0105009DC68F /* LightsIntentHandler.swift */,
+				81CA7BBE21B9A45200344D45 /* Info.plist */,
+			);
+			path = AutomationIntents;
+			sourceTree = "<group>";
+		};
+		81FF8B5421BA033E009DC68F /* VanTomationCommons */ = {
+			isa = PBXGroup;
+			children = (
+				81FF8B5521BA033E009DC68F /* VanTomationCommons.h */,
+				81FF8B5621BA033E009DC68F /* Info.plist */,
+				81DEA22A21BB407700D1D4EF /* IntercomManager.swift */,
+			);
+			path = VanTomationCommons;
 			sourceTree = "<group>";
 		};
 		EC8F567A20EB2E82005D6959 = {
@@ -128,6 +241,8 @@
 				EC8F568520EB2E82005D6959 /* VanTomation */,
 				EC8F569A20EB2E84005D6959 /* VanTomationTests */,
 				EC8F56A520EB2E84005D6959 /* VanTomationUITests */,
+				81CA7BBB21B9A45200344D45 /* AutomationIntents */,
+				81FF8B5421BA033E009DC68F /* VanTomationCommons */,
 				EC8F568420EB2E82005D6959 /* Products */,
 				0F694128A212E944581B44B4 /* Pods */,
 				6B2A425F4B309A9BDDE5C60C /* Frameworks */,
@@ -140,6 +255,8 @@
 				EC8F568320EB2E82005D6959 /* VanTomation.app */,
 				EC8F569720EB2E84005D6959 /* VanTomationTests.xctest */,
 				EC8F56A220EB2E84005D6959 /* VanTomationUITests.xctest */,
+				81CA7BBA21B9A45200344D45 /* AutomationIntents.appex */,
+				81FF8B5321BA033E009DC68F /* VanTomationCommons.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -147,6 +264,7 @@
 		EC8F568520EB2E82005D6959 /* VanTomation */ = {
 			isa = PBXGroup;
 			children = (
+				81FF8B4A21B9F342009DC68F /* VanTomation.entitlements */,
 				EC8F568620EB2E82005D6959 /* AppDelegate.swift */,
 				EC8F56B420EB35B3005D6959 /* MasterManager.swift */,
 				EC3D3EB52128BAFB00E2E7EE /* MainViewController.swift */,
@@ -158,6 +276,7 @@
 				ECADEAE320FAED5A00E42F17 /* ColorPickerLens.swift */,
 				ECADEAE520FAF75600E42F17 /* ColorPickerImageView.swift */,
 				EC3D3EB7213104C300E2E7EE /* UIAlertControllerExtensions.swift */,
+				81FF8B4721B9F096009DC68F /* AutomationIntents.intentdefinition */,
 			);
 			path = VanTomation;
 			sourceTree = "<group>";
@@ -182,7 +301,55 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		81FF8B4E21BA033E009DC68F /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				81FF8B5721BA033E009DC68F /* VanTomationCommons.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
+		81CA7BB921B9A45200344D45 /* AutomationIntents */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 81CA7BC421B9A45200344D45 /* Build configuration list for PBXNativeTarget "AutomationIntents" */;
+			buildPhases = (
+				81CA7BB621B9A45200344D45 /* Sources */,
+				81CA7BB721B9A45200344D45 /* Frameworks */,
+				81CA7BB821B9A45200344D45 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				81FF8B6121BA0352009DC68F /* PBXTargetDependency */,
+			);
+			name = AutomationIntents;
+			productName = AutomationIntents;
+			productReference = 81CA7BBA21B9A45200344D45 /* AutomationIntents.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		81FF8B5221BA033E009DC68F /* VanTomationCommons */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 81FF8B5C21BA033E009DC68F /* Build configuration list for PBXNativeTarget "VanTomationCommons" */;
+			buildPhases = (
+				99A763A0A995AB4A332C4368 /* [CP] Check Pods Manifest.lock */,
+				81FF8B4E21BA033E009DC68F /* Headers */,
+				81FF8B4F21BA033E009DC68F /* Sources */,
+				81FF8B5021BA033E009DC68F /* Frameworks */,
+				81FF8B5121BA033E009DC68F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = VanTomationCommons;
+			productName = VanTonationCommons;
+			productReference = 81FF8B5321BA033E009DC68F /* VanTomationCommons.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 		EC8F568220EB2E82005D6959 /* VanTomation */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = EC8F56AB20EB2E84005D6959 /* Build configuration list for PBXNativeTarget "VanTomation" */;
@@ -192,10 +359,14 @@
 				EC8F568020EB2E82005D6959 /* Frameworks */,
 				EC8F568120EB2E82005D6959 /* Resources */,
 				DC1F7BA65D1F2A3BCEF977A5 /* [CP] Embed Pods Frameworks */,
+				81CA7BC521B9A45200344D45 /* Embed App Extensions */,
+				81FF8B5F21BA033E009DC68F /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				81CA7BC021B9A45200344D45 /* PBXTargetDependency */,
+				81FF8B5921BA033E009DC68F /* PBXTargetDependency */,
 			);
 			name = VanTomation;
 			productName = VanTomation;
@@ -246,14 +417,32 @@
 		EC8F567B20EB2E82005D6959 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0940;
+				LastSwiftUpdateCheck = 1010;
 				LastUpgradeCheck = 0940;
 				ORGANIZATIONNAME = "Gustavo Ambrozio";
 				TargetAttributes = {
+					81CA7BB921B9A45200344D45 = {
+						CreatedOnToolsVersion = 10.1;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
+					};
+					81FF8B5221BA033E009DC68F = {
+						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1010;
+					};
 					EC8F568220EB2E82005D6959 = {
 						CreatedOnToolsVersion = 9.4.1;
 						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
 							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+							com.apple.Siri = {
 								enabled = 1;
 							};
 						};
@@ -284,11 +473,27 @@
 				EC8F568220EB2E82005D6959 /* VanTomation */,
 				EC8F569620EB2E84005D6959 /* VanTomationTests */,
 				EC8F56A120EB2E84005D6959 /* VanTomationUITests */,
+				81CA7BB921B9A45200344D45 /* AutomationIntents */,
+				81FF8B5221BA033E009DC68F /* VanTomationCommons */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		81CA7BB821B9A45200344D45 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		81FF8B5121BA033E009DC68F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		EC8F568120EB2E82005D6959 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -328,6 +533,28 @@
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/Pods-VanTomationTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		99A763A0A995AB4A332C4368 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-VanTomationCommons-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -381,6 +608,7 @@
 				"${BUILT_PRODUCTS_DIR}/RxSwift/RxSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/fluid-slider/fluid_slider.framework",
 				"${BUILT_PRODUCTS_DIR}/pop/pop.framework",
+				"${BUILT_PRODUCTS_DIR}/MMWormhole/MMWormhole.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -388,6 +616,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxSwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/fluid_slider.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/pop.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MMWormhole.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -397,6 +626,25 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		81CA7BB621B9A45200344D45 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				81FF8B4D21BA0105009DC68F /* LightsIntentHandler.swift in Sources */,
+				81CA7BBD21B9A45200344D45 /* IntentHandler.swift in Sources */,
+				81FF8B4921B9F096009DC68F /* AutomationIntents.intentdefinition in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		81FF8B4F21BA033E009DC68F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				81DEA22B21BB407700D1D4EF /* IntercomManager.swift in Sources */,
+				81DEA22C21BB43A900D1D4EF /* AutomationIntents.intentdefinition in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		EC8F567F20EB2E82005D6959 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -406,6 +654,7 @@
 				EC3D3EB8213104C300E2E7EE /* UIAlertControllerExtensions.swift in Sources */,
 				EC8F56B520EB35B3005D6959 /* MasterManager.swift in Sources */,
 				EC3D3EB62128BAFB00E2E7EE /* MainViewController.swift in Sources */,
+				81FF8B4821B9F096009DC68F /* AutomationIntents.intentdefinition in Sources */,
 				ECADEAE620FAF75600E42F17 /* ColorPickerImageView.swift in Sources */,
 				ECADEAE420FAED5A00E42F17 /* ColorPickerLens.swift in Sources */,
 			);
@@ -430,6 +679,21 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		81CA7BC021B9A45200344D45 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 81CA7BB921B9A45200344D45 /* AutomationIntents */;
+			targetProxy = 81CA7BBF21B9A45200344D45 /* PBXContainerItemProxy */;
+		};
+		81FF8B5921BA033E009DC68F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 81FF8B5221BA033E009DC68F /* VanTomationCommons */;
+			targetProxy = 81FF8B5821BA033E009DC68F /* PBXContainerItemProxy */;
+		};
+		81FF8B6121BA0352009DC68F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 81FF8B5221BA033E009DC68F /* VanTomationCommons */;
+			targetProxy = 81FF8B6021BA0352009DC68F /* PBXContainerItemProxy */;
+		};
 		EC8F569920EB2E84005D6959 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = EC8F568220EB2E82005D6959 /* VanTomation */;
@@ -462,6 +726,117 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		81CA7BC221B9A45200344D45 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = AutomationIntents/AutomationIntents.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = XG2WG7U93U;
+				INFOPLIST_FILE = AutomationIntents/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = br.eng.gustavo.VanTomation.AutomationIntents;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		81CA7BC321B9A45200344D45 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = AutomationIntents/AutomationIntents.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = XG2WG7U93U;
+				INFOPLIST_FILE = AutomationIntents/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = br.eng.gustavo.VanTomation.AutomationIntents;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		81FF8B5D21BA033E009DC68F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1687BDEF7B2AA700588DC514 /* Pods-VanTomationCommons.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = XG2WG7U93U;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "$(SRCROOT)/VanTomationCommons/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = br.eng.gustavo.VanTomationCommons;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		81FF8B5E21BA033E009DC68F /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8BFC22E0E299E4253CE6A0E8 /* Pods-VanTomationCommons.release.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = XG2WG7U93U;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "$(SRCROOT)/VanTomationCommons/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = br.eng.gustavo.VanTomationCommons;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
 		EC8F56A920EB2E84005D6959 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -580,10 +955,13 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C01FC24EC56D386209E14D14 /* Pods-VanTomation.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = VanTomation/VanTomation.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = XG2WG7U93U;
 				INFOPLIST_FILE = VanTomation/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -599,10 +977,13 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 368C196598E59C2C19274BCE /* Pods-VanTomation.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = VanTomation/VanTomation.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = XG2WG7U93U;
 				INFOPLIST_FILE = VanTomation/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -703,6 +1084,24 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		81CA7BC421B9A45200344D45 /* Build configuration list for PBXNativeTarget "AutomationIntents" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				81CA7BC221B9A45200344D45 /* Debug */,
+				81CA7BC321B9A45200344D45 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		81FF8B5C21BA033E009DC68F /* Build configuration list for PBXNativeTarget "VanTomationCommons" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				81FF8B5D21BA033E009DC68F /* Debug */,
+				81FF8B5E21BA033E009DC68F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		EC8F567E20EB2E82005D6959 /* Build configuration list for PBXProject "VanTomation" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

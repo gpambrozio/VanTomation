@@ -22,6 +22,10 @@
 	<true/>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>Because...</string>
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>LightsIntent</string>
+	</array>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>bluetooth-peripheral</string>

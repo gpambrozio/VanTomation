@@ -7,15 +7,25 @@
 //
 
 import UIKit
+import IntentsUI
+import Intents
+import VanTomationCommons
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
+    func createIntents() {
+        let intent = LightsIntent()
+        intent.onOff = .on
+        let interaction = INInteraction(intent: intent, response: nil)
+        interaction.donate(completion: nil)
+    }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        createIntents()
         return true
     }
 
@@ -41,6 +51,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
+    func application(_ application: UIApplication, willContinueUserActivityWithType userActivityType: String) -> Bool {
+        if userActivityType == "com.razeware.NewArticle" {
+            return true
+        }
 
+        return true
+    }
+
+    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+        guard userActivity.interaction == nil else  {
+
+            return false
+        }
+
+        return true
+    }
 }
 
