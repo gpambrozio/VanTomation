@@ -76,28 +76,30 @@ class LightsViewController: UIViewController {
                                      blue: colors.advanced(by: 2),
                                      alpha: nil) else { return }
 
-            command = String(format: "L\(strip)C%02X%02X%02X%02X",
-                             Int(brightnessSlider.fraction * 40),
-                             Int(colors[0] * 255),
-                             Int(colors[1] * 255),
-                             Int(colors[2] * 255))
+            command = String(
+                format: "L\(strip)C%02X00%02X%02X%02X",
+                Int(brightnessSlider.fraction * 40),
+                Int(colors[0] * 255),
+                Int(colors[1] * 255),
+                Int(colors[2] * 255))
         case 1:
             speedSlider.isHidden = false
-            command = String(format: "L\(strip)R%02X%02X",
-                             Int(brightnessSlider.fraction * 40),
-                             Int(speedSlider.fraction * 200))
+            command = String(
+                format: "L\(strip)R%02X%02X000000",
+                Int(brightnessSlider.fraction * 40),
+                Int(speedSlider.fraction * 200))
 
         case 2:
             speedSlider.isHidden = false
-            command = String(format: "L\(strip)T%02X%02X",
+            command = String(
+                format: "L\(strip)T%02X%02X000000",
                 Int(brightnessSlider.fraction * 40),
                 Int(speedSlider.fraction * 200 + 24))
         default:
             command = ""
         }
 
-        guard command.count > 0 else { return }
+        guard !command.isEmpty else { return }
         masterManager.send(command: command)
     }
 }
-

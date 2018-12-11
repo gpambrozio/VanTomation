@@ -69,7 +69,7 @@ class MasterManager {
                         guard let self = self else { return }
                         self.connectedStream.onNext(true)
                         self.centrals.append(central)
-                        print("central: \(central), char: \(characteristic)")
+                        print("connected: \(central)")
                     })
                     .disposed(by: self.disposeBag)
 
@@ -80,7 +80,7 @@ class MasterManager {
                         self.centrals.removeAll(where: { (otherCentral) -> Bool in
                             central.identifier == otherCentral.identifier
                         })
-                        print("central: \(central), char: \(characteristic)")
+                        print("disconnected: \(central)")
                     })
                     .disposed(by: self.disposeBag)
 
