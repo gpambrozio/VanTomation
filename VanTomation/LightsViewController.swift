@@ -78,7 +78,7 @@ class LightsViewController: UIViewController {
 
             command = String(
                 format: "L\(strip)C%02X00%02X%02X%02X",
-                Int(brightnessSlider.fraction * 40),
+                Int(brightnessSlider.fraction * 100),
                 Int(colors[0] * 255),
                 Int(colors[1] * 255),
                 Int(colors[2] * 255))
@@ -86,14 +86,14 @@ class LightsViewController: UIViewController {
             speedSlider.isHidden = false
             command = String(
                 format: "L\(strip)R%02X%02X000000",
-                Int(brightnessSlider.fraction * 40),
+                Int(brightnessSlider.fraction * 100),
                 Int(speedSlider.fraction * 200))
 
         case 2:
             speedSlider.isHidden = false
             command = String(
                 format: "L\(strip)T%02X%02X000000",
-                Int(brightnessSlider.fraction * 40),
+                Int(brightnessSlider.fraction * 100),
                 Int(speedSlider.fraction * 200 + 24))
         default:
             command = ""
