@@ -44,6 +44,7 @@ class MainViewController: UIViewController {
                 self.temperatureCelsiusLabel.text = "?"
                 self.humidityLabel.text = "?"
             }
+            self.tabBarItem.badgeValue = connected ? "" : nil
         }).disposed(by: disposeBag)
 
         masterManager.commandsStream.subscribe(onNext: { [weak self] command in
@@ -54,7 +55,7 @@ class MainViewController: UIViewController {
             } else if command.starts(with: "Ti") {
                 let temperatureF = (Double(commandData) ?? 0) / 10.0
                 self.temperatureFahrenheitLabel.text = String(format: "i %.1f°F", temperatureF)
-                self.navigationController?.tabBarItem.badgeValue = "\(temperatureF)"
+                self.tabBarItem.badgeValue = "\(temperatureF)"
             } else if command.starts(with: "To") {
                 let temperatureF = (Double(commandData) ?? 0) / 10.0
                 self.temperatureCelsiusLabel.text = String(format: "o %.1f°F", temperatureF)

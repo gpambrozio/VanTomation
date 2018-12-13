@@ -22,8 +22,10 @@ class WiFiViewController: UIViewController {
     private func updateWifiLabel() {
         guard let wifiNetwork = wifiNetwork else {
             wifiLabel.text = "Disconnected"
+            self.tabBarItem.badgeValue = nil
             return
         }
+        self.tabBarItem.badgeValue = ""
         guard let wifiIp = wifiIp, !wifiIp.isEmpty else {
             wifiLabel.text = wifiNetwork
             return
