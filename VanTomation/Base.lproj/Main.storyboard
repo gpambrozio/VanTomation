@@ -232,7 +232,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="a24-UZ-E6i"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Main" id="DC2-av-f6a"/>
+                    <tabBarItem key="tabBarItem" title="Agnes" image="iconVanDefault" selectedImage="iconVanDefault" id="DC2-av-f6a"/>
                     <connections>
                         <outlet property="connectedLabel" destination="H7r-05-41Q" id="1fY-B2-Iy0"/>
                         <outlet property="humidityLabel" destination="Xw8-vF-1Uh" id="hUe-Id-SAm"/>
@@ -256,58 +256,117 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" alignment="center" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="cbN-0g-kQ4">
-                                <rect key="frame" x="10" y="20" width="355" height="527"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" alignment="center" spacing="30" translatesAutoresizingMaskIntoConstraints="NO" id="cbN-0g-kQ4">
+                                <rect key="frame" x="10" y="57" width="355" height="516"/>
                                 <subviews>
                                     <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="DJY-s8-9xM">
-                                        <rect key="frame" x="115" y="0.0" width="125" height="29"/>
+                                        <rect key="frame" x="16" y="0.0" width="323" height="29"/>
                                         <segments>
                                             <segment title="Inside"/>
                                             <segment title="Outside"/>
                                         </segments>
                                     </segmentedControl>
-                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="fs5-0g-hxd">
-                                        <rect key="frame" x="77.5" y="48" width="200" height="29"/>
-                                        <segments>
-                                            <segment title="Color"/>
-                                            <segment title="Rainbow"/>
-                                            <segment title="Theater"/>
-                                        </segments>
-                                        <connections>
-                                            <action selector="didChangeLedMode" destination="BYZ-38-t0r" eventType="valueChanged" id="dD7-BB-z0P"/>
-                                        </connections>
-                                    </segmentedControl>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="oqg-yv-Ygr" customClass="Slider" customModule="fluid_slider">
-                                        <rect key="frame" x="0.0" y="96" width="355" height="25"/>
-                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eS0-fz-j4e">
+                                        <rect key="frame" x="27.5" y="58" width="300" height="300"/>
+                                        <subviews>
+                                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFit" insetsLayoutMarginsFromSafeArea="NO" image="ColorPicker" translatesAutoresizingMaskIntoConstraints="NO" id="vzX-ke-q7g" customClass="ColorPickerImageView" customModule="VanTomation" customModuleProvider="target">
+                                                <rect key="frame" x="0.0" y="0.0" width="300" height="300"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" secondItem="vzX-ke-q7g" secondAttribute="height" multiplier="1:1" id="ajs-qK-q4d"/>
+                                                </constraints>
+                                            </imageView>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="u50-gv-ok6">
+                                                <rect key="frame" x="134" y="134" width="32" height="32"/>
+                                                <state key="normal" image="iconPowerDefault"/>
+                                                <connections>
+                                                    <action selector="didTapPower:" destination="BYZ-38-t0r" eventType="touchUpInside" id="YrH-31-QVn"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="f1f-Vx-UpK">
+                                                <rect key="frame" x="0.0" y="0.0" width="55" height="29"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <state key="normal" title="Rainbow"/>
+                                                <connections>
+                                                    <action selector="didTapRainbow:" destination="BYZ-38-t0r" eventType="touchUpInside" id="1hw-fu-ggv"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gG8-uJ-kYn">
+                                                <rect key="frame" x="249" y="0.0" width="51" height="29"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <state key="normal" title="Theater"/>
+                                                <connections>
+                                                    <action selector="didTapTheater:" destination="BYZ-38-t0r" eventType="touchUpInside" id="LWb-ZX-TSS"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="25" id="jnE-Im-yua"/>
+                                            <constraint firstAttribute="trailing" secondItem="vzX-ke-q7g" secondAttribute="trailing" id="50S-Tm-ljL"/>
+                                            <constraint firstItem="gG8-uJ-kYn" firstAttribute="top" secondItem="eS0-fz-j4e" secondAttribute="top" id="565-AW-XEg"/>
+                                            <constraint firstItem="u50-gv-ok6" firstAttribute="centerY" secondItem="eS0-fz-j4e" secondAttribute="centerY" id="DbF-UE-LIy"/>
+                                            <constraint firstAttribute="width" constant="300" id="HT9-4A-U9D"/>
+                                            <constraint firstAttribute="trailing" secondItem="gG8-uJ-kYn" secondAttribute="trailing" id="IT3-qg-NX6"/>
+                                            <constraint firstItem="f1f-Vx-UpK" firstAttribute="leading" secondItem="eS0-fz-j4e" secondAttribute="leading" id="KtZ-O1-zic"/>
+                                            <constraint firstAttribute="width" secondItem="eS0-fz-j4e" secondAttribute="height" multiplier="1:1" id="L2q-io-kpR"/>
+                                            <constraint firstItem="f1f-Vx-UpK" firstAttribute="top" secondItem="eS0-fz-j4e" secondAttribute="top" id="LcX-L1-Fp7"/>
+                                            <constraint firstItem="vzX-ke-q7g" firstAttribute="top" secondItem="eS0-fz-j4e" secondAttribute="top" id="m8H-xK-UgI"/>
+                                            <constraint firstItem="vzX-ke-q7g" firstAttribute="leading" secondItem="eS0-fz-j4e" secondAttribute="leading" id="rXR-6K-9XU"/>
+                                            <constraint firstItem="u50-gv-ok6" firstAttribute="centerX" secondItem="eS0-fz-j4e" secondAttribute="centerX" id="x9a-7M-Acw"/>
                                         </constraints>
-                                        <connections>
-                                            <action selector="didChangeLedMode" destination="BYZ-38-t0r" eventType="touchUpOutside" id="96N-mY-9u2"/>
-                                            <action selector="didChangeLedMode" destination="BYZ-38-t0r" eventType="touchUpInside" id="rUg-5F-KMJ"/>
-                                        </connections>
                                     </view>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WZG-Q6-zYF" customClass="Slider" customModule="fluid_slider">
-                                        <rect key="frame" x="0.0" y="141" width="355" height="25"/>
-                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="25" id="ND1-F9-y9d"/>
-                                        </constraints>
-                                        <connections>
-                                            <action selector="didChangeLedMode" destination="BYZ-38-t0r" eventType="touchUpOutside" id="AMU-9i-dVr"/>
-                                            <action selector="didChangeLedMode" destination="BYZ-38-t0r" eventType="touchUpInside" id="h5a-RT-jwH"/>
-                                        </connections>
-                                    </view>
-                                    <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFit" insetsLayoutMarginsFromSafeArea="NO" image="ColorPicker" translatesAutoresizingMaskIntoConstraints="NO" id="vzX-ke-q7g" customClass="ColorPickerImageView" customModule="VanTomation" customModuleProvider="target">
-                                        <rect key="frame" x="7.5" y="186" width="340" height="341"/>
-                                    </imageView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="fJf-cX-zm8">
+                                        <rect key="frame" x="26" y="388" width="303" height="128"/>
+                                        <subviews>
+                                            <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="V9r-xf-DHu">
+                                                <rect key="frame" x="0.0" y="0.0" width="303" height="64"/>
+                                                <subviews>
+                                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="iconBrighter" translatesAutoresizingMaskIntoConstraints="NO" id="WC8-z5-xSB">
+                                                        <rect key="frame" x="0.0" y="16" width="32" height="32"/>
+                                                    </imageView>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="oqg-yv-Ygr" customClass="Slider" customModule="fluid_slider">
+                                                        <rect key="frame" x="40" y="18" width="263" height="28"/>
+                                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="28" id="jnE-Im-yua"/>
+                                                        </constraints>
+                                                        <connections>
+                                                            <action selector="didChangeLedMode" destination="BYZ-38-t0r" eventType="touchUpOutside" id="96N-mY-9u2"/>
+                                                            <action selector="didChangeLedMode" destination="BYZ-38-t0r" eventType="touchUpInside" id="rUg-5F-KMJ"/>
+                                                        </connections>
+                                                    </view>
+                                                </subviews>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="64" id="JYH-sa-Rcm"/>
+                                                </constraints>
+                                            </stackView>
+                                            <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="D9P-xa-D4v">
+                                                <rect key="frame" x="0.0" y="64" width="303" height="64"/>
+                                                <subviews>
+                                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="iconFaster" translatesAutoresizingMaskIntoConstraints="NO" id="Jh0-he-QvN">
+                                                        <rect key="frame" x="0.0" y="18.5" width="32" height="27"/>
+                                                    </imageView>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WZG-Q6-zYF" customClass="Slider" customModule="fluid_slider">
+                                                        <rect key="frame" x="40" y="18" width="263" height="28"/>
+                                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="28" id="ND1-F9-y9d"/>
+                                                        </constraints>
+                                                        <connections>
+                                                            <action selector="didChangeLedMode" destination="BYZ-38-t0r" eventType="touchUpOutside" id="AMU-9i-dVr"/>
+                                                            <action selector="didChangeLedMode" destination="BYZ-38-t0r" eventType="touchUpInside" id="h5a-RT-jwH"/>
+                                                        </connections>
+                                                    </view>
+                                                </subviews>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="64" id="pKH-Ce-3pj"/>
+                                                </constraints>
+                                            </stackView>
+                                        </subviews>
+                                    </stackView>
                                 </subviews>
                                 <constraints>
-                                    <constraint firstAttribute="trailing" secondItem="oqg-yv-Ygr" secondAttribute="trailing" id="4m4-Bc-47v"/>
-                                    <constraint firstAttribute="trailing" secondItem="WZG-Q6-zYF" secondAttribute="trailing" id="MZB-Mf-PdH"/>
-                                    <constraint firstItem="WZG-Q6-zYF" firstAttribute="leading" secondItem="cbN-0g-kQ4" secondAttribute="leading" id="YC0-le-MKC"/>
-                                    <constraint firstItem="oqg-yv-Ygr" firstAttribute="leading" secondItem="cbN-0g-kQ4" secondAttribute="leading" id="y5i-yJ-GKh"/>
+                                    <constraint firstItem="DJY-s8-9xM" firstAttribute="leading" secondItem="cbN-0g-kQ4" secondAttribute="leading" constant="16" id="BnJ-FK-La3"/>
+                                    <constraint firstAttribute="trailing" secondItem="fJf-cX-zm8" secondAttribute="trailing" constant="26" id="L5H-O0-hUS"/>
                                 </constraints>
                                 <variation key="heightClass=compact-widthClass=compact" spacing="10"/>
                             </stackView>
@@ -316,18 +375,20 @@
                         <constraints>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="cbN-0g-kQ4" secondAttribute="bottom" id="FaD-RP-lSo"/>
                             <constraint firstItem="cbN-0g-kQ4" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="XVx-mI-7uo"/>
-                            <constraint firstItem="cbN-0g-kQ4" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="qup-fT-ZWX"/>
+                            <constraint firstItem="cbN-0g-kQ4" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="37" id="qup-fT-ZWX"/>
                             <constraint firstItem="cbN-0g-kQ4" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="10" id="zpk-CJ-FCT"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Lights" id="29z-Df-3lT"/>
+                    <tabBarItem key="tabBarItem" title="Lights" image="iconFaster" selectedImage="iconFaster" id="29z-Df-3lT"/>
                     <connections>
                         <outlet property="brightnessSlider" destination="oqg-yv-Ygr" id="IiN-pw-zmf"/>
                         <outlet property="colorPicker" destination="vzX-ke-q7g" id="wcf-Or-87l"/>
-                        <outlet property="ledColorMode" destination="fs5-0g-hxd" id="70Z-Eh-uIB"/>
+                        <outlet property="rainbowButton" destination="f1f-Vx-UpK" id="Pc6-Rd-iDs"/>
                         <outlet property="speedSlider" destination="WZG-Q6-zYF" id="rOC-Nb-FZv"/>
+                        <outlet property="speedStack" destination="D9P-xa-D4v" id="Ebs-5o-B8t"/>
                         <outlet property="stripSelection" destination="DJY-s8-9xM" id="eIR-WE-IID"/>
+                        <outlet property="theaterButton" destination="gG8-uJ-kYn" id="b3h-N6-XHc"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -336,7 +397,11 @@
         </scene>
     </scenes>
     <resources>
-        <image name="ColorPicker" width="340" height="341"/>
+        <image name="ColorPicker" width="600" height="600"/>
+        <image name="iconBrighter" width="32" height="32"/>
+        <image name="iconFaster" width="32" height="27"/>
+        <image name="iconPowerDefault" width="32" height="32"/>
+        <image name="iconVanDefault" width="32" height="28"/>
         <image name="locked" width="11" height="15"/>
     </resources>
 </document>
