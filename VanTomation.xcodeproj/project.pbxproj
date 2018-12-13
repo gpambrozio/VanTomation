@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		671680447B9AAF27D48CB121 /* Pods_VanTomationTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF0657AD084F29454B02218E /* Pods_VanTomationTests.framework */; };
+		81AC79DF21C22937001F1C36 /* WiFiViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81AC79DE21C22937001F1C36 /* WiFiViewController.swift */; };
 		A6C8A7378DE3A1E0B9E107D1 /* Pods_VanTomation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 224B247CA41DBCFEA61576AF /* Pods_VanTomation.framework */; };
 		B19F9D25BB5C133422BEE01D /* Pods_VanTomationUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7622A07071BC303034BCD6DE /* Pods_VanTomationUITests.framework */; };
 		EC3D3EB62128BAFB00E2E7EE /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC3D3EB52128BAFB00E2E7EE /* MainViewController.swift */; };
@@ -46,6 +47,7 @@
 		224B247CA41DBCFEA61576AF /* Pods_VanTomation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VanTomation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		368C196598E59C2C19274BCE /* Pods-VanTomation.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VanTomation.release.xcconfig"; path = "Pods/Target Support Files/Pods-VanTomation/Pods-VanTomation.release.xcconfig"; sourceTree = "<group>"; };
 		7622A07071BC303034BCD6DE /* Pods_VanTomationUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VanTomationUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		81AC79DE21C22937001F1C36 /* WiFiViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WiFiViewController.swift; sourceTree = "<group>"; };
 		BA6C123B898D8A8469E88FAD /* Pods-VanTomationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VanTomationTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-VanTomationTests/Pods-VanTomationTests.debug.xcconfig"; sourceTree = "<group>"; };
 		BE7180F0C42A373ED079BB3B /* Pods-VanTomationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VanTomationTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-VanTomationTests/Pods-VanTomationTests.release.xcconfig"; sourceTree = "<group>"; };
 		C01FC24EC56D386209E14D14 /* Pods-VanTomation.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VanTomation.debug.xcconfig"; path = "Pods/Target Support Files/Pods-VanTomation/Pods-VanTomation.debug.xcconfig"; sourceTree = "<group>"; };
@@ -150,6 +152,7 @@
 				EC8F568620EB2E82005D6959 /* AppDelegate.swift */,
 				EC8F56B420EB35B3005D6959 /* MasterManager.swift */,
 				EC3D3EB52128BAFB00E2E7EE /* MainViewController.swift */,
+				81AC79DE21C22937001F1C36 /* WiFiViewController.swift */,
 				EC8F568820EB2E82005D6959 /* LightsViewController.swift */,
 				EC8F568A20EB2E82005D6959 /* Main.storyboard */,
 				EC8F568D20EB2E84005D6959 /* Assets.xcassets */,
@@ -402,6 +405,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EC8F568920EB2E82005D6959 /* LightsViewController.swift in Sources */,
+				81AC79DF21C22937001F1C36 /* WiFiViewController.swift in Sources */,
 				EC8F568720EB2E82005D6959 /* AppDelegate.swift in Sources */,
 				EC3D3EB8213104C300E2E7EE /* UIAlertControllerExtensions.swift in Sources */,
 				EC8F56B520EB35B3005D6959 /* MasterManager.swift in Sources */,
