@@ -135,13 +135,13 @@ class LightsViewController: UIViewController {
             command = String(
                 format: "L\(strip)R%02X%02X000000",
                 Int(brightnessSlider.fraction * 100),
-                Int(speedSlider.fraction * 200))
+                Int((1 - speedSlider.fraction) * 200))
 
         case .theater:
             command = String(
                 format: "L\(strip)T%02X%02X000000",
                 Int(brightnessSlider.fraction * 100),
-                Int(speedSlider.fraction * 200 + 24))
+                Int((1 - speedSlider.fraction) * 200 + 24))
         }
 
         masterManager.send(command: command)
