@@ -64,8 +64,6 @@ class WiFiViewController: UIViewController {
                 } catch let error {
                     print("Error decoding json: \(error)")
                 }
-            } else {
-                print("unknown command: \(command)")
             }
         }).disposed(by: disposeBag)
 

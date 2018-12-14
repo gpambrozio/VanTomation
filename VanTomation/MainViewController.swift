@@ -112,8 +112,6 @@ class MainViewController: UIViewController {
                 self.thermostatOn = commandData[commandData.startIndex] == "1"
             } else if command.starts(with: "Tt") {
                 self.targetTemperature = Int(commandData) ?? 0
-            } else {
-                print("unknown command: \(command)")
             }
         }).disposed(by: disposeBag)
 
@@ -121,6 +119,9 @@ class MainViewController: UIViewController {
             guard let self = self else { return }
             self.connectedLabel.text = status
         }).disposed(by: disposeBag)
+
+        // Forces loading of all VCs
+        tabBarController?.viewControllers?.forEach { let _ = $0.view }
     }
 
     @IBAction func lock() {
