@@ -8,40 +8,86 @@
 
 import UIKit
 import RxSwift
+import fluid_slider
 
 class MainViewController: UIViewController {
     private let masterManager = MasterManager.shared
 
     @IBOutlet private var connectedLabel: UILabel!
-    @IBOutlet private var temperatureFahrenheitLabel: UILabel!
-    @IBOutlet private var temperatureCelsiusLabel: UILabel!
+    @IBOutlet private var temperatureInsideLabel: UILabel!
+    @IBOutlet private var temperatureOutsideLabel: UILabel!
     @IBOutlet private var humidityLabel: UILabel!
 
-    @IBOutlet private var targetTemperatureLabel: UILabel!
-    @IBOutlet private var thermostatSwitch: UISwitch!
+    @IBOutlet private var thermostatSlider: Slider!
 
     private let disposeBag = DisposeBag()
 
+    private func targetInF(from fraction: CGFloat) -> Int? {
+        return fraction < 0.1 ? nil : Int((fraction - 0.1) / 0.9 * 30 + 45)
+    }
+
+    private func updateFractionFromTarget() {
+        guard thermostatOn else {
+            if thermostatSlider.fraction > 0.1 {
+                thermostatSlider.fraction = 0
+            }
+            return
+        }
+        let fraction = 0.1 + 0.9 * CGFloat(targetTemperature - 45) / 30
+        thermostatSlider.fraction = fraction
+    }
+
     private var thermostatOn = false {
         didSet {
-            thermostatSwitch.isOn = thermostatOn
+            updateFractionFromTarget()
         }
     }
+
     private var targetTemperature = 71 {
         didSet {
-            targetTemperatureLabel.text = "\(targetTemperature)°F"
+            updateFractionFromTarget()
         }
+    }
+
+    @IBAction func updateThermostat() {
+        if let target = targetInF(from: thermostatSlider.fraction) {
+            thermostatOn = true
+            targetTemperature = target
+        } else {
+            thermostatOn = false
+        }
+        sendThermostatCommand()
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        thermostatSlider.attributedTextForFraction = { [weak self] fraction in
+            guard let self = self else { return NSAttributedString(string: "", attributes: [:]) }
+            let formatter = NumberFormatter()
+            formatter.maximumIntegerDigits = 2
+            formatter.maximumFractionDigits = 0
+            let output: String
+            if let temp = self.targetInF(from: fraction) {
+                output = formatter.string(from: temp as NSNumber) ?? ""
+            } else {
+                output = "Off"
+            }
+            return NSAttributedString(string: output, attributes: [.font: UIFont.systemFont(ofSize: 14, weight: .semibold),
+                                                                   .foregroundColor: UIColor(red: 97/255, green: 125/255, blue: 138/255, alpha: 1)])
+        }
+        thermostatSlider.setMinimumLabelAttributedText(NSAttributedString(string: "", attributes: [:]))
+        thermostatSlider.setMaximumLabelAttributedText(NSAttributedString(string: "", attributes: [:]))
+        thermostatSlider.fraction = 0
+        thermostatSlider.contentViewColor = UIColor.init(white: 0.2, alpha: 1)
+        thermostatSlider.valueViewColor = .white
+
         masterManager.connectedStream.subscribe(onNext: { [weak self] connected in
             guard let self = self else { return }
             self.connectedLabel.text = connected ? "Connected" : "Disconnected"
             if !connected {
-                self.temperatureFahrenheitLabel.text = "?"
-                self.temperatureCelsiusLabel.text = "?"
+                self.temperatureInsideLabel.text = "?"
+                self.temperatureOutsideLabel.text = "?"
                 self.humidityLabel.text = "?"
             }
             self.tabBarItem.badgeValue = connected ? "" : nil
@@ -54,16 +100,16 @@ class MainViewController: UIViewController {
                 self.connectedLabel.text = "Connected: \(commandData)"
             } else if command.starts(with: "Ti") {
                 let temperatureF = (Double(commandData) ?? 0) / 10.0
-                self.temperatureFahrenheitLabel.text = String(format: "i %.1f°F", temperatureF)
+                self.temperatureInsideLabel.text = String(format: "%.1f", temperatureF)
                 self.tabBarItem.badgeValue = "\(temperatureF)"
             } else if command.starts(with: "To") {
                 let temperatureF = (Double(commandData) ?? 0) / 10.0
-                self.temperatureCelsiusLabel.text = String(format: "o %.1f°F", temperatureF)
+                self.temperatureOutsideLabel.text = String(format: "%.1f", temperatureF)
             } else if command.starts(with: "Hm") {
                 let humidity = (Double(commandData) ?? 0) / 10.0
-                self.humidityLabel.text = String(format: "%.1f%%", humidity)
+                self.humidityLabel.text = String(format: "%.1f", humidity)
             } else if command.starts(with: "TO") {
-                self.thermostatSwitch.isOn = commandData[commandData.startIndex] == "1"
+                self.thermostatOn = commandData[commandData.startIndex] == "1"
             } else if command.starts(with: "Tt") {
                 self.targetTemperature = Int(commandData) ?? 0
             } else {
@@ -85,18 +131,7 @@ class MainViewController: UIViewController {
         masterManager.send(command: "PU")
     }
 
-    @IBAction func targetPlus() {
-        targetTemperature += 1
-        sendThermostatCommand()
-    }
-
-    @IBAction func targetMinus() {
-        targetTemperature -= 1
-        sendThermostatCommand()
-    }
-
     @IBAction func thermostatSwitchChanged() {
-        thermostatOn = thermostatSwitch.isOn
         sendThermostatCommand()
     }
 
