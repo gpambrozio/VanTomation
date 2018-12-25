@@ -19,6 +19,7 @@
 		81FF8B5A21BA033E009DC68F /* VanTomationCommons.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81FF8B5321BA033E009DC68F /* VanTomationCommons.framework */; };
 		81FF8B5B21BA033E009DC68F /* VanTomationCommons.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 81FF8B5321BA033E009DC68F /* VanTomationCommons.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		81FF8B6221BA037D009DC68F /* VanTomationCommons.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81FF8B5321BA033E009DC68F /* VanTomationCommons.framework */; };
+		81AC79DF21C22937001F1C36 /* WiFiViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81AC79DE21C22937001F1C36 /* WiFiViewController.swift */; };
 		A6C8A7378DE3A1E0B9E107D1 /* Pods_VanTomation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 224B247CA41DBCFEA61576AF /* Pods_VanTomation.framework */; };
 		AF079BB29DC37BD37C0AD1EF /* Pods_VanTomationCommons.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 51C74603B8430F4CE17E180E /* Pods_VanTomationCommons.framework */; };
 		B19F9D25BB5C133422BEE01D /* Pods_VanTomationUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7622A07071BC303034BCD6DE /* Pods_VanTomationUITests.framework */; };
@@ -118,6 +119,7 @@
 		81FF8B5521BA033E009DC68F /* VanTomationCommons.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VanTomationCommons.h; sourceTree = "<group>"; };
 		81FF8B5621BA033E009DC68F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8BFC22E0E299E4253CE6A0E8 /* Pods-VanTomationCommons.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VanTomationCommons.release.xcconfig"; path = "Pods/Target Support Files/Pods-VanTomationCommons/Pods-VanTomationCommons.release.xcconfig"; sourceTree = "<group>"; };
+		81AC79DE21C22937001F1C36 /* WiFiViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WiFiViewController.swift; sourceTree = "<group>"; };
 		BA6C123B898D8A8469E88FAD /* Pods-VanTomationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VanTomationTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-VanTomationTests/Pods-VanTomationTests.debug.xcconfig"; sourceTree = "<group>"; };
 		BE7180F0C42A373ED079BB3B /* Pods-VanTomationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VanTomationTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-VanTomationTests/Pods-VanTomationTests.release.xcconfig"; sourceTree = "<group>"; };
 		C01FC24EC56D386209E14D14 /* Pods-VanTomation.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VanTomation.debug.xcconfig"; path = "Pods/Target Support Files/Pods-VanTomation/Pods-VanTomation.debug.xcconfig"; sourceTree = "<group>"; };
@@ -268,6 +270,7 @@
 				EC8F568620EB2E82005D6959 /* AppDelegate.swift */,
 				EC8F56B420EB35B3005D6959 /* MasterManager.swift */,
 				EC3D3EB52128BAFB00E2E7EE /* MainViewController.swift */,
+				81AC79DE21C22937001F1C36 /* WiFiViewController.swift */,
 				EC8F568820EB2E82005D6959 /* LightsViewController.swift */,
 				EC8F568A20EB2E82005D6959 /* Main.storyboard */,
 				EC8F568D20EB2E84005D6959 /* Assets.xcassets */,
@@ -435,6 +438,7 @@
 					};
 					EC8F568220EB2E82005D6959 = {
 						CreatedOnToolsVersion = 9.4.1;
+						LastSwiftMigration = 1010;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
 								enabled = 1;
@@ -449,10 +453,12 @@
 					};
 					EC8F569620EB2E84005D6959 = {
 						CreatedOnToolsVersion = 9.4.1;
+						LastSwiftMigration = 1010;
 						TestTargetID = EC8F568220EB2E82005D6959;
 					};
 					EC8F56A120EB2E84005D6959 = {
 						CreatedOnToolsVersion = 9.4.1;
+						LastSwiftMigration = 1010;
 						TestTargetID = EC8F568220EB2E82005D6959;
 					};
 				};
@@ -650,6 +656,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EC8F568920EB2E82005D6959 /* LightsViewController.swift in Sources */,
+				81AC79DF21C22937001F1C36 /* WiFiViewController.swift in Sources */,
 				EC8F568720EB2E82005D6959 /* AppDelegate.swift in Sources */,
 				EC3D3EB8213104C300E2E7EE /* UIAlertControllerExtensions.swift in Sources */,
 				EC8F56B520EB35B3005D6959 /* MasterManager.swift in Sources */,

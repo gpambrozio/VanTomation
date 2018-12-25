@@ -84,16 +84,20 @@ class ColorPickerImageView: UIImageView {
             return nil
         }
 
+        // For some reason when alpha is zero the data doesn't change in the draw call
+        // Force resetting the alpha value is enough to know it didn't draw anything.
+        data[0] = 0;
+
         // For retina images scale is 2.0f
         var point = touch
-        point.x *= image.scale;
-        point.y *= image.scale;
+        point.x *= image.scale * image.size.width / bounds.width
+        point.y *= image.scale * image.size.height / bounds.height
 
         // Create the bitmap context. We want pre-multiplied ARGB, 8-bits
         // per component. Regardless of what the source image format is
         // (CMYK, Grayscale, and so on) it will be converted over to the format
         // specified here by CGBitmapContextCreate.
-        let colorSpace = CGColorSpaceCreateDeviceRGB();
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
         guard let cgctx = CGContext(
             data: data,
             width: 1,    // width

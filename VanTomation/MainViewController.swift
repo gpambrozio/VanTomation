@@ -8,73 +8,93 @@
 
 import UIKit
 import RxSwift
+import fluid_slider
 
 class MainViewController: UIViewController {
     private let masterManager = MasterManager.shared
 
     @IBOutlet private var connectedLabel: UILabel!
-    @IBOutlet private var temperatureFahrenheitLabel: UILabel!
-    @IBOutlet private var temperatureCelsiusLabel: UILabel!
+    @IBOutlet private var temperatureInsideLabel: UILabel!
+    @IBOutlet private var temperatureOutsideLabel: UILabel!
     @IBOutlet private var humidityLabel: UILabel!
 
-    @IBOutlet private var targetTemperatureLabel: UILabel!
-    @IBOutlet private var thermostatSwitch: UISwitch!
-    @IBOutlet private var wifiLabel: UILabel!
-    @IBOutlet private var wifiTable: UITableView!
-
-    private var wifiNetworks = [WifiNetwork]()
+    @IBOutlet private var temperatureOutsideBackground: UIView!
+    @IBOutlet private var temperatureInsideBackground: UIView!
+    @IBOutlet private var thermostatSlider: Slider!
 
     private let disposeBag = DisposeBag()
 
-    private func updateWifiLabel() {
-        guard let wifiNetwork = wifiNetwork else {
-            wifiLabel.text = "Disconnected"
-            return
-        }
-        guard let wifiIp = wifiIp, !wifiIp.isEmpty else {
-            wifiLabel.text = wifiNetwork
-            return
-        }
-        wifiLabel.text = "\(wifiNetwork) (\(wifiIp))"
+    private func targetInF(from fraction: CGFloat) -> Int? {
+        return fraction < 0.1 ? nil : Int((fraction - 0.1) / 0.9 * 30 + 45)
     }
 
-    private var wifiNetwork: String? {
-        didSet {
-            updateWifiLabel()
+    private func updateFractionFromTarget() {
+        guard thermostatOn else {
+            if thermostatSlider.fraction > 0.1 {
+                thermostatSlider.fraction = 0
+            }
+            thermostatSlider.contentViewColor = Constants.offColor
+            return
         }
-    }
-    private var wifiIp: String? {
-        didSet {
-            updateWifiLabel()
-        }
+        let fraction = 0.1 + 0.9 * CGFloat(targetTemperature - 45) / 30
+        thermostatSlider.contentViewColor = MainViewController.getHeatMapColor(for: CGFloat(targetTemperature))
+        thermostatSlider.fraction = fraction
     }
 
     private var thermostatOn = false {
         didSet {
-            thermostatSwitch.isOn = thermostatOn
+            updateFractionFromTarget()
         }
     }
+
     private var targetTemperature = 71 {
         didSet {
-            targetTemperatureLabel.text = "\(targetTemperature)°F"
+            updateFractionFromTarget()
         }
+    }
+
+    @IBAction func updateThermostat() {
+        if let target = targetInF(from: thermostatSlider.fraction) {
+            thermostatOn = true
+            targetTemperature = target
+        } else {
+            thermostatOn = false
+        }
+        sendThermostatCommand()
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        thermostatSlider.attributedTextForFraction = { [weak self] fraction in
+            guard let self = self else { return NSAttributedString(string: "", attributes: [:]) }
+            let formatter = NumberFormatter()
+            formatter.maximumIntegerDigits = 2
+            formatter.maximumFractionDigits = 0
+            let output: String
+            if let temp = self.targetInF(from: fraction) {
+                output = formatter.string(from: temp as NSNumber) ?? ""
+            } else {
+                output = "Off"
+            }
+            return NSAttributedString(string: output, attributes: [.font: UIFont.systemFont(ofSize: 14, weight: .semibold),
+                                                                   .foregroundColor: UIColor(red: 97/255, green: 125/255, blue: 138/255, alpha: 1)])
+        }
+        thermostatSlider.setMinimumLabelAttributedText(NSAttributedString(string: "", attributes: [:]))
+        thermostatSlider.setMaximumLabelAttributedText(NSAttributedString(string: "", attributes: [:]))
+        thermostatSlider.fraction = 0
+        thermostatSlider.contentViewColor = Constants.offColor
+        thermostatSlider.valueViewColor = .white
+
         masterManager.connectedStream.subscribe(onNext: { [weak self] connected in
             guard let self = self else { return }
             self.connectedLabel.text = connected ? "Connected" : "Disconnected"
             if !connected {
-                self.wifiNetworks = []
-                self.wifiTable.reloadData()
-                self.wifiIp = nil
-                self.wifiNetwork = nil
-                self.temperatureFahrenheitLabel.text = "?"
-                self.temperatureCelsiusLabel.text = "?"
+                self.temperatureInsideLabel.text = "?"
+                self.temperatureOutsideLabel.text = "?"
                 self.humidityLabel.text = "?"
             }
+            self.tabBarItem.badgeValue = connected ? "" : nil
         }).disposed(by: disposeBag)
 
         masterManager.commandsStream.subscribe(onNext: { [weak self] command in
@@ -84,34 +104,20 @@ class MainViewController: UIViewController {
                 self.connectedLabel.text = "Connected: \(commandData)"
             } else if command.starts(with: "Ti") {
                 let temperatureF = (Double(commandData) ?? 0) / 10.0
-                self.temperatureFahrenheitLabel.text = String(format: "i %.1f°F", temperatureF)
-                self.navigationController?.tabBarItem.badgeValue = "\(temperatureF)"
+                self.temperatureInsideBackground.backgroundColor = MainViewController.getHeatMapColor(for: CGFloat(temperatureF))
+                self.temperatureInsideLabel.text = String(format: "%.1f", temperatureF)
+                self.tabBarItem.badgeValue = "\(temperatureF)"
             } else if command.starts(with: "To") {
                 let temperatureF = (Double(commandData) ?? 0) / 10.0
-                self.temperatureCelsiusLabel.text = String(format: "o %.1f°F", temperatureF)
+                self.temperatureOutsideBackground.backgroundColor = MainViewController.getHeatMapColor(for: CGFloat(temperatureF))
+                self.temperatureOutsideLabel.text = String(format: "%.1f", temperatureF)
             } else if command.starts(with: "Hm") {
                 let humidity = (Double(commandData) ?? 0) / 10.0
-                self.humidityLabel.text = String(format: "%.1f%%", humidity)
+                self.humidityLabel.text = String(format: "%.1f", humidity)
             } else if command.starts(with: "TO") {
-                self.thermostatSwitch.isOn = commandData[commandData.startIndex] == "1"
+                self.thermostatOn = commandData[commandData.startIndex] == "1"
             } else if command.starts(with: "Tt") {
                 self.targetTemperature = Int(commandData) ?? 0
-            } else if command.starts(with: "Ws") {
-                self.wifiNetwork = commandData.isEmpty ? nil : "\(commandData)"
-            } else if command.starts(with: "Wi") {
-                self.wifiIp = "\(commandData)"
-            } else if command.starts(with: "WS") {
-                do {
-                    if let data = commandData.data(using: .utf8) {
-                        let networks = try JSONDecoder().decode([[StringOrInt]].self, from: data)
-                        self.wifiNetworks = networks.compactMap { WifiNetwork(from: $0) }.sorted()
-                        self.wifiTable.reloadData()
-                    }
-                } catch let error {
-                    print("Error decoding json: \(error)")
-                }
-            } else {
-                print("unknown command: \(command)")
             }
         }).disposed(by: disposeBag)
 
@@ -120,7 +126,8 @@ class MainViewController: UIViewController {
             self.connectedLabel.text = status
         }).disposed(by: disposeBag)
 
-        updateWifiLabel()
+        // Forces loading of all VCs
+        tabBarController?.viewControllers?.forEach { let _ = $0.view }
     }
 
     @IBAction func lock() {
@@ -131,18 +138,7 @@ class MainViewController: UIViewController {
         masterManager.send(command: "PU")
     }
 
-    @IBAction func targetPlus() {
-        targetTemperature += 1
-        sendThermostatCommand()
-    }
-
-    @IBAction func targetMinus() {
-        targetTemperature -= 1
-        sendThermostatCommand()
-    }
-
     @IBAction func thermostatSwitchChanged() {
-        thermostatOn = thermostatSwitch.isOn
         sendThermostatCommand()
     }
 
@@ -151,100 +147,40 @@ class MainViewController: UIViewController {
         masterManager.send(command: command)
     }
 
-    private func addNetwork(_ network: WifiNetwork, password: String = "") {
-        masterManager.send(command: "WA\(network.name),\(password)")
+    enum Constants {
+        static var minTemp: CGFloat = 50.0
+        static var maxTemp: CGFloat = 95.0
+        static var offColor = UIColor(white: 0.8, alpha: 1)
+
+        // A static array of 4 colors:  (blue,   green,  yellow,  red) using {r,g,b} for each.
+        static var colors: [(CGFloat, CGFloat, CGFloat)] = [ (0, 0, 1), (0, 1, 0), (1, 1, 0), (1, 0, 0) ]
     }
-}
 
-private struct StringOrInt: Decodable {
-    let asString: String?
-    let asInt: Int?
+    // Adapted from http://www.andrewnoske.com/wiki/Code_-_heatmaps_and_color_gradients
+    private static func getHeatMapColor(for temperature: CGFloat) -> UIColor {
+        var value = (temperature - Constants.minTemp) / (Constants.maxTemp - Constants.minTemp)
 
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        asInt = try? container.decode(Int.self)
-        asString = try? container.decode(String.self)
-    }
-}
+        let idx1: Int        // |-- Our desired color will be between these two indexes in "color".
+        let idx2: Int        // |
+        var fractBetween: CGFloat = 0;  // Fraction between "idx1" and "idx2" where our value is.
 
-extension MainViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        let network = wifiNetworks[indexPath.row]
-        if network.open {
-            self.addNetwork(network)
+        if (value <= 0) {  // accounts for an input <=0
+            idx1 = 0
+            idx2 = 0
+        } else if (value >= 1) {  // accounts for an input >=0
+            idx1 = Constants.colors.count - 1
+            idx2 = idx1
         } else {
-            let alert = UIAlertController(title: nil,
-                                          message: "What's the password?",
-                                          preferredStyle: .alert)
-            alert.addTextField()
-            alert.addAction(.init(title: "Cancel", style: .cancel, handler: { _ in alert.dismiss(animated: true) }))
-            alert.addAction(.init(title: "OK", style: .default, handler: { [weak self] _ in
-                guard let textField = alert.textFields?.first, let text = textField.text else { return }
-                guard let self = self else { return }
-                self.addNetwork(network, password: text)
-                alert.dismiss(animated: true)
-            }))
-            self.present(alert, animated: true)
+            value *= CGFloat(Constants.colors.count - 1)
+            idx1  = Int(value)                              // Our desired color will be after this index.
+            idx2  = idx1 + 1                                // ... and before this index (inclusive).
+            fractBetween = value - CGFloat(idx1)            // Distance between the two indexes (0-1).
         }
 
-        return nil
-    }
-}
+        let r = fractBetween * (Constants.colors[idx2].0 - Constants.colors[idx1].0) + Constants.colors[idx1].0
+        let g = fractBetween * (Constants.colors[idx2].1 - Constants.colors[idx1].1) + Constants.colors[idx1].1
+        let b = fractBetween * (Constants.colors[idx2].2 - Constants.colors[idx1].2) + Constants.colors[idx1].2
 
-extension MainViewController: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return wifiNetworks.count
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "WifiCell", for: indexPath) as! WifiCell
-        cell.fill(with: wifiNetworks[indexPath.row])
-        return cell
-    }
-}
-
-private struct WifiNetwork {
-    let name: String
-    let open: Bool
-    let strength: Int
-    let frequency: Int
-
-    init?(from network: [StringOrInt]) {
-        guard let name = network[0].asString,
-            !name.isEmpty,
-            name != "agnes",
-            let open = network[3].asInt,
-            let strength = network[2].asInt,
-            let frequency = network[1].asInt else { return nil }
-        self.name = name
-        self.open = open != 0
-        self.strength = strength
-        self.frequency = frequency
-    }
-}
-
-extension WifiNetwork: Comparable {
-    static func < (lhs: WifiNetwork, rhs: WifiNetwork) -> Bool {
-        if lhs.open && !rhs.open {
-            return true
-        }
-        if !lhs.open && rhs.open {
-            return false
-        }
-        return lhs.strength > rhs.strength
-    }
-}
-
-class WifiCell: UITableViewCell {
-    @IBOutlet private var networkName: UILabel!
-    @IBOutlet private var networkStrenght: UILabel!
-    @IBOutlet private var networkFrequency: UILabel!
-    @IBOutlet private var openImage: UIImageView!
-
-    fileprivate func fill(with network: WifiNetwork) {
-        networkName.text = network.name
-        networkStrenght.text = "\(network.strength)"
-        networkFrequency.text = network.frequency >= 5000 ? "5G" : "2G"
-        openImage.image = UIImage.init(named: network.open ? "unlocked" : "locked")!
+        return .init(red: r, green: g, blue: b, alpha: 1)
     }
 }
