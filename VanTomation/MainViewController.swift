@@ -18,6 +18,8 @@ class MainViewController: UIViewController {
     @IBOutlet private var temperatureOutsideLabel: UILabel!
     @IBOutlet private var humidityLabel: UILabel!
 
+    @IBOutlet private var temperatureOutsideBackground: UIView!
+    @IBOutlet private var temperatureInsideBackground: UIView!
     @IBOutlet private var thermostatSlider: Slider!
 
     private let disposeBag = DisposeBag()
@@ -31,9 +33,11 @@ class MainViewController: UIViewController {
             if thermostatSlider.fraction > 0.1 {
                 thermostatSlider.fraction = 0
             }
+            thermostatSlider.contentViewColor = Constants.offColor
             return
         }
         let fraction = 0.1 + 0.9 * CGFloat(targetTemperature - 45) / 30
+        thermostatSlider.contentViewColor = MainViewController.getHeatMapColor(for: CGFloat(targetTemperature))
         thermostatSlider.fraction = fraction
     }
 
@@ -79,7 +83,7 @@ class MainViewController: UIViewController {
         thermostatSlider.setMinimumLabelAttributedText(NSAttributedString(string: "", attributes: [:]))
         thermostatSlider.setMaximumLabelAttributedText(NSAttributedString(string: "", attributes: [:]))
         thermostatSlider.fraction = 0
-        thermostatSlider.contentViewColor = UIColor.init(white: 0.2, alpha: 1)
+        thermostatSlider.contentViewColor = Constants.offColor
         thermostatSlider.valueViewColor = .white
 
         masterManager.connectedStream.subscribe(onNext: { [weak self] connected in
@@ -100,10 +104,12 @@ class MainViewController: UIViewController {
                 self.connectedLabel.text = "Connected: \(commandData)"
             } else if command.starts(with: "Ti") {
                 let temperatureF = (Double(commandData) ?? 0) / 10.0
+                self.temperatureInsideBackground.backgroundColor = MainViewController.getHeatMapColor(for: CGFloat(temperatureF))
                 self.temperatureInsideLabel.text = String(format: "%.1f", temperatureF)
                 self.tabBarItem.badgeValue = "\(temperatureF)"
             } else if command.starts(with: "To") {
                 let temperatureF = (Double(commandData) ?? 0) / 10.0
+                self.temperatureOutsideBackground.backgroundColor = MainViewController.getHeatMapColor(for: CGFloat(temperatureF))
                 self.temperatureOutsideLabel.text = String(format: "%.1f", temperatureF)
             } else if command.starts(with: "Hm") {
                 let humidity = (Double(commandData) ?? 0) / 10.0
@@ -139,5 +145,42 @@ class MainViewController: UIViewController {
     private func sendThermostatCommand() {
         let command = String(format: "TT\(thermostatOn ? "1" : "0")%04X", targetTemperature)
         masterManager.send(command: command)
+    }
+
+    enum Constants {
+        static var minTemp: CGFloat = 50.0
+        static var maxTemp: CGFloat = 95.0
+        static var offColor = UIColor(white: 0.8, alpha: 1)
+
+        // A static array of 4 colors:  (blue,   green,  yellow,  red) using {r,g,b} for each.
+        static var colors: [(CGFloat, CGFloat, CGFloat)] = [ (0, 0, 1), (0, 1, 0), (1, 1, 0), (1, 0, 0) ]
+    }
+
+    // Adapted from http://www.andrewnoske.com/wiki/Code_-_heatmaps_and_color_gradients
+    private static func getHeatMapColor(for temperature: CGFloat) -> UIColor {
+        var value = (temperature - Constants.minTemp) / (Constants.maxTemp - Constants.minTemp)
+
+        let idx1: Int        // |-- Our desired color will be between these two indexes in "color".
+        let idx2: Int        // |
+        var fractBetween: CGFloat = 0;  // Fraction between "idx1" and "idx2" where our value is.
+
+        if (value <= 0) {  // accounts for an input <=0
+            idx1 = 0
+            idx2 = 0
+        } else if (value >= 1) {  // accounts for an input >=0
+            idx1 = Constants.colors.count - 1
+            idx2 = idx1
+        } else {
+            value *= CGFloat(Constants.colors.count - 1)
+            idx1  = Int(value)                              // Our desired color will be after this index.
+            idx2  = idx1 + 1                                // ... and before this index (inclusive).
+            fractBetween = value - CGFloat(idx1)            // Distance between the two indexes (0-1).
+        }
+
+        let r = fractBetween * (Constants.colors[idx2].0 - Constants.colors[idx1].0) + Constants.colors[idx1].0
+        let g = fractBetween * (Constants.colors[idx2].1 - Constants.colors[idx1].1) + Constants.colors[idx1].1
+        let b = fractBetween * (Constants.colors[idx2].2 - Constants.colors[idx1].2) + Constants.colors[idx1].2
+
+        return .init(red: r, green: g, blue: b, alpha: 1)
     }
 }

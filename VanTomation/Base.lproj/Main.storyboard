@@ -74,6 +74,7 @@ N</string>
                                                 </subviews>
                                                 <color key="backgroundColor" red="0.29510128498077393" green="0.35994249582290649" blue="0.39608457684516907" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                 <constraints>
+                                                    <constraint firstItem="Jm5-4C-sbt" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="0Wt-PF-e4O" secondAttribute="trailing" constant="8" symbolic="YES" id="NYA-oz-Ksr"/>
                                                     <constraint firstItem="0Wt-PF-e4O" firstAttribute="leading" secondItem="chQ-gb-7cY" secondAttribute="leading" constant="5" id="NcM-zx-Ieg"/>
                                                     <constraint firstItem="Jm5-4C-sbt" firstAttribute="centerX" secondItem="chQ-gb-7cY" secondAttribute="centerX" id="RBx-aY-4Ug"/>
                                                     <constraint firstItem="Jm5-4C-sbt" firstAttribute="centerY" secondItem="chQ-gb-7cY" secondAttribute="centerY" id="Uz1-5m-xPO"/>
@@ -180,6 +181,7 @@ T</string>
                                             <constraint firstAttribute="height" constant="112" id="Egn-ha-UJn"/>
                                             <constraint firstItem="C6g-iA-jOh" firstAttribute="leading" secondItem="Kss-qM-2ud" secondAttribute="leading" constant="5" id="NWa-c4-EiG"/>
                                             <constraint firstItem="C6g-iA-jOh" firstAttribute="centerY" secondItem="Kss-qM-2ud" secondAttribute="centerY" id="XMW-Pe-Jr4"/>
+                                            <constraint firstItem="foP-me-4wJ" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="C6g-iA-jOh" secondAttribute="trailing" constant="8" symbolic="YES" id="cwa-Uh-R2R"/>
                                         </constraints>
                                     </view>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="ub9-EX-oGO">
@@ -236,7 +238,9 @@ T</string>
                     <connections>
                         <outlet property="connectedLabel" destination="H7r-05-41Q" id="1fY-B2-Iy0"/>
                         <outlet property="humidityLabel" destination="pZl-0R-Uky" id="gjH-k1-qAj"/>
+                        <outlet property="temperatureInsideBackground" destination="chQ-gb-7cY" id="Zjl-C7-HIT"/>
                         <outlet property="temperatureInsideLabel" destination="9fV-4f-j9G" id="cLN-nf-1KG"/>
+                        <outlet property="temperatureOutsideBackground" destination="5fD-a9-fSf" id="vVc-Ee-ZlP"/>
                         <outlet property="temperatureOutsideLabel" destination="7NG-2T-b5A" id="zYS-uh-RGk"/>
                         <outlet property="thermostatSlider" destination="XUo-0i-n5Y" id="TsA-Dn-FNO"/>
                     </connections>
