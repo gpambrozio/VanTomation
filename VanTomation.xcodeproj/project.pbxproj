@@ -255,6 +255,7 @@
 				TargetAttributes = {
 					EC8F568220EB2E82005D6959 = {
 						CreatedOnToolsVersion = 9.4.1;
+						LastSwiftMigration = 1010;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
@@ -263,10 +264,12 @@
 					};
 					EC8F569620EB2E84005D6959 = {
 						CreatedOnToolsVersion = 9.4.1;
+						LastSwiftMigration = 1010;
 						TestTargetID = EC8F568220EB2E82005D6959;
 					};
 					EC8F56A120EB2E84005D6959 = {
 						CreatedOnToolsVersion = 9.4.1;
+						LastSwiftMigration = 1010;
 						TestTargetID = EC8F568220EB2E82005D6959;
 					};
 				};
