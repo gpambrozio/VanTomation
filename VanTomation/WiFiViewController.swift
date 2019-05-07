@@ -47,6 +47,14 @@ class WiFiViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        masterManager.connectedStream.subscribe(onNext: { [weak self] connected in
+            guard let self = self else { return }
+            self.wifiNetwork = nil
+            self.wifiIp = nil
+            self.wifiNetworks = []
+            self.wifiTable.reloadData()
+        }).disposed(by: disposeBag)
+
         masterManager.commandsStream.subscribe(onNext: { [weak self] command in
             guard let self = self else { return }
             let commandData = command[command.index(command.startIndex, offsetBy: 2)...]
