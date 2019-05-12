@@ -97,22 +97,29 @@ private struct StringOrInt: Decodable {
 extension WiFiViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         let network = wifiNetworks[indexPath.row]
+        let alert: UIAlertController
         if network.open {
-            self.addNetwork(network)
+            alert = UIAlertController(title: nil,
+                                      message: "Are you sure?",
+                                      preferredStyle: .alert)
+            alert.addAction(.init(title: "Cancel", style: .cancel))
+            alert.addAction(.init(title: "Yes", style: .default, handler: { [weak self] _ in
+                guard let self = self else { return }
+                self.addNetwork(network)
+            }))
         } else {
-            let alert = UIAlertController(title: nil,
-                                          message: "What's the password?",
-                                          preferredStyle: .alert)
+            alert = UIAlertController(title: nil,
+                                      message: "What's the password?",
+                                      preferredStyle: .alert)
             alert.addTextField()
-            alert.addAction(.init(title: "Cancel", style: .cancel, handler: { _ in alert.dismiss(animated: true) }))
+            alert.addAction(.init(title: "Cancel", style: .cancel))
             alert.addAction(.init(title: "OK", style: .default, handler: { [weak self] _ in
                 guard let textField = alert.textFields?.first, let text = textField.text else { return }
                 guard let self = self else { return }
                 self.addNetwork(network, password: text)
-                alert.dismiss(animated: true)
             }))
-            self.present(alert, animated: true)
         }
+        self.present(alert, animated: true)
 
         return nil
     }
@@ -172,6 +179,6 @@ class WifiCell: UITableViewCell {
         networkName.text = network.name
         networkStrenght.text = "\(network.strength)"
         networkFrequency.text = network.frequency >= 5000 ? "5G" : "2G"
-        openImage.image = UIImage.init(named: network.open ? "unlocked" : "locked")!
+        openImage.image = network.open ? nil : UIImage(named: "locked")!
     }
 }
