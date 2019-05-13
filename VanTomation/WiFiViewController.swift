@@ -15,7 +15,11 @@ class WiFiViewController: UIViewController {
     @IBOutlet private var wifiLabel: UILabel!
     @IBOutlet private var wifiTable: UITableView!
 
-    private var wifiNetworks = [WifiNetwork]()
+    private var wifiNetworks = [WifiNetwork]() {
+        didSet {
+            wifiTable.reloadData()
+        }
+    }
 
     private let disposeBag = DisposeBag()
 
@@ -52,7 +56,6 @@ class WiFiViewController: UIViewController {
             self.wifiNetwork = nil
             self.wifiIp = nil
             self.wifiNetworks = []
-            self.wifiTable.reloadData()
         }).disposed(by: disposeBag)
 
         masterManager.commandsStream.subscribe(onNext: { [weak self] command in
@@ -67,7 +70,6 @@ class WiFiViewController: UIViewController {
                     if let data = commandData.data(using: .utf8) {
                         let networks = try JSONDecoder().decode([[StringOrInt]].self, from: data)
                         self.wifiNetworks = networks.compactMap { WifiNetwork(from: $0) }.sorted()
-                        self.wifiTable.reloadData()
                     }
                 } catch let error {
                     print("Error decoding json: \(error)")
