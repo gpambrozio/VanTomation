@@ -8,9 +8,11 @@
 
 import Foundation
 import CoreBluetooth
+import CoreLocation
 
 import RxBluetoothKit
 import RxSwift
+import RxCoreLocation
 
 class MasterManager {
 
@@ -41,6 +43,8 @@ class MasterManager {
     let commandsStream = PublishSubject<String>()
     let connectedStream = PublishSubject<Bool>()
 
+    private let locationManager = CLLocationManager()
+
     private init() {
         service = CBMutableService(type: CBUUID(string: Constants.serviceUUID), primary: true)
         sendCharacterictic = CBMutableCharacteristic(type: CBUUID(string: Constants.sendCharacteristicUUID),
@@ -54,6 +58,8 @@ class MasterManager {
         service.characteristics = [sendCharacterictic, receiveCharacterictic]
 
         startAdvertising()
+
+        startLocationManager()
     }
 
     func startAdvertising() {
@@ -129,6 +135,40 @@ class MasterManager {
                 self.changeStatus("Advertising")
                 print("\(event)")
             }
+            .disposed(by: disposeBag)
+    }
+
+    private func startLocationManager() {
+        locationManager.requestAlwaysAuthorization()
+        locationManager.desiredAccuracy = 50
+        locationManager.distanceFilter = 10
+        locationManager.startMonitoringSignificantLocationChanges()
+
+        locationManager.rx
+            .didUpdateLocations
+            .subscribe(onNext: { _, locations in
+                guard !locations.isEmpty,
+                    let currentLocation = locations.last else { return }
+                print("altitude: \(currentLocation.altitude)")
+                print("latitude: \(currentLocation.coordinate.latitude)")
+                print("longitude: \(currentLocation.coordinate.longitude)")
+            })
+            .disposed(by: disposeBag)
+
+        locationManager.rx
+            .didChangeAuthorization
+            .subscribe(onNext: {_, status in
+                switch status {
+                case .denied:
+                    print("Authorization denied")
+                case .notDetermined:
+                    print("Authorization: not determined")
+                case .restricted:
+                    print("Authorization: restricted")
+                case .authorizedAlways, .authorizedWhenInUse:
+                    print("All good fire request")
+                }
+            })
             .disposed(by: disposeBag)
     }
 

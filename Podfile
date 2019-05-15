@@ -7,6 +7,7 @@ target 'VanTomation' do
 
   pod 'RxBluetoothKit'
   pod 'fluid-slider'
+  pod 'RxCoreLocation', '~> 1.3.2'
 
   # Pods for VanTomation
 
