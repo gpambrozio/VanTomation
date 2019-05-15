@@ -26,8 +26,9 @@ class DriveController: UIViewController {
         super.viewDidLoad()
 
         masterManager.connectedStream.subscribe(onNext: { [weak self] connected in
-            guard let self = self else { return }
-            self.files = []
+            if !connected {
+                self?.files = []
+            }
         }).disposed(by: disposeBag)
 
         masterManager.commandsStream.subscribe(onNext: { [weak self] command in

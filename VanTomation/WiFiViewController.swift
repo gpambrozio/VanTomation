@@ -52,7 +52,7 @@ class WiFiViewController: UIViewController {
         super.viewDidLoad()
 
         masterManager.connectedStream.subscribe(onNext: { [weak self] connected in
-            guard let self = self else { return }
+            guard !connected, let self = self else { return }
             self.wifiNetwork = nil
             self.wifiIp = nil
             self.wifiNetworks = []
