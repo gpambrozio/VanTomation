@@ -35,7 +35,7 @@ class DriveController: UIViewController {
             guard let self = self else { return }
             let commandData = command[command.index(command.startIndex, offsetBy: 2)...]
             if command.starts(with: "Mv") && commandData == "1" {
-
+                self.tabBarController?.selectedViewController = self
             } else if command.starts(with: "Pf") {
                 do {
                     if let data = commandData.data(using: .utf8) {

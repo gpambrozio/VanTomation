@@ -118,6 +118,8 @@ class MainViewController: UIViewController {
                 self.thermostatOn = commandData[commandData.startIndex] == "1"
             } else if command.starts(with: "Tt") {
                 self.targetTemperature = Int(commandData) ?? 0
+            } else if command.starts(with: "Mv") && commandData == "0" {
+                self.tabBarController?.selectedViewController = self
             }
         }).disposed(by: disposeBag)
 
