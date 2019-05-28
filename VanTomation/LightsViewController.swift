@@ -7,7 +7,18 @@
 //
 
 import UIKit
+import RxSwift
 import fluid_slider
+
+private extension UIColor {
+    static func from(int color: Int) -> UIColor {
+        let r = CGFloat(color / (256 * 256))
+        let g = CGFloat((color / 256) % 256)
+        let b = CGFloat(color % 256)
+
+        return UIColor(red: r / 255, green: g / 255, blue: b / 255, alpha: 1)
+    }
+}
 
 class LightsViewController: UIViewController {
 
@@ -15,34 +26,79 @@ class LightsViewController: UIViewController {
         case color
         case rainbow
         case theater
+
+        static func create(from mode: Character) -> Mode? {
+            switch mode {
+            case "C":
+                return .color
+            case "R":
+                return .rainbow
+            case "T":
+                return .theater
+            default:
+                return nil
+            }
+        }
+    }
+
+    enum Strip: Hashable {
+        case inside, outside
+
+        var identifier: String {
+            switch self {
+            case .inside: return "I"
+            case .outside: return "O"
+            }
+        }
+
+        static func create(from strip: Character) -> Strip? {
+            switch strip {
+            case "I":
+                return .inside
+            case "O":
+                return .outside
+            default:
+                return nil
+            }
+        }
+
+        static func create(from tabIndex: Int) -> Strip? {
+            switch tabIndex {
+            case 0:
+                return .inside
+            case 1:
+                return .outside
+            default:
+                return nil
+            }
+        }
+    }
+
+    private class StripState {
+        var mode: Mode = .color
+        var brightness: Int = 0
+        var cycleDelay: Int = 0
+        var color: UIColor = .white
     }
 
     private let masterManager = MasterManager.shared
+    private let disposeBag = DisposeBag()
 
-    private var mode = Mode.color {
-        didSet {
-            switch mode {
-            case .color:
-                speedStack.isHidden = true
-                rainbowButton.isSelected = false
-                theaterButton.isSelected = false
-            case .rainbow:
-                speedStack.isHidden = false
-                rainbowButton.isSelected = true
-                theaterButton.isSelected = false
-            case .theater:
-                speedStack.isHidden = false
-                rainbowButton.isSelected = false
-                theaterButton.isSelected = true
-            }
-            didChangeLedMode()
-        }
+    private let strips: [Strip: StripState] = [
+        .inside: StripState(),
+        .outside: StripState(),
+    ]
+
+    private var selectedStrip: Strip? {
+        return Strip.create(from: stripSelection.selectedSegmentIndex)
     }
 
-    private var pickedColor = UIColor.white {
-        didSet {
-            self.brightnessSlider.contentViewColor = pickedColor
+    private var selectedStripState: StripState? {
+        guard let selectedStrip = selectedStrip else {
+            return nil
         }
+
+        return strips[selectedStrip]
     }
 
     @IBOutlet private var stripSelection: UISegmentedControl!
@@ -57,9 +113,11 @@ class LightsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         colorPicker.pickedColorClosure = { [weak self] color in
-            guard let self = self else { return }
-            self.pickedColor = color
-            self.mode = .color
+            guard let self = self, let selectedStripState = self.selectedStripState else { return }
+            selectedStripState.color = color
+            selectedStripState.mode = .color
+            self.updateUI()
+            self.updateCurrentStrip()
         }
 
         brightnessSlider.attributedTextForFraction = { fraction in
@@ -89,61 +147,137 @@ class LightsViewController: UIViewController {
         speedSlider.fraction = 0.5
         speedSlider.contentViewColor = .clear
         speedSlider.valueViewColor = .white
+
+        masterManager.commandsStream.subscribe(onNext: { [weak self] command in
+            guard let self = self else { return }
+            if command.starts(with: "L") {
+                let strip = command[command.index(command.startIndex, offsetBy: 1)]
+                let mode = command[command.index(command.startIndex, offsetBy: 2)]
+                let brightnessCycleColor = command[command.index(command.startIndex, offsetBy: 3)...].split(separator: ",").compactMap { Int($0) }
+
+                if let mode = Mode.create(from: mode),
+                    let strip = Strip.create(from: strip),
+                    let stripMode = self.strips[strip],
+                    brightnessCycleColor.count == 3 {
+
+                    stripMode.brightness = brightnessCycleColor[0]
+                    stripMode.cycleDelay = brightnessCycleColor[1]
+                    stripMode.color = UIColor.from(int: brightnessCycleColor[2])
+                    stripMode.mode = stripMode.brightness == 0 ? .color : mode
+
+                    self.updateUI()
+                }
+            }
+        }).disposed(by: disposeBag)
     }
 
-    @IBAction func didTapPower(_ sender: Any) {
-        if brightnessSlider.fraction == 0 {
-            brightnessSlider.fraction = 1
-            pickedColor = .white
-        } else {
-            brightnessSlider.fraction = 0
+    private func updateUI() {
+        guard let selectedStripState = selectedStripState else {
+            return
         }
-        mode = .color
+
+        brightnessSlider.fraction = CGFloat(selectedStripState.brightness) / 100
+        speedSlider.fraction = 1 - CGFloat(selectedStripState.cycleDelay) / 100
+        switch selectedStripState.mode {
+        case .color:
+            brightnessSlider.contentViewColor = selectedStripState.color
+            speedStack.isHidden = true
+            rainbowButton.isSelected = false
+            theaterButton.isSelected = false
+        case .rainbow:
+            brightnessSlider.contentViewColor = .white
+            speedStack.isHidden = false
+            rainbowButton.isSelected = true
+            theaterButton.isSelected = false
+        case .theater:
+            brightnessSlider.contentViewColor = .white
+            speedStack.isHidden = false
+            rainbowButton.isSelected = false
+            theaterButton.isSelected = true
+        }
     }
 
-    @IBAction func didTapRainbow(_ sender: Any) {
-        mode = .rainbow
-    }
-
-    @IBAction func didTapTheater(_ sender: Any) {
-        mode = .theater
-    }
-
-    @IBAction func didChangeLedMode() {
-        let strip = stripSelection.selectedSegmentIndex == 0 ? "I" : "O"
+    private func updateCurrentStrip() {
+        guard let selectedStrip = selectedStrip,
+            let selectedStripState = selectedStripState else {
+                return
+        }
 
         let command: String
-        switch mode {
+        switch selectedStripState.mode {
         case .color:
             let colors = UnsafeMutablePointer<CGFloat>.allocate(capacity: 3)
             defer {
                 colors.deallocate()
             }
 
-            guard pickedColor.getRed(colors.advanced(by: 0),
-                                     green: colors.advanced(by: 1),
-                                     blue: colors.advanced(by: 2),
-                                     alpha: nil) else { return }
+            guard selectedStripState.color.getRed(colors.advanced(by: 0),
+                                                  green: colors.advanced(by: 1),
+                                                  blue: colors.advanced(by: 2),
+                                                  alpha: nil) else { return }
 
             command = String(
-                format: "L\(strip)C%02X00%02X%02X%02X",
-                Int(brightnessSlider.fraction * 100),
+                format: "L\(selectedStrip.identifier)C%02X00%02X%02X%02X",
+                selectedStripState.brightness,
                 Int(colors[0] * 255),
                 Int(colors[1] * 255),
                 Int(colors[2] * 255))
+
         case .rainbow:
             command = String(
-                format: "L\(strip)R%02X%02X000000",
-                Int(brightnessSlider.fraction * 100),
-                Int((1 - speedSlider.fraction) * 200))
+                format: "L\(selectedStrip.identifier)R%02X%02X000000",
+                selectedStripState.brightness,
+                selectedStripState.cycleDelay)
 
         case .theater:
             command = String(
-                format: "L\(strip)T%02X%02X000000",
-                Int(brightnessSlider.fraction * 100),
-                Int((1 - speedSlider.fraction) * 200 + 24))
+                format: "L\(selectedStrip.identifier)T%02X%02X000000",
+                selectedStripState.brightness,
+                selectedStripState.cycleDelay)
         }
 
         masterManager.send(command: command)
+    }
+
+    @IBAction func didTapPower(_ sender: Any) {
+        guard let selectedStripState = selectedStripState else {
+            return
+        }
+
+        if selectedStripState.brightness == 0 {
+            selectedStripState.brightness = 100
+            selectedStripState.color = .white
+        } else {
+            selectedStripState.brightness = 0
+        }
+        selectedStripState.mode = .color
+        updateUI()
+        updateCurrentStrip()
+    }
+
+    @IBAction func didTapRainbow(_ sender: Any) {
+        selectedStripState?.mode = .rainbow
+        updateUI()
+        updateCurrentStrip()
+    }
+
+    @IBAction func didTapTheater(_ sender: Any) {
+        selectedStripState?.mode = .theater
+        updateUI()
+        updateCurrentStrip()
+    }
+
+    @IBAction func didUpdateBrightness(_ sender: Any) {
+        selectedStripState?.brightness = Int(brightnessSlider.fraction * 100)
+        updateCurrentStrip()
+    }
+
+    @IBAction func didUpdateSpeed(_ sender: Any) {
+        selectedStripState?.cycleDelay = Int((1 - speedSlider.fraction) * 100)
+        updateCurrentStrip()
+    }
+
+    @IBAction func didChangeSelectedStrip(_ sender: Any) {
+        updateUI()
     }
 }

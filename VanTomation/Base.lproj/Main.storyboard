@@ -379,6 +379,9 @@ T</string>
                                             <segment title="Inside"/>
                                             <segment title="Outside"/>
                                         </segments>
+                                        <connections>
+                                            <action selector="didChangeSelectedStrip:" destination="BYZ-38-t0r" eventType="valueChanged" id="CIf-IC-tGv"/>
+                                        </connections>
                                     </segmentedControl>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eS0-fz-j4e">
                                         <rect key="frame" x="27.5" y="58" width="300" height="300"/>
@@ -445,8 +448,8 @@ T</string>
                                                             <constraint firstAttribute="height" constant="28" id="jnE-Im-yua"/>
                                                         </constraints>
                                                         <connections>
-                                                            <action selector="didChangeLedMode" destination="BYZ-38-t0r" eventType="touchUpOutside" id="96N-mY-9u2"/>
-                                                            <action selector="didChangeLedMode" destination="BYZ-38-t0r" eventType="touchUpInside" id="rUg-5F-KMJ"/>
+                                                            <action selector="didUpdateBrightness:" destination="BYZ-38-t0r" eventType="touchUpInside" id="hxG-YE-HDD"/>
+                                                            <action selector="didUpdateBrightness:" destination="BYZ-38-t0r" eventType="touchUpOutside" id="uES-bI-VE0"/>
                                                         </connections>
                                                     </view>
                                                 </subviews>
@@ -467,8 +470,8 @@ T</string>
                                                             <constraint firstAttribute="height" constant="28" id="ND1-F9-y9d"/>
                                                         </constraints>
                                                         <connections>
-                                                            <action selector="didChangeLedMode" destination="BYZ-38-t0r" eventType="touchUpOutside" id="AMU-9i-dVr"/>
-                                                            <action selector="didChangeLedMode" destination="BYZ-38-t0r" eventType="touchUpInside" id="h5a-RT-jwH"/>
+                                                            <action selector="didUpdateSpeed:" destination="BYZ-38-t0r" eventType="touchUpOutside" id="TLr-uA-JzW"/>
+                                                            <action selector="didUpdateSpeed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="rGa-h2-glp"/>
                                                         </connections>
                                                     </view>
                                                 </subviews>
