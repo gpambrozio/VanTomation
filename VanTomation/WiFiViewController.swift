@@ -34,7 +34,11 @@ class WiFiViewController: UIViewController {
             wifiLabel.text = wifiNetwork
             return
         }
-        wifiLabel.text = "\(wifiNetwork) (\(wifiIp))"
+        guard let wifiPing = wikiPing else {
+            wifiLabel.text = "\(wifiNetwork) (\(wifiIp))"
+            return
+        }
+        wifiLabel.text = "\(wifiNetwork) (\(wifiIp)), \(wifiPing)ms"
     }
 
     private var wifiNetwork: String? {
@@ -43,6 +47,11 @@ class WiFiViewController: UIViewController {
         }
     }
     private var wifiIp: String? {
+        didSet {
+            updateWifiLabel()
+        }
+    }
+    private var wikiPing: Int? {
         didSet {
             updateWifiLabel()
         }
@@ -65,6 +74,8 @@ class WiFiViewController: UIViewController {
                 self.wifiNetwork = commandData.isEmpty ? nil : "\(commandData)"
             } else if command.starts(with: "Wi") {
                 self.wifiIp = "\(commandData)"
+            } else if command.starts(with: "Wp") {
+                self.wikiPing = Int("\(commandData)")
             } else if command.starts(with: "WS") {
                 do {
                     if let data = commandData.data(using: .utf8) {
