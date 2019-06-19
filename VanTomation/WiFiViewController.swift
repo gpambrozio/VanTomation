@@ -34,7 +34,7 @@ class WiFiViewController: UIViewController {
             wifiLabel.text = wifiNetwork
             return
         }
-        guard let wifiPing = wikiPing else {
+        guard let wifiPing = wifiPing else {
             wifiLabel.text = "\(wifiNetwork) (\(wifiIp))"
             return
         }
@@ -51,7 +51,7 @@ class WiFiViewController: UIViewController {
             updateWifiLabel()
         }
     }
-    private var wikiPing: Int? {
+    private var wifiPing: Float? {
         didSet {
             updateWifiLabel()
         }
@@ -75,7 +75,7 @@ class WiFiViewController: UIViewController {
             } else if command.starts(with: "Wi") {
                 self.wifiIp = "\(commandData)"
             } else if command.starts(with: "Wp") {
-                self.wikiPing = Int("\(commandData)")
+                self.wifiPing = Float("\(commandData)")
             } else if command.starts(with: "WS") {
                 do {
                     if let data = commandData.data(using: .utf8) {
