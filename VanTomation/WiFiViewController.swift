@@ -155,6 +155,7 @@ private struct WifiNetwork {
     let open: Bool
     let strength: Int
     let frequency: Int
+    let hasPassword: Bool
 
     init?(from network: [StringOrInt]) {
         guard let name = network[0].asString,
@@ -162,11 +163,13 @@ private struct WifiNetwork {
             name != "agnes",
             let open = network[3].asInt,
             let strength = network[2].asInt,
-            let frequency = network[1].asInt else { return nil }
+            let frequency = network[1].asInt,
+            let hasPassword = network[4].asInt else { return nil }
         self.name = name
         self.open = open != 0
         self.strength = strength
         self.frequency = frequency
+        self.hasPassword = hasPassword != 0
     }
 }
 
@@ -182,6 +185,17 @@ extension WifiNetwork: Comparable {
     }
 }
 
+// From https://stackoverflow.com/a/54844627/754013
+extension UIFont {
+    /// Returns a new font in the same family with the given symbolic traits,
+    /// or `nil` if none found in the system.
+    func withSymbolicTraits(_ traits: UIFontDescriptor.SymbolicTraits) -> UIFont? {
+        guard let descriptorWithTraits = fontDescriptor.withSymbolicTraits(traits)
+            else { return nil }
+        return UIFont(descriptor: descriptorWithTraits, size: 0)
+    }
+}
+
 class WifiCell: UITableViewCell {
     @IBOutlet private var networkName: UILabel!
     @IBOutlet private var networkStrenght: UILabel!
@@ -193,5 +207,6 @@ class WifiCell: UITableViewCell {
         networkStrenght.text = "\(network.strength)"
         networkFrequency.text = network.frequency >= 5000 ? "5G" : "2G"
         openImage.image = network.open ? nil : UIImage(named: "locked")!
+        networkName.font = network.hasPassword ? networkName.font.withSymbolicTraits(.traitBold) : networkName.font.withSymbolicTraits(.init(rawValue: 0))
     }
 }
