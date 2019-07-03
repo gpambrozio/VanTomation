@@ -94,6 +94,10 @@ class WiFiViewController: UIViewController {
     private func addNetwork(_ network: WifiNetwork, password: String = "") {
         masterManager.send(command: "WA\(network.name),\(password)")
     }
+
+    private func removeNetwork(_ network: WifiNetwork) {
+        masterManager.send(command: "WR\(network.name)")
+    }
 }
 
 private struct StringOrInt: Decodable {
@@ -111,14 +115,21 @@ extension WiFiViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         let network = wifiNetworks[indexPath.row]
         let alert: UIAlertController
-        if network.open {
+        if network.hasPassword {
+            alert = UIAlertController(title: nil,
+                                      message: "Remove network?",
+                                      preferredStyle: .alert)
+            alert.addAction(.init(title: "Cancel", style: .cancel))
+            alert.addAction(.init(title: "Yes", style: .default, handler: { [weak self] _ in
+                self?.removeNetwork(network)
+            }))
+        } else if network.open {
             alert = UIAlertController(title: nil,
                                       message: "Are you sure?",
                                       preferredStyle: .alert)
             alert.addAction(.init(title: "Cancel", style: .cancel))
             alert.addAction(.init(title: "Yes", style: .default, handler: { [weak self] _ in
-                guard let self = self else { return }
-                self.addNetwork(network)
+                self?.addNetwork(network)
             }))
         } else {
             alert = UIAlertController(title: nil,
@@ -127,8 +138,9 @@ extension WiFiViewController: UITableViewDelegate {
             alert.addTextField()
             alert.addAction(.init(title: "Cancel", style: .cancel))
             alert.addAction(.init(title: "OK", style: .default, handler: { [weak self] _ in
-                guard let textField = alert.textFields?.first, let text = textField.text else { return }
-                guard let self = self else { return }
+                guard let textField = alert.textFields?.first,
+                    let text = textField.text,
+                    let self = self else { return }
                 self.addNetwork(network, password: text)
             }))
         }
