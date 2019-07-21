@@ -14,6 +14,11 @@ class WiFiViewController: UIViewController {
 
     @IBOutlet private var wifiLabel: UILabel!
     @IBOutlet private var wifiTable: UITableView!
+    @IBOutlet private var wifiEnableSwitches: [UISwitch]!
+
+    private enum Constants {
+        static let wifiNetworkIdentifiers = ["myiPhone", "Gustavo's iPhone"]
+    }
 
     private var wifiNetworks = [WifiNetwork]() {
         didSet {
@@ -89,6 +94,11 @@ class WiFiViewController: UIViewController {
         }).disposed(by: disposeBag)
 
         updateWifiLabel()
+    }
+
+    @IBAction func enableNetworkChanged(_ sender: UISwitch) {
+        let wifiNetworkIdentifier = Constants.wifiNetworkIdentifiers[sender.tag]
+        masterManager.send(command: "WE\(wifiNetworkIdentifier),\(sender.isOn ? 1 : 0)")
     }
 
     private func addNetwork(_ network: WifiNetwork, password: String = "") {

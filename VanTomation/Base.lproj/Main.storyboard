@@ -276,7 +276,7 @@ T</string>
                                 </subviews>
                             </stackView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" verticalHuggingPriority="251" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="4il-JJ-16d">
-                                <rect key="frame" x="10" y="70.5" width="355" height="547.5"/>
+                                <rect key="frame" x="10" y="70.5" width="355" height="501.5"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="WifiCell" id="D9h-0Z-vvj" customClass="WifiCell" customModule="VanTomation" customModuleProvider="target">
@@ -340,15 +340,50 @@ T</string>
                                     <outlet property="delegate" destination="dPD-ri-Hcg" id="wcM-Zr-0Kd"/>
                                 </connections>
                             </tableView>
+                            <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="kAj-Z0-k6k">
+                                <rect key="frame" x="5" y="582" width="365" height="31"/>
+                                <subviews>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="LYX-1J-ROm">
+                                        <rect key="frame" x="0.0" y="0.0" width="51" height="31"/>
+                                        <connections>
+                                            <action selector="enableNetworkChanged:" destination="dPD-ri-Hcg" eventType="valueChanged" id="SSg-rg-gGs"/>
+                                        </connections>
+                                    </switch>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Gustavo" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pqa-ce-bAK">
+                                        <rect key="frame" x="59" y="0.0" width="118.5" height="31"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch opaque="NO" tag="1" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="4iM-0q-DEa">
+                                        <rect key="frame" x="187.5" y="0.0" width="51" height="31"/>
+                                        <connections>
+                                            <action selector="enableNetworkChanged:" destination="dPD-ri-Hcg" eventType="valueChanged" id="QvE-Bf-nvF"/>
+                                        </connections>
+                                    </switch>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sony" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="caE-h8-1sR">
+                                        <rect key="frame" x="246.5" y="0.0" width="118.5" height="31"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="caE-h8-1sR" firstAttribute="width" secondItem="pqa-ce-bAK" secondAttribute="width" id="jYH-cf-Fvk"/>
+                                </constraints>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="4il-JJ-16d" firstAttribute="leading" secondItem="iij-Vj-YfH" secondAttribute="leading" constant="10" id="5Si-NX-FyF"/>
                             <constraint firstItem="4il-JJ-16d" firstAttribute="centerX" secondItem="S0m-kM-IpP" secondAttribute="centerX" id="7fS-8m-ftS"/>
-                            <constraint firstItem="iij-Vj-YfH" firstAttribute="bottom" secondItem="4il-JJ-16d" secondAttribute="bottom" id="Cfl-K4-4B3"/>
+                            <constraint firstItem="kAj-Z0-k6k" firstAttribute="top" secondItem="4il-JJ-16d" secondAttribute="bottom" constant="10" id="K4l-sk-wAV"/>
                             <constraint firstItem="MmY-A2-The" firstAttribute="centerX" secondItem="S0m-kM-IpP" secondAttribute="centerX" id="Q8M-j6-jwv"/>
+                            <constraint firstItem="kAj-Z0-k6k" firstAttribute="centerX" secondItem="S0m-kM-IpP" secondAttribute="centerX" id="Y9o-lN-OqS"/>
                             <constraint firstItem="MmY-A2-The" firstAttribute="top" secondItem="iij-Vj-YfH" secondAttribute="top" constant="15" id="iaq-4U-HvZ"/>
                             <constraint firstItem="4il-JJ-16d" firstAttribute="top" secondItem="MmY-A2-The" secondAttribute="bottom" constant="15" id="oEV-86-8HV"/>
+                            <constraint firstItem="kAj-Z0-k6k" firstAttribute="leading" secondItem="iij-Vj-YfH" secondAttribute="leading" constant="5" id="r0t-FK-KC5"/>
+                            <constraint firstItem="iij-Vj-YfH" firstAttribute="bottom" secondItem="kAj-Z0-k6k" secondAttribute="bottom" constant="5" id="u0B-LP-PaR"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="iij-Vj-YfH"/>
                     </view>
@@ -356,6 +391,8 @@ T</string>
                     <connections>
                         <outlet property="wifiLabel" destination="A3W-dv-D6F" id="tOf-It-VXR"/>
                         <outlet property="wifiTable" destination="4il-JJ-16d" id="oay-h0-sQa"/>
+                        <outletCollection property="wifiEnableSwitches" destination="LYX-1J-ROm" collectionClass="NSMutableArray" id="LAm-6k-svU"/>
+                        <outletCollection property="wifiEnableSwitches" destination="4iM-0q-DEa" collectionClass="NSMutableArray" id="yBG-aj-pj1"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="cH2-G9-VnD" userLabel="First Responder" sceneMemberID="firstResponder"/>
