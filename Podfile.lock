@@ -1,40 +1,64 @@
 PODS:
-  - fluid-slider (0.0.6):
+  - fluid-slider (1.1.0):
     - pop
-  - pop (1.0.10)
-  - RxBluetoothKit (5.1.4):
-    - RxSwift (~> 4.0)
-  - RxCocoa (4.4.1):
-    - RxSwift (~> 4.0)
-  - RxCoreLocation (1.3.2):
-    - RxCoreLocation/Core (= 1.3.2)
-  - RxCoreLocation/Core (1.3.2):
-    - RxCocoa (~> 4.0)
-    - RxSwift (~> 4.0)
-  - RxSwift (4.3.1)
+  - pop (1.0.12)
+  - RxBluetoothKit (7.0.0):
+    - RxSwift (~> 6.0)
+  - RxCocoa (6.5.0):
+    - RxRelay (= 6.5.0)
+    - RxSwift (= 6.5.0)
+  - RxCoreLocation (1.5.1):
+    - RxCoreLocation/Core (= 1.5.1)
+  - RxCoreLocation/Core (1.5.1):
+    - RxCocoa (~> 6.0)
+    - RxSwift (~> 6.0)
+  - RxRelay (6.5.0):
+    - RxSwift (= 6.5.0)
+  - RxSwift (6.5.0)
 
 DEPENDENCIES:
-  - fluid-slider
-  - RxBluetoothKit
-  - RxCoreLocation (~> 1.3.2)
+  - fluid-slider (from `https://github.com/wedalo/fluid-slider`, commit `b19d77f296a2c92cd98a165af431a0d06b60cda4`)
+  - RxBluetoothKit (from `https://github.com/i-mobility/RxBluetoothKit`, commit `a228044eca4c7108fa7c7ff81da04083f68568c3`)
+  - RxCoreLocation (from `https://github.com/sk-chanch/RxCoreLocation`, commit `c14b975043c58943bc1d44efa03ce48c542c97ef`)
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
-    - fluid-slider
+  trunk:
     - pop
-    - RxBluetoothKit
     - RxCocoa
-    - RxCoreLocation
+    - RxRelay
     - RxSwift
 
+EXTERNAL SOURCES:
+  fluid-slider:
+    :commit: b19d77f296a2c92cd98a165af431a0d06b60cda4
+    :git: https://github.com/wedalo/fluid-slider
+  RxBluetoothKit:
+    :commit: a228044eca4c7108fa7c7ff81da04083f68568c3
+    :git: https://github.com/i-mobility/RxBluetoothKit
+  RxCoreLocation:
+    :commit: c14b975043c58943bc1d44efa03ce48c542c97ef
+    :git: https://github.com/sk-chanch/RxCoreLocation
+
+CHECKOUT OPTIONS:
+  fluid-slider:
+    :commit: b19d77f296a2c92cd98a165af431a0d06b60cda4
+    :git: https://github.com/wedalo/fluid-slider
+  RxBluetoothKit:
+    :commit: a228044eca4c7108fa7c7ff81da04083f68568c3
+    :git: https://github.com/i-mobility/RxBluetoothKit
+  RxCoreLocation:
+    :commit: c14b975043c58943bc1d44efa03ce48c542c97ef
+    :git: https://github.com/sk-chanch/RxCoreLocation
+
 SPEC CHECKSUMS:
-  fluid-slider: 3aeb48bd7f875dc0431963fde12674e69c7c0ed2
-  pop: 82ca6b068ce9278fd350fd9dd09482a0ce9492e6
-  RxBluetoothKit: d18f7beb5fd4d2b24659d57548e38d5d2fac885b
-  RxCocoa: 2f35a76bf8887872e28a1914112395b11b8e0e64
-  RxCoreLocation: 23d0f2f06fba5af57f2fa9064a5c165e75eb4c33
-  RxSwift: fe0fd770a43acdb7d0a53da411c9b892e69bb6e4
+  fluid-slider: 68037ac7247f16a89f3e24ff5d0167c8eea6f50b
+  pop: d582054913807fd11fd50bfe6a539d91c7e1a55a
+  RxBluetoothKit: be7acb92b3eaaa3a15c3813c2c12648ad7f49010
+  RxCocoa: 94f817b71c07517321eb4f9ad299112ca8af743b
+  RxCoreLocation: 5db05ff830a313466a29e82798d983826b93a2f8
+  RxRelay: 1de1523e604c72b6c68feadedd1af3b1b4d0ecbd
+  RxSwift: 5710a9e6b17f3c3d6e40d6e559b9fa1e813b2ef8
 
-PODFILE CHECKSUM: 0031a245cf5fdb8521a9e8c9abfbac96cf1f0cfa
+PODFILE CHECKSUM: 6b02a61f344297e360a019e346cf17b41b4d2f3a
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.11.3
