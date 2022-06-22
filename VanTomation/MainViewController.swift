@@ -22,10 +22,22 @@ class MainViewController: UIViewController {
     @IBOutlet private var temperatureInsideBackground: UIView!
     @IBOutlet private var thermostatSlider: Slider!
 
+    private enum Constants {
+        static let minThermostatTemp: CGFloat = 60
+        static let maxThermostatTemp: CGFloat = 85
+
+        static let minColorTemp: CGFloat = 50
+        static let maxColorTemp: CGFloat = 95
+        static let offColor = UIColor(white: 0.8, alpha: 1)
+
+        // A static array of 4 colors:  (blue,   green,  yellow,  red) using {r,g,b} for each.
+        static let colors: [(CGFloat, CGFloat, CGFloat)] = [ (0, 0, 1), (0, 1, 0), (1, 1, 0), (1, 0, 0) ]
+    }
+
     private let disposeBag = DisposeBag()
 
     private func targetInF(from fraction: CGFloat) -> Int? {
-        return fraction < 0.1 ? nil : Int((fraction - 0.1) / 0.9 * 30 + 45)
+        return fraction < 0.1 ? nil : Int((fraction - 0.1) / 0.9 * (Constants.maxThermostatTemp - Constants.minThermostatTemp) + Constants.minThermostatTemp)
     }
 
     private func updateFractionFromTarget() {
@@ -36,7 +48,7 @@ class MainViewController: UIViewController {
             thermostatSlider.contentViewColor = Constants.offColor
             return
         }
-        let fraction = 0.1 + 0.9 * CGFloat(targetTemperature - 45) / 30
+        let fraction = 0.1 + 0.9 * (CGFloat(targetTemperature) - Constants.minThermostatTemp) / (Constants.maxThermostatTemp - Constants.minThermostatTemp)
         thermostatSlider.contentViewColor = MainViewController.getHeatMapColor(for: CGFloat(targetTemperature))
         thermostatSlider.fraction = fraction
     }
@@ -149,18 +161,9 @@ class MainViewController: UIViewController {
         masterManager.send(command: command)
     }
 
-    enum Constants {
-        static var minTemp: CGFloat = 50.0
-        static var maxTemp: CGFloat = 95.0
-        static var offColor = UIColor(white: 0.8, alpha: 1)
-
-        // A static array of 4 colors:  (blue,   green,  yellow,  red) using {r,g,b} for each.
-        static var colors: [(CGFloat, CGFloat, CGFloat)] = [ (0, 0, 1), (0, 1, 0), (1, 1, 0), (1, 0, 0) ]
-    }
-
     // Adapted from http://www.andrewnoske.com/wiki/Code_-_heatmaps_and_color_gradients
     private static func getHeatMapColor(for temperature: CGFloat) -> UIColor {
-        var value = (temperature - Constants.minTemp) / (Constants.maxTemp - Constants.minTemp)
+        var value = (temperature - Constants.minColorTemp) / (Constants.maxColorTemp - Constants.minColorTemp)
 
         let idx1: Int        // |-- Our desired color will be between these two indexes in "color".
         let idx2: Int        // |
