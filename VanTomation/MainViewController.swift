@@ -152,6 +152,18 @@ class MainViewController: UIViewController {
         masterManager.send(command: "PU")
     }
 
+    @IBAction func fanDown() {
+        masterManager.send(command: "FD")
+    }
+
+    @IBAction func fanUp() {
+        masterManager.send(command: "FU")
+    }
+
+    @IBAction func fanPress() {
+        masterManager.send(command: "FP")
+    }
+
     @IBAction func thermostatSwitchChanged() {
         sendThermostatCommand()
     }
